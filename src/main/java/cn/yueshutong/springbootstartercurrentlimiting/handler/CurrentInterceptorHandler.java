@@ -8,11 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface CurrentInterceptorHandler {
     /**
      * 自定义全局的拦截处理
-     * @param request
-     * @param response
-     * @param handler
-     * @return true:表示放行，false:表示拦截
-     * @throws Exception
+     * true:表示放行，false:表示拦截
      */
     void preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
 }
