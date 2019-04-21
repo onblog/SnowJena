@@ -100,8 +100,8 @@ public class MyInterceptorHandler implements CurrentInterceptorHandler {
 
 邮箱：[yster@foxmail.com](mailto:yster@foxmail.com)
 
-Github：<<https://github.com/yueshutong/spring-boot-starter-current-limiting> >
+Github：<https://github.com/yueshutong/spring-boot-starter-current-limiting>
 
-Gitee：<https://gitee.com/zyzpp/spring-boot-starter-current-limiting>>
+Gitee：<https://gitee.com/zyzpp/spring-boot-starter-current-limiting>
 
 交流QQ群：781927207
