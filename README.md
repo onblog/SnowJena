@@ -38,8 +38,8 @@ public class MyController {
 | 属性         | 说明         | 默认值 |
 | ------------ | ------------ | ------ |
 | QPS          | 每秒并发量   | 20     |
-| initialDelay | 初始延迟时间 | 0      |
-| failFast     | 开启快速失败 | true   |
+| initialDelay | 初始延迟时间<br>系统启动保护 | 0      |
+| failFast     | 开启快速失败<br>可切换为阻塞 | true   |
 
 ## 4.系统限流
 
@@ -58,10 +58,10 @@ current.limiting.initial-delay=0
 | 属性          | 说明         | 默认值 |
 | ------------- | ------------ | ------ |
 | enabled       | 开启全局限流 | false  |
-| part-enabled  | 开启注解限流 | true   |
+| part-enabled  | 开启注解限流<br>可使注解失效 | true   |
 | qps           | 每秒并发量   | 100    |
-| fail-fast     | 开启快速失败 | true   |
-| initial-delay | 初始延迟时间 | 0      |
+| fail-fast     | 开启快速失败<br>可切换为阻塞 | true   |
+| initial-delay | 初始延迟时间<br>系统启动保护 | 0      |
 
 ## 5.拒绝策略
 
