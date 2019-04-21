@@ -8,10 +8,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 public interface CurrentAspectHandler {
     /**
      * 自定义对CurrentLimiter注解的拦截处理
-     * @param pjp
-     * @param rateLimiter
-     * @return
-     * @throws Throwable
      */
     Object around(ProceedingJoinPoint pjp, CurrentLimiter rateLimiter)throws Throwable;
 }

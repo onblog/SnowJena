@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RateLimiter {
     private long QPS; //QPS：每秒并发数、令牌桶容量
     private long period; //间隔：1000/QPS
-    private long initialDelay; //延迟时间：毫秒
+    private long initialDelay; //初始延迟时间：毫秒
     private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
 
     private RateLimiter(long QPS, long initialDelay) {
