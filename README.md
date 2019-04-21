@@ -4,6 +4,8 @@
 
 spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的**无锁限流**插件，支持方法级别、系统级别限流，支持设置系统启动保护时间，提供快速失败与CAS阻塞两种限流方案，这些功能只需要导入依赖，简单配置即可使用。
 
+![1555848355646](./picture/yulan.png)
+
 ## 2.Maven
 
 ```xml
