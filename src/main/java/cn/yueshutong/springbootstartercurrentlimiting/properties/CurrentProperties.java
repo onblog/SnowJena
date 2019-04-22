@@ -1,4 +1,4 @@
-package cn.yueshutong.springbootstartercurrentlimiting.interceptor.properties;
+package cn.yueshutong.springbootstartercurrentlimiting.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "current.limiting")
 public class CurrentProperties {
     /**
-     * Do you want to turn on the limiting current?
+     * Do you want to turn on the current limiting ?
      */
     private boolean enabled = false;
 
@@ -18,6 +18,11 @@ public class CurrentProperties {
      * Is the local current limiter on?
      */
     private boolean partEnabled = true;
+
+    /**
+     * Do you want to turn on the cluster current limiter?
+     */
+    private boolean cloudEnabled = false;
 
     /**
      * qps
@@ -72,5 +77,13 @@ public class CurrentProperties {
 
     public void setFailFast(boolean failFast) {
         this.failFast = failFast;
+    }
+
+    public boolean isCloudEnabled() {
+        return cloudEnabled;
+    }
+
+    public void setCloudEnabled(boolean cloudEnabled) {
+        this.cloudEnabled = cloudEnabled;
     }
 }
