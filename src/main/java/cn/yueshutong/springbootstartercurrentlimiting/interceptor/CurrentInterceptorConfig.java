@@ -1,9 +1,10 @@
-package cn.yueshutong.springbootstartercurrentlimiting.interceptor.config;
+package cn.yueshutong.springbootstartercurrentlimiting.interceptor;
 
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiter;
+import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
+import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterCloud;
+import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterSingle;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
-import cn.yueshutong.springbootstartercurrentlimiting.interceptor.CurrentInterceptor;
-import cn.yueshutong.springbootstartercurrentlimiting.interceptor.properties.CurrentProperties;
+import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +26,11 @@ public class CurrentInterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(new CurrentInterceptor(RateLimiter.of(properties.getQps(),properties.getInitialDelay()),properties.isFailFast(),handler)).addPathPatterns("/**");
+        if (properties.isCloudEnabled()) {
+            registry.addInterceptor(new CurrentInterceptor(RateLimiterCloud.of(properties.getQps(), properties.getInitialDelay(), SpringContextUtil.getApplicationName()), properties.isFailFast(), handler)).addPathPatterns("/**");
+        }else {
+            registry.addInterceptor(new CurrentInterceptor(RateLimiterSingle.of(properties.getQps(), properties.getInitialDelay()), properties.isFailFast(), handler)).addPathPatterns("/**");
+        }
     }
 
 }

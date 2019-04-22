@@ -1,7 +1,6 @@
 package cn.yueshutong.springbootstartercurrentlimiting.interceptor;
 
 import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiter;
-import cn.yueshutong.springbootstartercurrentlimiting.common.CurrentEnum;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -36,7 +35,7 @@ public class CurrentInterceptor implements HandlerInterceptor {
             return true;
         }else { //没取到令牌
             if (interceptorHandler == null) {
-                response.getWriter().print(CurrentEnum.MESSAGE.getMessage());
+                response.getWriter().print(RateLimiter.message);
             } else {
                 interceptorHandler.preHandle(request, response, handler);
             }
