@@ -95,6 +95,7 @@ public class MyInterceptorHandler implements CurrentInterceptorHandler {
 
 }
 ```
+需要注意的是，以上实现类在Application中只能注入一个。
 
 ## 6.关于作者
 
