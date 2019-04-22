@@ -19,11 +19,17 @@ public class RedisLockUtil {
     /**
      * 获取锁,获取不到立即失败
      */
-//    public static boolean tryLockFailed(StringRedisTemplate template,String LOCK,String Value,int expires,TimeUnit unit) {
-//        Boolean b = template.opsForValue().setIfAbsent(LOCK, Value, expires, unit);
-//        return b == null ? false : b;
-//    }
-
+    public static boolean tryLockFailed(StringRedisTemplate template,String LOCK,String Value,int expires,TimeUnit unit) {
+        Boolean b = template.opsForValue().setIfAbsent(LOCK, Value, expires, unit);
+        return b == null ? false : b;
+    }
+    /**
+     * 获取锁,获取不到立即失败
+     */
+    public static boolean tryLockFailed(StringRedisTemplate template,String LOCK,String Value) {
+        Boolean b = template.opsForValue().setIfAbsent(LOCK, Value);
+        return b == null ? false : b;
+    }
 
     /**
      * 释放锁
