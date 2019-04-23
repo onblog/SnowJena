@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的**无锁限流**插件，支持方法级别、系统级别限流，支持设置系统启动保护时间，提供快速失败与CAS阻塞两种限流方案，这些功能只需要导入依赖，简单配置即可使用。
+spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的分布式无锁限流插件，支持方法级别、系统级别限流，支持设置系统启动保护时间，提供快速失败与CAS阻塞两种限流方案，这些功能只需要导入依赖，简单配置即可使用。
 
 ![1555848355646](./picture/yulan.png)
 
@@ -12,7 +12,7 @@ spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的**无锁�
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.1.RELEASE</version>
+  <version>0.0.2.SNAPSHOOT</version>
 </dependency>
 ```
 
@@ -97,7 +97,19 @@ public class MyInterceptorHandler implements CurrentInterceptorHandler {
 ```
 需要注意的是，以上实现类在Application中只能注入一个。
 
-## 6.关于作者
+## 6.分布式限流
+
+分布式限流的目的是对相同实例（即ApplicationName）的集群进行统一的限流，前提是已经开启并配置好Redis，直接开启即可：
+
+```properties
+spring.redis.host=127.0.0.1
+spring.redis.password=
+spring.redis.port=6379
+#一行开启
+current.limiting.cloud-enabled=true
+```
+
+## 7.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
