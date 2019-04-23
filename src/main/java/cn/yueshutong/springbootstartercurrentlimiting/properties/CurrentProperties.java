@@ -15,7 +15,7 @@ public class CurrentProperties {
     private boolean enabled = false;
 
     /**
-     * Is the local current limiter on?
+     * Do you want to turn on the annotation current limiter?
      */
     private boolean partEnabled = true;
 
@@ -25,12 +25,12 @@ public class CurrentProperties {
     private boolean cloudEnabled = false;
 
     /**
-     * application qps
+     * application qps：The number/SEC
      */
-    private long qps = 100;
+    private double qps = 100;
 
     /**
-     * Initialization delay time
+     * The delay time for the token to be put in for the first time.
      */
     private long initialDelay = 0;
 
@@ -39,8 +39,21 @@ public class CurrentProperties {
      */
     private boolean failFast = true;
 
+    /**
+     * Are request rates and frequency strictly controlled?
+     */
+    private boolean overflow = false;
+
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean isOverflow() {
+        return overflow;
+    }
+
+    public void setOverflow(boolean overflow) {
+        this.overflow = overflow;
     }
 
     public void setEnabled(boolean enabled) {
@@ -55,11 +68,11 @@ public class CurrentProperties {
         this.partEnabled = partEnabled;
     }
 
-    public long getQps() {
+    public double getQps() {
         return qps;
     }
 
-    public void setQps(long qps) {
+    public void setQps(double qps) {
         this.qps = qps;
     }
 

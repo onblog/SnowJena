@@ -9,9 +9,11 @@ import java.lang.annotation.*;
 @Deprecated
 public @interface CurrentLimiter {
 
-    long QPS() default 20;
+    double QPS() default 20;
 
     long initialDelay() default 0;
 
     boolean failFast() default true;
+
+    boolean overflow() default false;
 }

@@ -10,25 +10,26 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RateLimiterSingle implements RateLimiter {
     private long size; //size：令牌桶容量
-    private long period; //间隔：1000*1000/size 微秒
+    private long period; //间隔：纳秒
     private long initialDelay; //延迟生效时间：毫秒
     private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
 
     /**
-     * @param QPS 每秒并发量,等于0 默认禁止访问
+     * @param QPS          每秒并发量,等于0 默认禁止访问
      * @param initialDelay 首次延迟时间：毫秒
+     * @param overflow     是否严格控制请求速率和次数
      */
-    private RateLimiterSingle(double QPS, long initialDelay) {
-        this.size = QPS < 1 ? 1 : Double.doubleToLongBits(QPS);
+    private RateLimiterSingle(double QPS, long initialDelay, boolean overflow) {
+        this.size = overflow ? 1 : (QPS < 1 ? 1 : new Double(QPS).longValue());
         this.initialDelay = initialDelay * 1000 * 1000; //毫秒转纳秒
-        this.period = QPS != 0 ? Double.doubleToLongBits(1000 * 1000 * 1000 / QPS) : Integer.MAX_VALUE;
-        if (QPS != 0) {
+        this.period = QPS != 0 ? new Double(1000 * 1000 * 1000 / QPS).longValue() : Integer.MAX_VALUE;
+        if (QPS != 0) { //等于0就不放令牌了
             putScheduled();
         }
     }
 
-    public static RateLimiter of(double QPS, long initialDelay) {
-        return new RateLimiterSingle(QPS, initialDelay);
+    public static RateLimiter of(double QPS, long initialDelay, boolean overflow) {
+        return new RateLimiterSingle(QPS, initialDelay, overflow);
     }
 
     /**
@@ -69,5 +70,4 @@ public class RateLimiterSingle implements RateLimiter {
             }
         }, initialDelay, period, TimeUnit.NANOSECONDS);
     }
-
 }

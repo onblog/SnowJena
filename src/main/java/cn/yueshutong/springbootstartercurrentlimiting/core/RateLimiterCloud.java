@@ -16,46 +16,41 @@ public class RateLimiterCloud implements RateLimiter {
     private long size; //令牌桶容量
     private long period; //间隔时间：纳秒
     private long initialDelay; //延迟生效时间：毫秒
-    private final int LOCK_GET_EXPIRES = 10*1000; //锁过期时间：毫秒
-    private final int LOCK_PUT_EXPIRES = 10*1000; //实例过期时间：毫秒
+    private final int LOCK_GET_EXPIRES = 10 * 1000; //锁过期时间：毫秒
+    private final int LOCK_PUT_EXPIRES = 10 * 1000; //实例过期时间：毫秒
     private String LOCK_GET; // 读锁
     private String LOCK_PUT; // 写锁
     private String BUCKET; //令牌桶标识
     private String LOCK_PUT_DATA; //记录上一次操作的时间
-    private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort()+this.hashCode(); //唯一实例标识
+    private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort() + this.hashCode(); //唯一实例标识
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
 
     /**
-     * @param QPS 每秒并发量,等于0 默认禁止访问
+     * @param QPS          每秒并发量,等于0 默认禁止访问
      * @param initialDelay 首次延迟时间：毫秒
+     * @param overflow     是否严格控制请求速率和次数
      */
-    private RateLimiterCloud(double QPS, long initialDelay, String bucket) {
-        this.size = QPS < 1 ? 1 : Double.doubleToLongBits(QPS);
+    private RateLimiterCloud(double QPS, long initialDelay, String bucket, boolean overflow) {
+        this.size = overflow ? 1 : (QPS < 1 ? 1 : new Double(QPS).longValue());
         this.initialDelay = initialDelay * 1000 * 1000; //毫秒转纳秒
-        this.period = QPS != 0 ? Double.doubleToLongBits(1000 * 1000 * 1000 / QPS) : Integer.MAX_VALUE;
-        initName(bucket);
-        initBucket();
-        putScheduled();
+        this.period = QPS != 0 ? new Double(1000 * 1000 * 1000 / QPS).longValue() : Integer.MAX_VALUE;
+        init(bucket);
+        if (QPS != 0) { //等于0就不放令牌了
+            putScheduled();
+        }
     }
 
-    private void initName(String bucket) {
+    private void init(String bucket) {
         this.BUCKET = bucket;
         this.LOCK_GET = bucket + "$GET";
         this.LOCK_PUT = bucket + "$PUT";
         this.LOCK_PUT_DATA = this.LOCK_PUT + "$DATA";
+        template.opsForValue().set(BUCKET, String.valueOf(0)); //初始化令牌桶为0
     }
 
-    private void initBucket() {
-        try {
-            tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
-            template.opsForValue().set(BUCKET, String.valueOf(0));
-        } finally {
-            releaseLock(template, LOCK_PUT); //释放锁
-        }
-    }
 
-    public static RateLimiter of(double QPS, long initialDelay, String bucket) {
-        return new RateLimiterCloud(QPS, initialDelay, bucket);
+    public static RateLimiter of(double QPS, long initialDelay, String bucket, boolean overflow) {
+        return new RateLimiterCloud(QPS, initialDelay, bucket, overflow);
     }
 
     /**

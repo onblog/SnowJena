@@ -1,6 +1,6 @@
 package cn.yueshutong.springbootstartercurrentlimiting.handler;
 
-import cn.yueshutong.springbootstartercurrentlimiting.handler.entity.CurrentLimiterProperty;
+import cn.yueshutong.springbootstartercurrentlimiting.property.CurrentProperty;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,5 +8,5 @@ public interface CurrentRuleHandler {
     /**
      * 拦截规则
      */
-    CurrentLimiterProperty rule(HttpServletRequest request);
+    CurrentProperty rule(HttpServletRequest request);
 }
