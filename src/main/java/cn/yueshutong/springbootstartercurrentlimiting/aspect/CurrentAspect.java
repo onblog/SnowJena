@@ -65,9 +65,9 @@ public class CurrentAspect {
         String key = pjp.getSignature().toLongString();
         if (!map.containsKey(key)) {
             if (properties.isCloudEnabled()){
-                map.put(key, RateLimiterCloud.of(currentLimiter.QPS(),currentLimiter.initialDelay(), SpringContextUtil.getApplicationName()+key));
+                map.put(key, RateLimiterCloud.of(currentLimiter.QPS(),currentLimiter.initialDelay(), SpringContextUtil.getApplicationName()+key,currentLimiter.overflow()));
             }else {
-                map.put(key, RateLimiterSingle.of(currentLimiter.QPS(), currentLimiter.initialDelay()));
+                map.put(key, RateLimiterSingle.of(currentLimiter.QPS(), currentLimiter.initialDelay(),currentLimiter.overflow()));
             }
         }
         return map.get(key);

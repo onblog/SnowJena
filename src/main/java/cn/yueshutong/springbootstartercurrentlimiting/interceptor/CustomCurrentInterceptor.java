@@ -6,7 +6,7 @@ import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterCloud;
 import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterSingle;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
-import cn.yueshutong.springbootstartercurrentlimiting.handler.entity.CurrentLimiterProperty;
+import cn.yueshutong.springbootstartercurrentlimiting.property.CurrentProperty;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -31,7 +31,7 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //读取实现的规则
-        CurrentLimiterProperty rule = limiterRule.rule(request);
+        CurrentProperty rule = limiterRule.rule(request);
         //初始化限流器
         initRateLimiter(request,rule);
         if (rule.isFailFast()){ //执行快速失败
@@ -41,16 +41,16 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
         }
     }
 
-    private void initRateLimiter(HttpServletRequest request, CurrentLimiterProperty rule) {
+    private void initRateLimiter(HttpServletRequest request, CurrentProperty rule) {
         //获取限流器
         if (map.containsKey(rule.getId())){
             rateLimiter = map.get(rule.getId());
         }else {
             //判断是否是集群
             if (properties.isCloudEnabled()) {
-                rateLimiter = RateLimiterCloud.of(rule.getQps(),rule.getInitialDelay(), SpringContextUtil.getApplicationName()+rule.getId());
+                rateLimiter = RateLimiterCloud.of(rule.getQps(),rule.getInitialDelay(), SpringContextUtil.getApplicationName()+rule.getId(),rule.isOverflow());
             } else {
-                rateLimiter = RateLimiterSingle.of(rule.getQps(), rule.getInitialDelay());
+                rateLimiter = RateLimiterSingle.of(rule.getQps(), rule.getInitialDelay(),rule.isOverflow());
             }
         }
     }

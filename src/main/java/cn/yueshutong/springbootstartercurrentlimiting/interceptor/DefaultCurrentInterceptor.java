@@ -23,9 +23,9 @@ public class DefaultCurrentInterceptor implements HandlerInterceptor {
         this.failFast = properties.isFailFast();
         this.interceptorHandler = handler;
         if (properties.isCloudEnabled()){
-            rateLimiter = RateLimiterCloud.of(properties.getQps(), properties.getInitialDelay(),SpringContextUtil.getApplicationName());
+            rateLimiter = RateLimiterCloud.of(properties.getQps(), properties.getInitialDelay(),SpringContextUtil.getApplicationName(),properties.isOverflow());
         }else {
-            rateLimiter = RateLimiterSingle.of(properties.getQps(), properties.getInitialDelay());
+            rateLimiter = RateLimiterSingle.of(properties.getQps(), properties.getInitialDelay(),properties.isOverflow());
         }
     }
 
