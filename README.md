@@ -97,9 +97,9 @@ public class MyInterceptorHandler implements CurrentInterceptorHandler {
 ```
 需要注意的是，以上实现类在Application中只能注入一个。
 
-## 6.分布式限流
+## 6.集群限流
 
-分布式限流的目的是对相同实例（即ApplicationName）的集群进行统一的限流，前提是已经开启并配置好Redis，直接开启即可：
+集群限流的目的是对相同实例（即ApplicationName）的集群进行统一的限流，前提是已经开启并配置好Redis，直接开启即可：
 
 ```properties
 spring.redis.host=127.0.0.1
@@ -108,6 +108,11 @@ spring.redis.port=6379
 #一行开启
 current.limiting.cloud-enabled=true
 ```
+例如QPS为2，两个实例组成集群，效果图如下：
+
+![](./picture/jiqun1.jpg)
+
+![](./picture/jiqun2.jpg)
 
 ## 7.关于作者
 

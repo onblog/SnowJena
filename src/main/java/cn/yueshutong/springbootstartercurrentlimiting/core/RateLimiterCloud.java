@@ -22,7 +22,7 @@ public class RateLimiterCloud implements RateLimiter {
     private String LOCK_PUT; //（存放）互斥锁：ApplicationName(+MethodName)
     private String BUCKET; //令牌桶
     private String LOCK_PUT_DATA; //记录上一次操作的时间
-    private final String hashCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort(); //唯一实例标识
+    private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort()+this.hashCode(); //唯一实例标识
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
 
     private RateLimiterCloud(long QPS, long initialDelay, String bucket) {
@@ -86,7 +86,7 @@ public class RateLimiterCloud implements RateLimiter {
         service.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                if (tryLockFailed(template, LOCK_PUT, hashCode) || hashCode.equals(template.opsForValue().get(LOCK_PUT))) { //成为leader
+                if (tryLockFailed(template, LOCK_PUT, AppCode) || AppCode.equals(template.opsForValue().get(LOCK_PUT))) { //成为leader
                     Long s = Long.valueOf(template.opsForValue().get(BUCKET));
                     if (QPS > s) {
                         template.opsForValue().increment(BUCKET);
