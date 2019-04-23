@@ -120,6 +120,8 @@ current.limiting.cloud-enabled=true
 
 0.0.2.RELEASE：结合Redis实现集群限流
 
+0.0.3.SNAPSHOT：增加自定义规则限流、已弃用注解的使用、增加令牌桶算法与漏桶算法的切换。
+
 ## 8.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
