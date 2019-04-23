@@ -12,7 +12,7 @@ spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的分布式�
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.2.SNAPSHOOT</version>
+  <version>0.0.2.RELEASE</version>
 </dependency>
 ```
 
@@ -114,7 +114,13 @@ current.limiting.cloud-enabled=true
 
 ![](./picture/jiqun2.jpg)
 
-## 7.关于作者
+## 7.更新日志
+
+0.0.1.RELEASE：单机版限流，注解+全局配置
+
+0.0.2.RELEASE：结合Redis实现集群限流
+
+## 8.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
