@@ -108,9 +108,7 @@ public class RateLimiterCloud implements RateLimiter {
     private void initBucket() {
         try {
             tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
-            if (!template.hasKey(BUCKET)) {
-                template.opsForValue().set(BUCKET, String.valueOf(0));
-            }
+            template.opsForValue().set(BUCKET, String.valueOf(0));
         } finally {
             releaseLock(template, LOCK_PUT); //释放锁
         }
