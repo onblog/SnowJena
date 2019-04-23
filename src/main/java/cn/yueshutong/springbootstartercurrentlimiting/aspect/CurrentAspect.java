@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Aspect
 @ConditionalOnProperty(prefix = "current.limiting", name = "part-enabled", havingValue = "true", matchIfMissing = true)
+@Deprecated
 public class CurrentAspect {
     //一个方法一个限流器
     private Map<String, RateLimiter> map = new ConcurrentHashMap<>();
