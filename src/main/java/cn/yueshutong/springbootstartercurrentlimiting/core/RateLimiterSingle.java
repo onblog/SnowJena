@@ -6,22 +6,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 令牌桶算法：单机
+ * 令牌桶算法：单机、纳秒级流控
  */
 public class RateLimiterSingle implements RateLimiter {
-    private long QPS; //QPS：每秒并发数、令牌桶容量
-    private long period; //间隔：1000*1000/QPS 微秒
-    private long initialDelay; //初始延迟时间：毫秒
+    private long size; //size：令牌桶容量
+    private long period; //间隔：1000*1000/size 微秒
+    private long initialDelay; //延迟生效时间：毫秒
     private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
 
-    private RateLimiterSingle(long QPS, long initialDelay) {
-        this.QPS = QPS;
-        this.initialDelay = initialDelay*1000; //提升至微秒
-        this.period = QPS > 0 ? 1000*1000 / QPS : Integer.MAX_VALUE;
-        scheduled();
+    /**
+     * @param QPS 每秒并发量,等于0 默认禁止访问
+     * @param initialDelay 首次延迟时间：毫秒
+     */
+    private RateLimiterSingle(double QPS, long initialDelay) {
+        this.size = QPS < 1 ? 1 : Double.doubleToLongBits(QPS);
+        this.initialDelay = initialDelay * 1000 * 1000; //毫秒转纳秒
+        this.period = QPS != 0 ? Double.doubleToLongBits(1000 * 1000 * 1000 / QPS) : Integer.MAX_VALUE;
+        if (QPS != 0) {
+            putScheduled();
+        }
     }
 
-    public static RateLimiter of(long QPS, long initialDelay) {
+    public static RateLimiter of(double QPS, long initialDelay) {
         return new RateLimiterSingle(QPS, initialDelay);
     }
 
@@ -55,13 +61,13 @@ public class RateLimiterSingle implements RateLimiter {
     /**
      * 周期性放令牌，控制访问速率
      */
-    private void scheduled() {
+    private void putScheduled() {
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(() -> {
-            if (QPS > bucket.longValue()) {
+            if (size > bucket.longValue()) {
                 bucket.incrementAndGet();
             }
-        }, initialDelay, period, TimeUnit.MICROSECONDS);
+        }, initialDelay, period, TimeUnit.NANOSECONDS);
     }
 
 }

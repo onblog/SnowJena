@@ -25,7 +25,7 @@ public class CurrentProperties {
     private boolean cloudEnabled = false;
 
     /**
-     * qps
+     * application qps
      */
     private long qps = 100;
 
