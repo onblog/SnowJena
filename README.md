@@ -37,10 +37,12 @@ public class MyController {
 
 | 属性         | 说明         | 默认值 |
 | ------------ | ------------ | ------ |
-| QPS          | 每秒并发量<br>次数/时间(秒) | 20     |
-| initialDelay | 初始延迟时间<br>系统启动保护(毫秒) | 0      |
-| failFast     | 开启快速失败<br>可切换为阻塞 | true   |
-| overflow | 是否严控速率<br>切换漏桶算法 | false |
+| QPS          | 每秒并发量| 20     |
+| initialDelay | 初始延迟时间| 0      |
+| failFast     | 是否快速失败 | true   |
+| overflow | 是否严控速率 | false |
+
+关于属性的具体说明请参见下方介绍。
 
 ## 4.系统限流
 
