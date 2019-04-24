@@ -1,7 +1,5 @@
 package cn.yueshutong.springbootstartercurrentlimiting.property;
 
-import java.util.concurrent.TimeUnit;
-
 public class CurrentProperty {
     private String id;
     private double qps;
