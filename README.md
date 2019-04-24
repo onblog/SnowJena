@@ -12,7 +12,7 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.2.RELEASE</version>
+  <version>0.0.3.RELEASE</version>
 </dependency>
 ```
 
@@ -164,6 +164,8 @@ CurrentProperty 构造方法参数说明：
 0.0.2.RELEASE：结合Redis实现集群限流
 
 0.0.3.RELEASE：可自定义规则限流、增加令牌桶算法与漏桶算法的切换，纳秒级并发控制。
+
+0.0.4.SNAPSHOOT：解决大规模限流器注册而长时间不使用导致的内存泄漏问题。
 
 ## 8.关于作者
 
