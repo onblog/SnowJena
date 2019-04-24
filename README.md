@@ -52,19 +52,19 @@ current.limiting.part-enabled=false #使限流注解的作用失效
 current.limiting.qps=100 #每秒并发量，支持小数、分数。计算规则：次数/时间(秒级)
 current.limiting.fail-fast=true #快速失败
 current.limiting.initial-delay=0 #系统启动保护时间为0
-current.limiting.overflow=true #
+current.limiting.overflow=true #切换为漏桶算法
 ```
 
 参数说明：
 
 | 属性          | 说明         | 默认值 |
 | ------------- | ------------ | ------ |
-| enabled       | 开启系统限流器 | false  |
-| part-enabled  | 默认开启注解作用<br />可使注解限流失效 | true   |
-| qps           | 每秒并发量<br>支持小数分数，计算规则：次数/时间(秒级)，为0禁止访问 | 100    |
-| fail-fast     | 默认快速失败<br />可切换为阻塞 | true   |
-| initial-delay | 初始延迟时间<br />系统启动保护(毫秒) | 0      |
-| overflow | 是否严格控制请求速率和次数<br />即切换为漏桶算法 | false |
+| enabled       | 是否开启非注解的限流器 | FALSE  |
+| part-enabled  | 是否开启注解限流的作用。FALSE可使注解限流失效 | TRUE   |
+| qps           | 每秒并发量。支持小数、分数，计算规则：次数/时间(秒级)，为0禁止访问 | 100    |
+| fail-fast     | 是否执行快速失败，FALSE可切换为阻塞 | TRUE   |
+| initial-delay | 首次放入令牌（即允许访问）的延迟时间，可作为系统启动保护，单位:毫秒 | 0      |
+| overflow | 是否严格控制请求速率和次数，TRUE即切换为漏桶算法 | false |
 
 ## 5.拒绝策略
 
@@ -151,7 +151,7 @@ CurrentProperty 构造方法参数说明：
 | qps          | 每秒并发量。支持小数、分数，计算规则：次数/时间(秒)。为0禁止访问。 |
 | initialDelay | 首次放入令牌（即允许访问）延迟时间，可作为系统启动保护时间，单位/毫秒。 |
 | failFast     | 是否需开启快速失败。false即切换为阻塞。                      |
-| overflow     | 是否严格控制请求速率和次数，即切换为漏桶算法。               |
+| overflow     | 是否严格控制请求速率和次数，true即切换为漏桶算法。               |
 
 例如：对接口进行限流，只需要 request.getServletPath() 作为参数 id 的值即可。
 
