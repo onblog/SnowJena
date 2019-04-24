@@ -58,8 +58,8 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
+        tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
         try {
-            tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
             Long s = Long.valueOf(template.opsForValue().get(BUCKET));
             while (s <= 0) { //阻塞
                 s = Long.valueOf(template.opsForValue().get(BUCKET));
@@ -76,8 +76,8 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquireFailed() {
+        tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
         try {
-            tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
             Long s = Long.valueOf(template.opsForValue().get(BUCKET));
             if (s > 0) {
                 template.opsForValue().decrement(BUCKET); //拿走令牌
