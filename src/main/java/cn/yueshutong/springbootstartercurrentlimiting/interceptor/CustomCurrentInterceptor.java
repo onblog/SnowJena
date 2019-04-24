@@ -12,15 +12,14 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomCurrentInterceptor implements HandlerInterceptor {
     private CurrentInterceptorHandler interceptorHandler;
     private CurrentRuleHandler limiterRule;
     private CurrentProperties properties;
-    private RateLimiter rateLimiter;
-    private Map<String,RateLimiter> map = new HashMap<>();
+    private Map<String,RateLimiter> map = new ConcurrentHashMap<>();
 
     CustomCurrentInterceptor(CurrentProperties properties, CurrentInterceptorHandler handler, CurrentRuleHandler limiterRule) {
         this.limiterRule = limiterRule;
@@ -31,31 +30,37 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //读取实现的规则
-        CurrentProperty rule = limiterRule.rule(request);
+        CurrentProperty property = limiterRule.rule(request);
+        if (property==null){ //为NULL则默认不限制
+            return true;
+        }
         //初始化限流器
-        initRateLimiter(request,rule);
-        if (rule.isFailFast()){ //执行快速失败
-            return tryAcquireFailed(request,response,handler);
+        RateLimiter rateLimiter = initRateLimiter(property);
+        if (property.isFailFast()){ //执行快速失败
+            return tryAcquireFailed(request,response,handler,rateLimiter);
         }else { //执行阻塞策略
             return rateLimiter.tryAcquire();
         }
     }
 
-    private void initRateLimiter(HttpServletRequest request, CurrentProperty rule) {
+    /**
+     * 初始化限流器
+     * 为了提高性能，不加同步锁，所以刚开始可能存在极短暂的误差。
+     */
+    private RateLimiter initRateLimiter(CurrentProperty property) {
         //获取限流器
-        if (map.containsKey(rule.getId())){
-            rateLimiter = map.get(rule.getId());
-        }else {
+        if (!map.containsKey(property.getId())){
             //判断是否是集群
             if (properties.isCloudEnabled()) {
-                rateLimiter = RateLimiterCloud.of(rule.getQps(),rule.getInitialDelay(), SpringContextUtil.getApplicationName()+rule.getId(),rule.isOverflow());
+                map.put(property.getId(),RateLimiterCloud.of(property.getQps(),property.getInitialDelay(), SpringContextUtil.getApplicationName()+property.getId(),property.isOverflow()));
             } else {
-                rateLimiter = RateLimiterSingle.of(rule.getQps(), rule.getInitialDelay(),rule.isOverflow());
+                map.put(property.getId(),RateLimiterSingle.of(property.getQps(), property.getInitialDelay(),property.isOverflow()));
             }
         }
+        return map.get(property.getId());
     }
 
-    private boolean tryAcquireFailed(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    private boolean tryAcquireFailed(HttpServletRequest request, HttpServletResponse response, Object handler,RateLimiter rateLimiter) throws Exception {
         if (rateLimiter.tryAcquireFailed()){ //取到令牌
             return true;
         }else { //没取到令牌

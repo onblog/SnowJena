@@ -6,7 +6,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Documented
 @Inherited
-@Deprecated
 public @interface CurrentLimiter {
 
     double QPS() default 20;

@@ -5,7 +5,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 /**
  * Create by yster@foxmail.com
  */
-@Deprecated
 public interface CurrentAspectHandler {
     /**
      * CurrentLimiter注解拦截后的反馈
