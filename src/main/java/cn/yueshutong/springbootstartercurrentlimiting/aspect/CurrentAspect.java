@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Aspect
 @ConditionalOnProperty(prefix = "current.limiting", name = "part-enabled", havingValue = "true", matchIfMissing = true)
-@Deprecated
 public class CurrentAspect {
     //一个方法一个限流器
     private Map<String, RateLimiter> map = new ConcurrentHashMap<>();
@@ -60,6 +59,7 @@ public class CurrentAspect {
 
     /**
      * 初始化限流器
+     * 为了提高性能，不加同步锁，所以存在初始的误差。
      */
     private RateLimiter initCurrentLimiting(ProceedingJoinPoint pjp, CurrentLimiter currentLimiter) {
         String key = pjp.getSignature().toLongString();

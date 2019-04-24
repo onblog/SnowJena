@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的分布式无锁限流插件，支持方法级别、系统级别限流，支持设置系统启动保护时间，提供快速失败与CAS阻塞两种限流方案，这些功能只需要导入依赖，简单配置即可使用。
+**spring-boot-starter-current-limiting**：完美嵌入SpringBoot、SpringCloud应用的纳秒级分布式无锁限流插件，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，开箱即用。
 
 ![1555848355646](./picture/yulan.png)
 
@@ -18,7 +18,7 @@ spring-boot-starter-current-limiting：完美嵌入SpringBoot应用的分布式�
 
 ## 3.方法限流
 
-在需要限流的方法上使用 @CurrentLimiter 注解，示例代码如下：
+在需要限流的方法上使用 @CurrentLimiter 注解，不局限于Controller方法，示例代码如下：
 
 ```java
 @RestController
@@ -37,31 +37,34 @@ public class MyController {
 
 | 属性         | 说明         | 默认值 |
 | ------------ | ------------ | ------ |
-| QPS          | 每秒并发量   | 20     |
+| QPS          | 每秒并发量（支持小数） | 20     |
 | initialDelay | 初始延迟时间<br>系统启动保护 | 0      |
 | failFast     | 开启快速失败<br>可切换为阻塞 | true   |
+| overflow | 是否严控速率<br>切换漏桶算法 | false |
 
 ## 4.系统限流
 
 对整个应用的限流只需要在配置文件中配置即可，示例代码如下：
 
 ```properties
-current.limiting.enabled=true
-current.limiting.part-enabled=false
-current.limiting.qps=100
-current.limiting.fail-fast=true
-current.limiting.initial-delay=0
+current.limiting.enabled=true #开启系统限流
+current.limiting.part-enabled=false #使限流注解的作用失效
+current.limiting.qps=100 #每秒并发量，支持小数、分数。计算规则：次数/时间(秒级)
+current.limiting.fail-fast=true #快速失败
+current.limiting.initial-delay=0 #系统启动保护时间为0
+current.limiting.overflow=true #
 ```
 
 参数说明：
 
 | 属性          | 说明         | 默认值 |
 | ------------- | ------------ | ------ |
-| enabled       | 开启全局限流 | false  |
-| part-enabled  | 开启注解限流<br>可使注解失效 | true   |
-| qps           | 每秒并发量   | 100    |
-| fail-fast     | 开启快速失败<br>可切换为阻塞 | true   |
-| initial-delay | 初始延迟时间<br>系统启动保护 | 0      |
+| enabled       | 开启非注解限流器 | false  |
+| part-enabled  | 默认开启限流注解的效果<br />可使注解限流失效 | true   |
+| qps           | 每秒并发量，支持小数、分数<br />计算规则：次数/时间(秒级) | 100    |
+| fail-fast     | 默认快速失败<br />可切换为阻塞 | true   |
+| initial-delay | 初始延迟时间<br />系统启动保护时间（毫秒） | 0      |
+| overflow | 是否严格控制请求速率和次数<br />即切换为漏桶算法。 | true |
 
 ## 5.拒绝策略
 
@@ -114,13 +117,51 @@ current.limiting.cloud-enabled=true
 
 ![](./picture/jiqun2.jpg)
 
+## 7.自定义限流规则
+在实际场景中，我们的限流规则并不只是简单的对整个系统或单个接口进行流控，需要考虑的是更复杂的场景。例如：
+
+1. 对请求的目标URL进行限流（例如：某个URL每分钟只允许调用多少次）
+2. 对客户端的访问IP进行限流（例如：某个IP每分钟只允许请求多少次）
+3. 对某些特定用户或者用户组进行限流（例如：非VIP用户限制每分钟只允许调用100次某个API等）
+4. 多维度混合的限流。此时，就需要实现一些限流规则的编排机制。与、或、非等关系。
+
+在本插件中实现这些业务需求是非常轻量简便的，只需要一个实现 CurrentRuleHandler 接口并返回CurrentProperty 对象的 Bean 即可。示例代码如下：
+
+```java
+@Component
+public class MyRule implements CurrentRuleHandler {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Override
+    public CurrentProperty rule(HttpServletRequest request) {
+        request.getServletPath(); // /hello
+        request.getMethod(); // GET
+        request.getRemoteHost(); // 127.0.0.1
+        request.getSession(); // session
+        return new CurrentProperty("Default",3,0,true,true);
+    }
+}
+```
+
+CurrentProperty 构造方法参数说明：
+
+| 参数         | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| id           | 标识名。若为IP地址则为IP地址限流，若为用户名则为用户限流，若为访问的URL则为接口限流。 |
+| qps          | 每秒并发量。比如1分种允许100次调用，那么可以写：100/60。为0则禁止访问。 |
+| initialDelay | 首次放入令牌（即允许访问）延迟时间，可作为系统启动保护时间，单位/毫秒。 |
+| failFast     | 是否需开启快速失败。false即切换为阻塞。                      |
+| overflow     | 是否严格控制请求速率和次数，即切换为漏桶算法。               |
+
+例如：对接口进行限流，只需要 request.getServletPath() 作为参数 id 的值即可。
+
 ## 7.更新日志
 
 0.0.1.RELEASE：单机版限流，注解+全局配置
 
 0.0.2.RELEASE：结合Redis实现集群限流
 
-0.0.3.SNAPSHOT：增加自定义规则限流、已弃用注解的使用、增加令牌桶算法与漏桶算法的切换。
+0.0.3.RELEASE：可自定义规则限流、增加令牌桶算法与漏桶算法的切换，纳秒级并发控制。
 
 ## 8.关于作者
 
