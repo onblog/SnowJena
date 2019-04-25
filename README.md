@@ -12,7 +12,7 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.3.RELEASE</version>
+  <version>0.0.5.RELEASE</version>
 </dependency>
 ```
 

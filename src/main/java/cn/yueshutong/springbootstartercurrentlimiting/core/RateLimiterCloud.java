@@ -60,7 +60,7 @@ public class RateLimiterCloud implements RateLimiter {
 
     public static RateLimiter of(double QPS, long initialDelay, String bucket, boolean overflow, long time, ChronoUnit unit) {
         RateLimiterCloud rateLimiterCloud = new RateLimiterCloud(QPS, initialDelay, bucket, overflow);
-        if (unit!=null) {
+        if (unit != null) {
             LocalDateTime localDateTime = LocalDateTime.now().plus(time, unit);
             rateLimiterCloud.setExpirationTime(localDateTime);
         }
@@ -99,7 +99,8 @@ public class RateLimiterCloud implements RateLimiter {
         RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                if (AppCode.equals(template.opsForValue().get(LOCK_PUT)) || tryLockFailed(template, LOCK_PUT, AppCode)) { //成为leader
+                String appCode = template.opsForValue().get(LOCK_PUT);
+                if (AppCode.equals(appCode) || (appCode == null ? tryLockFailed(template, LOCK_PUT, AppCode) : false)) { //成为leader
                     Long s = Long.valueOf(template.opsForValue().get(BUCKET));
                     if (s < 0) {
                         template.opsForValue().set(BUCKET, String.valueOf(1)); //空桶放一块令牌
