@@ -6,11 +6,15 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
-import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.*;
+import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
+import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.tryLockFailed;
+
 
 /**
  * 令牌桶算法：分布式、Redis
@@ -19,10 +23,8 @@ public class RateLimiterCloud implements RateLimiter {
     private long size; //令牌桶容量
     private long period; //间隔时间：纳秒
     private long initialDelay; //延迟生效时间：毫秒
-    private final int LOCK_GET_EXPIRES = 10 * 1000; //锁过期时间：毫秒
     private final int LOCK_PUT_EXPIRES = 10 * 1000; //实例过期时间：毫秒
-    private String LOCK_GET; // 读锁
-    private String LOCK_PUT; // 写锁
+    private String LOCK_PUT; // 放令牌的标识
     private String BUCKET; //令牌桶标识
     private String LOCK_PUT_DATA; //记录上一次操作的时间
     private LocalDateTime ExpirationTime; //限流器对象到期时间
@@ -46,7 +48,6 @@ public class RateLimiterCloud implements RateLimiter {
 
     private void init(String bucket) {
         this.BUCKET = bucket;
-        this.LOCK_GET = bucket + "$GET";
         this.LOCK_PUT = bucket + "$PUT";
         this.LOCK_PUT_DATA = this.LOCK_PUT + "$DATA";
         template.opsForValue().set(BUCKET, String.valueOf(0)); //初始化令牌桶为0
@@ -59,8 +60,10 @@ public class RateLimiterCloud implements RateLimiter {
 
     public static RateLimiter of(double QPS, long initialDelay, String bucket, boolean overflow, long time, ChronoUnit unit) {
         RateLimiterCloud rateLimiterCloud = new RateLimiterCloud(QPS, initialDelay, bucket, overflow);
-        LocalDateTime localDateTime = LocalDateTime.now().plus(time,unit);
-        rateLimiterCloud.setExpirationTime(localDateTime);
+        if (unit!=null) {
+            LocalDateTime localDateTime = LocalDateTime.now().plus(time, unit);
+            rateLimiterCloud.setExpirationTime(localDateTime);
+        }
         return rateLimiterCloud;
     }
 
@@ -69,17 +72,11 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
-        tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
-        try {
-            Long s = Long.valueOf(template.opsForValue().get(BUCKET));
-            while (s <= 0) { //阻塞
-                s = Long.valueOf(template.opsForValue().get(BUCKET));
-            }
-            template.opsForValue().decrement(BUCKET); //拿走令牌
-            return true;
-        } finally {
-            releaseLock(template, LOCK_GET); //释放锁
+        Long d = template.opsForValue().decrement(BUCKET);
+        while (d < 0) { //无效令牌
+            d = template.opsForValue().decrement(BUCKET);
         }
+        return true;
     }
 
     /**
@@ -87,30 +84,26 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquireFailed() {
-        tryLock(template, LOCK_GET, LOCK_GET, LOCK_GET_EXPIRES, TimeUnit.MILLISECONDS); //取到锁
-        try {
-            Long s = Long.valueOf(template.opsForValue().get(BUCKET));
-            if (s > 0) {
-                template.opsForValue().decrement(BUCKET); //拿走令牌
-                return true;
-            }
+        Long d = template.opsForValue().decrement(BUCKET);
+        if (d < 0) { //无效令牌
             return false;
-        } finally {
-            releaseLock(template, LOCK_GET); //释放锁
         }
+        return true;
     }
 
     /**
      * 周期性放令牌，控制访问速率
-     * 算法：通过抢占机制选举leader，其它候选者对leader进行监督，发现leader懈怠即可将其踢下台。由此进入新一轮的抢占...
+     * 选举算法：通过抢占机制选举leader，其它候选者对leader进行监督，发现leader懈怠即可将其踢下台。由此进入新一轮的抢占...
      */
     private void putScheduled() {
         RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                if (tryLockFailed(template, LOCK_PUT, AppCode) || AppCode.equals(template.opsForValue().get(LOCK_PUT))) { //成为leader
+                if (AppCode.equals(template.opsForValue().get(LOCK_PUT)) || tryLockFailed(template, LOCK_PUT, AppCode)) { //成为leader
                     Long s = Long.valueOf(template.opsForValue().get(BUCKET));
-                    if (size > s) {
+                    if (s < 0) {
+                        template.opsForValue().set(BUCKET, String.valueOf(1)); //空桶放一块令牌
+                    } else if (s < size) {
                         template.opsForValue().increment(BUCKET);
                     }
                     template.opsForValue().set(LOCK_PUT_DATA, String.valueOf(System.currentTimeMillis()));//更新时间

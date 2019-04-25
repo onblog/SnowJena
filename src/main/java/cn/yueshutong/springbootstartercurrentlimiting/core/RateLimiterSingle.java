@@ -38,8 +38,10 @@ public class RateLimiterSingle implements RateLimiter {
 
     public static RateLimiter of(double QPS, long initialDelay, boolean overflow, long time, ChronoUnit unit) {
         RateLimiterSingle rateLimiterSingle = new RateLimiterSingle(QPS, initialDelay, overflow);
-        LocalDateTime localDateTime = LocalDateTime.now().plus(time,unit);
-        rateLimiterSingle.setExpirationTime(localDateTime);
+        if (unit!=null) {
+            LocalDateTime localDateTime = LocalDateTime.now().plus(time, unit);
+            rateLimiterSingle.setExpirationTime(localDateTime);
+        }
         return rateLimiterSingle;
     }
 
