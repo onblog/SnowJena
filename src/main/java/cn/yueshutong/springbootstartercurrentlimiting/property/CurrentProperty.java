@@ -18,7 +18,7 @@ public class CurrentProperty {
      * @param failFast 是否需开启快速失败。
      * @param overflow 是否严格控制请求速率和次数。
      */
-    public CurrentProperty(String id, double qps, long initialDelay, boolean failFast, boolean overflow) {
+    CurrentProperty(String id, double qps, long initialDelay, boolean failFast, boolean overflow) {
         this.id = id;
         this.qps = qps;
         this.initialDelay = initialDelay;
@@ -36,7 +36,7 @@ public class CurrentProperty {
      * @param time 时间
      * @param unit 时间单位
      */
-    public CurrentProperty(String id, double qps, long initialDelay, boolean failFast, boolean overflow, long time, ChronoUnit unit) {
+    CurrentProperty(String id, double qps, long initialDelay, boolean failFast, boolean overflow, long time, ChronoUnit unit) {
         this.id = id;
         this.qps = qps;
         this.initialDelay = initialDelay;
