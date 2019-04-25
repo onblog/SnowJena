@@ -142,6 +142,7 @@ public class MyRule implements CurrentRuleHandler {
         request.getMethod(); // GET
         request.getRemoteHost(); // 127.0.0.1
         request.getSession(); // session
+        //返回NULL是无规则的意思，即放行。
         return new CurrentProperty("Default",3,0,true,true);
     }
 }
@@ -160,6 +161,8 @@ CurrentProperty 构造方法参数说明：
 | unit |该规则限流器对象的存活时间单位（选填） |
 
 例如：对接口进行限流，只需要 request.getServletPath() 作为参数 id 的值即可。
+
+**注意：一旦自定义规则，即实现CurrentRuleHandler接口，那么系统默认配置的限流规则会失效。注解限流和拦截限流是可以同时作用的。**
 
 ## 7.更新日志
 
