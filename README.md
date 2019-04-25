@@ -143,7 +143,7 @@ public class MyRule implements CurrentRuleHandler {
         request.getRemoteHost(); // 127.0.0.1
         request.getSession(); // session
         //返回NULL是无规则的意思，即放行。
-        return new CurrentProperty("Default",3,0,true,true);
+        return CurrentPropertyFactory.of("Default",3,0,true,true);
     }
 }
 ```
@@ -164,7 +164,7 @@ CurrentProperty 构造方法参数说明：
 
 **注意：一旦自定义规则，即实现CurrentRuleHandler接口，那么系统默认配置的限流规则会失效。注解限流和拦截限流是可以同时作用的。**
 
-## 7.更新日志
+## 8.更新日志
 
 0.0.1.RELEASE：单点限流，注解+全局配置。
 
@@ -176,7 +176,7 @@ CurrentProperty 构造方法参数说明：
 
 0.0.5.RELEASE：去掉集群限流器的锁操作，改进令牌桶算法，实现真正的无锁限流。使用享元模式减少大量对象的创建。
 
-## 8.关于作者
+## 9.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
