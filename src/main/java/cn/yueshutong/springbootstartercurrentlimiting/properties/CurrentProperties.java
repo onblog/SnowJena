@@ -44,6 +44,16 @@ public class CurrentProperties {
      */
     private boolean overflow = false;
 
+    /**
+     * How many seconds will it take to reclaim the expired limiter object?
+     */
+    private long recycling = 10;
+
+    /**
+     * The number of core threads in the thread pool performing the scheduled task.
+     */
+    private int corePoolSize = 10;
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -66,6 +76,14 @@ public class CurrentProperties {
 
     public void setPartEnabled(boolean partEnabled) {
         this.partEnabled = partEnabled;
+    }
+
+    public int getCorePoolSize() {
+        return corePoolSize;
+    }
+
+    public void setCorePoolSize(int corePoolSize) {
+        this.corePoolSize = corePoolSize;
     }
 
     public double getQps() {
@@ -94,6 +112,14 @@ public class CurrentProperties {
 
     public boolean isCloudEnabled() {
         return cloudEnabled;
+    }
+
+    public long getRecycling() {
+        return recycling;
+    }
+
+    public void setRecycling(long recycling) {
+        this.recycling = recycling;
     }
 
     public void setCloudEnabled(boolean cloudEnabled) {

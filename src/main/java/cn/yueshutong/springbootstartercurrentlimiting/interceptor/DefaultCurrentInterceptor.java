@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 系统默认限流规则：通过配置文件指定参数
  * Create by yster@foxmail.com 2019/4/21 0021 11:19
  */
 public class DefaultCurrentInterceptor implements HandlerInterceptor {

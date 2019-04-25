@@ -1,5 +1,8 @@
 package cn.yueshutong.springbootstartercurrentlimiting.core;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +16,7 @@ public class RateLimiterSingle implements RateLimiter {
     private long period; //间隔：纳秒
     private long initialDelay; //延迟生效时间：毫秒
     private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
+    private LocalDateTime ExpirationTime; //限流器对象到期时间
 
     /**
      * @param QPS          每秒并发量,等于0 默认禁止访问
@@ -30,6 +34,13 @@ public class RateLimiterSingle implements RateLimiter {
 
     public static RateLimiter of(double QPS, long initialDelay, boolean overflow) {
         return new RateLimiterSingle(QPS, initialDelay, overflow);
+    }
+
+    public static RateLimiter of(double QPS, long initialDelay, boolean overflow, long time, ChronoUnit unit) {
+        RateLimiterSingle rateLimiterSingle = new RateLimiterSingle(QPS, initialDelay, overflow);
+        LocalDateTime localDateTime = LocalDateTime.now().plus(time,unit);
+        rateLimiterSingle.setExpirationTime(localDateTime);
+        return rateLimiterSingle;
     }
 
     /**
@@ -63,12 +74,19 @@ public class RateLimiterSingle implements RateLimiter {
      * 周期性放令牌，控制访问速率
      */
     private void putScheduled() {
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.scheduleAtFixedRate(() -> {
+        RateLimiter.scheduled.scheduleAtFixedRate(() -> {
             if (size > bucket.longValue()) {
                 bucket.incrementAndGet();
             }
         }, initialDelay, period, TimeUnit.NANOSECONDS);
     }
 
+    @Override
+    public LocalDateTime getExpirationTime() {
+        return ExpirationTime;
+    }
+
+    private void setExpirationTime(LocalDateTime expirationTime) {
+        ExpirationTime = expirationTime;
+    }
 }

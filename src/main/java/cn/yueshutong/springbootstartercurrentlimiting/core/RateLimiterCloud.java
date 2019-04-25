@@ -3,6 +3,9 @@ package cn.yueshutong.springbootstartercurrentlimiting.core;
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +25,7 @@ public class RateLimiterCloud implements RateLimiter {
     private String LOCK_PUT; // 写锁
     private String BUCKET; //令牌桶标识
     private String LOCK_PUT_DATA; //记录上一次操作的时间
+    private LocalDateTime ExpirationTime; //限流器对象到期时间
     private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort() + this.hashCode(); //唯一实例标识
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
 
@@ -51,6 +55,13 @@ public class RateLimiterCloud implements RateLimiter {
 
     public static RateLimiter of(double QPS, long initialDelay, String bucket, boolean overflow) {
         return new RateLimiterCloud(QPS, initialDelay, bucket, overflow);
+    }
+
+    public static RateLimiter of(double QPS, long initialDelay, String bucket, boolean overflow, long time, ChronoUnit unit) {
+        RateLimiterCloud rateLimiterCloud = new RateLimiterCloud(QPS, initialDelay, bucket, overflow);
+        LocalDateTime localDateTime = LocalDateTime.now().plus(time,unit);
+        rateLimiterCloud.setExpirationTime(localDateTime);
+        return rateLimiterCloud;
     }
 
     /**
@@ -94,8 +105,7 @@ public class RateLimiterCloud implements RateLimiter {
      * 算法：通过抢占机制选举leader，其它候选者对leader进行监督，发现leader懈怠即可将其踢下台。由此进入新一轮的抢占...
      */
     private void putScheduled() {
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.scheduleAtFixedRate(new Runnable() {
+        RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 if (tryLockFailed(template, LOCK_PUT, AppCode) || AppCode.equals(template.opsForValue().get(LOCK_PUT))) { //成为leader
@@ -112,6 +122,15 @@ public class RateLimiterCloud implements RateLimiter {
                 }
             }
         }, initialDelay, period, TimeUnit.NANOSECONDS);
+    }
+
+    @Override
+    public LocalDateTime getExpirationTime() {
+        return ExpirationTime;
+    }
+
+    private void setExpirationTime(LocalDateTime expirationTime) {
+        ExpirationTime = expirationTime;
     }
 
 }
