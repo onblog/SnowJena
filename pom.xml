@@ -11,7 +11,7 @@
 
     <groupId>cn.yueshutong</groupId>
     <artifactId>spring-boot-starter-current-limiting</artifactId>
-    <version>0.0.3.RELEASE</version>
+    <version>0.0.4.RELEASE</version>
 
     <name>spring-boot-starter-current-limiting</name>
     <url>https://github.com/yueshutong/spring-boot-starter-current-limiting</url>

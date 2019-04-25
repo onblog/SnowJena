@@ -8,13 +8,26 @@ import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptor
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.property.CurrentProperty;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
+import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.tryLockFailed;
+
+/**
+ * 自定义扩展限流规则：参数由用户实现CurrentRuleHandler接口指定
+ */
 public class CustomCurrentInterceptor implements HandlerInterceptor {
     private CurrentInterceptorHandler interceptorHandler;
     private CurrentRuleHandler limiterRule;
@@ -25,6 +38,7 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
         this.limiterRule = limiterRule;
         this.interceptorHandler = handler;
         this.properties = properties;
+        memoryLeak(); //执行过期对象回收
     }
 
     @Override
@@ -52,9 +66,9 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
         if (!map.containsKey(property.getId())){
             //判断是否是集群
             if (properties.isCloudEnabled()) {
-                map.put(property.getId(),RateLimiterCloud.of(property.getQps(),property.getInitialDelay(), SpringContextUtil.getApplicationName()+property.getId(),property.isOverflow()));
+                map.put(property.getId(),RateLimiterCloud.of(property.getQps(),property.getInitialDelay(), SpringContextUtil.getApplicationName()+property.getId(),property.isOverflow(),property.getTime(),property.getUnit()));
             } else {
-                map.put(property.getId(),RateLimiterSingle.of(property.getQps(), property.getInitialDelay(),property.isOverflow()));
+                map.put(property.getId(),RateLimiterSingle.of(property.getQps(), property.getInitialDelay(),property.isOverflow(),property.getTime(),property.getUnit()));
             }
         }
         return map.get(property.getId());
@@ -71,6 +85,26 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
             }
             return false;
         }
+    }
+
+    /**
+     * 解决大规模限流器注册而长时间不使用导致的内存泄漏问题，定时删除过期的限流器对象，秒级。
+     */
+    private void memoryLeak() {
+        RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                Iterator<Map.Entry<String, RateLimiter>> iterator = map.entrySet().iterator();
+                while (iterator.hasNext()){
+                    Map.Entry<String, RateLimiter> entry = iterator.next();
+                    RateLimiter value = entry.getValue();
+                    LocalDateTime expirationTime = value.getExpirationTime();
+                    if (expirationTime!=null && expirationTime.isBefore(LocalDateTime.now())){
+                        iterator.remove();
+                    }
+                }
+            }
+        }, properties.getRecycling(), properties.getRecycling(), TimeUnit.SECONDS);
     }
 
 }
