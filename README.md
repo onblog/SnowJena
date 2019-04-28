@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-CurrentLimiting：基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，开箱即用。
+CurrentLimiting：基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，开箱即用。[入门Demo](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
 
 ![1555848355646](./picture/yulan.png)
 
@@ -12,7 +12,7 @@ CurrentLimiting：基于令牌桶算法和漏桶算法实现的纳秒级分布�
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.6.RELEASE</version>
+  <version>0.0.7.RELEASE</version>
 </dependency>
 ```
 
@@ -183,7 +183,9 @@ current.limiting.recycling=10
 
 0.0.6.RELEASE：使用Lua脚本减少Redis网络请求次数。
 
-0.0.7.RELEASE：系统监控可视化组件正在开发中...
+0.0.7.RELEASE：从SpringBoot2切换到SpringBoot1.5开发。
+
+0.0.8.RELEASE：系统监控可视化组件正在开发中...
 
 ## 10.关于作者
 

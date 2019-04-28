@@ -8,37 +8,16 @@ public class RedisLockUtil {
     /**
      * 获取锁,获取不到立即失败
      */
-    public static boolean tryLockFailed(StringRedisTemplate template,String LOCK,String Value) {
-        Boolean b = template.opsForValue().setIfAbsent(LOCK, Value);
+    public static boolean tryLockFailed(StringRedisTemplate template,String Key,String Value) {
+        Boolean b = template.opsForValue().setIfAbsent(Key, Value);
         return b == null ? false : b;
     }
 
     /**
      * 释放锁
      */
-    public static boolean releaseLock(StringRedisTemplate template,String LOCK) {
-        return template.delete(LOCK);
-    }
-
-    /**
-     * 获取锁,阻塞直到成功
-     */
-    @Deprecated
-    public static boolean tryLock(StringRedisTemplate template, String LOCK, String Value, int expires, TimeUnit unit) {
-        Boolean b = template.opsForValue().setIfAbsent(LOCK, Value, expires, unit);
-        while (!(b == null ? false : b)) {
-            b = template.opsForValue().setIfAbsent(LOCK, Value, expires, unit);
-        }
-        return true;
-    }
-
-    /**
-     * 获取锁,获取不到立即失败
-     */
-    @Deprecated
-    public static boolean tryLockFailed(StringRedisTemplate template,String LOCK,String Value,int expires,TimeUnit unit) {
-        Boolean b = template.opsForValue().setIfAbsent(LOCK, Value, expires, unit);
-        return b == null ? false : b;
+    public static void releaseLock(StringRedisTemplate template,String LOCK) {
+        template.delete(LOCK);
     }
 
 }

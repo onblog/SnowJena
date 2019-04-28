@@ -7,7 +7,10 @@ import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterSingle;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +23,7 @@ public class DefaultCurrentInterceptor implements HandlerInterceptor {
     private RateLimiter rateLimiter;
     private CurrentRuleProperties limiterRule;
     private CurrentInterceptorHandler interceptorHandler;
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     DefaultCurrentInterceptor(CurrentProperties properties, CurrentInterceptorHandler handler, CurrentRuleProperties limiterRule) {
         this.limiterRule = limiterRule;
@@ -28,10 +32,10 @@ public class DefaultCurrentInterceptor implements HandlerInterceptor {
     }
 
     private void initRateLimiter(CurrentProperties properties, CurrentRuleProperties limiterRule) {
-        if (properties.isCloudEnabled()){
-            this.rateLimiter = RateLimiterCloud.of(limiterRule.getQps(), limiterRule.getInitialDelay(), SpringContextUtil.getApplicationName(),limiterRule.isOverflow());
-        }else {
-            this.rateLimiter = RateLimiterSingle.of(limiterRule.getQps(), limiterRule.getInitialDelay(),limiterRule.isOverflow());
+        if (properties.isCloudEnabled()) {
+            this.rateLimiter = RateLimiterCloud.of(limiterRule.getQps(), limiterRule.getInitialDelay(), SpringContextUtil.getApplicationName(), limiterRule.isOverflow());
+        } else {
+            this.rateLimiter = RateLimiterSingle.of(limiterRule.getQps(), limiterRule.getInitialDelay(), limiterRule.isOverflow());
         }
     }
 
@@ -39,15 +43,15 @@ public class DefaultCurrentInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (limiterRule.isFailFast()) { //执行快速失败
             return tryAcquireFailed(request, response);
-        }else { //执行阻塞策略
+        } else { //执行阻塞策略
             return rateLimiter.tryAcquire();
         }
     }
 
     private boolean tryAcquireFailed(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (rateLimiter.tryAcquireFailed()){ //取到令牌
+        if (rateLimiter.tryAcquireFailed()) { //取到令牌
             return true;
-        }else { //没取到令牌
+        } else { //没取到令牌
             if (interceptorHandler == null) {
                 response.getWriter().print(RateLimiter.message);
             } else {
@@ -55,5 +59,15 @@ public class DefaultCurrentInterceptor implements HandlerInterceptor {
             }
             return false;
         }
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) {
+        //视图渲染之前
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
+        //整个请求结束之后
     }
 }
