@@ -3,6 +3,7 @@ package cn.yueshutong.springbootstartercurrentlimiting.interceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
+import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,9 @@ public class CurrentInterceptorConfig implements WebMvcConfigurer {
     @Autowired
     private CurrentProperties properties;
 
+    @Autowired
+    private CurrentRuleProperties rules;
+
     @Autowired(required = false)
     private CurrentInterceptorHandler handler;
 
@@ -28,7 +32,7 @@ public class CurrentInterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         if (rule==null) { //是否自定义规则
-            registry.addInterceptor(new DefaultCurrentInterceptor(properties, handler)).addPathPatterns("/**");
+            registry.addInterceptor(new DefaultCurrentInterceptor(properties, handler, rules)).addPathPatterns("/**");
         }else {
             registry.addInterceptor(new CustomCurrentInterceptor(properties, handler,rule)).addPathPatterns("/**");
         }

@@ -9,5 +9,5 @@ public interface CurrentInterceptorHandler {
     /**
      * 拦截器拦截后的反馈
      */
-    void preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
+    void preHandle(HttpServletRequest request, HttpServletResponse response) throws Exception;
 }
