@@ -77,7 +77,7 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
             if (interceptorHandler == null) {
                 response.getWriter().print(RateLimiter.message);
             } else {
-                interceptorHandler.preHandle(request, response, handler);
+                interceptorHandler.preHandle(request, response);
             }
             return false;
         }

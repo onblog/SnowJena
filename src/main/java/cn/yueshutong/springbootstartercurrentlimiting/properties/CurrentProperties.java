@@ -25,26 +25,6 @@ public class CurrentProperties {
     private boolean cloudEnabled = false;
 
     /**
-     * application qps：The number/SEC
-     */
-    private double qps = 100;
-
-    /**
-     * The delay time for the token to be put in for the first time.
-     */
-    private long initialDelay = 0;
-
-    /**
-     * When the token is empty, does it fail fast or block?
-     */
-    private boolean failFast = true;
-
-    /**
-     * Are request rates and frequency strictly controlled?
-     */
-    private boolean overflow = false;
-
-    /**
      * How many seconds will it take to reclaim the expired limiter object?
      */
     private long recycling = 10;
@@ -58,13 +38,6 @@ public class CurrentProperties {
         return enabled;
     }
 
-    public boolean isOverflow() {
-        return overflow;
-    }
-
-    public void setOverflow(boolean overflow) {
-        this.overflow = overflow;
-    }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -84,30 +57,6 @@ public class CurrentProperties {
 
     public void setCorePoolSize(int corePoolSize) {
         this.corePoolSize = corePoolSize;
-    }
-
-    public double getQps() {
-        return qps;
-    }
-
-    public void setQps(double qps) {
-        this.qps = qps;
-    }
-
-    public long getInitialDelay() {
-        return initialDelay;
-    }
-
-    public void setInitialDelay(long initialDelay) {
-        this.initialDelay = initialDelay;
-    }
-
-    public boolean isFailFast() {
-        return failFast;
-    }
-
-    public void setFailFast(boolean failFast) {
-        this.failFast = failFast;
     }
 
     public boolean isCloudEnabled() {

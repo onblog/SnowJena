@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，开箱即用。
+CurrentLimiting：基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，开箱即用。
 
 ![1555848355646](./picture/yulan.png)
 
@@ -33,16 +33,7 @@ public class MyController {
 }
 ```
 
-@CurrentLimiter 注解参数说明：
-
-| 属性         | 说明         | 默认值 |
-| ------------ | ------------ | ------ |
-| QPS          | 每秒并发量| 20     |
-| initialDelay | 初始延迟时间| 0      |
-| failFast     | 是否快速失败 | true   |
-| overflow | 是否严控速率 | false |
-
-关于属性的具体说明请参见下方介绍。
+该注解参数的具体说明请参见下方限流规则。
 
 ## 4.系统限流
 
@@ -51,10 +42,10 @@ public class MyController {
 ```properties
 current.limiting.enabled=true #开启系统限流
 current.limiting.part-enabled=false #使限流注解的作用失效
-current.limiting.qps=100 #每秒并发量，支持小数、分数。计算规则：次数/时间(秒级)
-current.limiting.fail-fast=true #快速失败
-current.limiting.initial-delay=0 #系统启动保护时间为0
-current.limiting.overflow=true #切换为漏桶算法
+current.limiting.rule.qps=100 #每秒并发量，支持小数、分数。计算规则：次数/时间(秒级)
+current.limiting.rule.fail-fast=true #快速失败
+current.limiting.rule.initial-delay=0 #系统启动保护时间为0
+current.limiting.rule.overflow=true #切换为漏桶算法
 ```
 
 参数说明：
@@ -63,12 +54,16 @@ current.limiting.overflow=true #切换为漏桶算法
 | ------------- | ------------ | ------ |
 | enabled       | 是否开启非注解的限流器 | FALSE  |
 | part-enabled  | 是否开启注解限流的作用。FALSE可使注解限流失效 | TRUE   |
-| qps           | 每秒并发量。支持小数，计算规则：次数/时间(秒级)，为0禁止访问 | 100    |
-| fail-fast     | 是否执行快速失败，FALSE可切换为阻塞 | TRUE   |
-| initial-delay | 首次放入令牌（即允许访问）的延迟时间，可作为系统启动保护，单位:毫秒 | 0      |
-| overflow | 是否严格控制请求速率和次数，TRUE即切换为漏桶算法 | false |
-| recycling | 间隔多少秒可以去回收过期的限制器对象 | 10 |
 | corePoolSize | 执行计划任务的线程池中的核心线程数 | 10 |
+
+**限流规则：**
+
+| 属性          | 说明         | 默认值 |
+| ------------- | ------------ | ------ |
+| QPS        | 每秒并发量。支持小数，计算规则：次数/时间(秒级)，为0禁止访问 | 100    |
+| failFast    | 是否执行快速失败，FALSE可切换为阻塞 | TRUE   |
+| initialDelay | 首次放入令牌（即允许访问）的延迟时间，可作为系统启动保护，单位:毫秒 | 0      |
+| overflow | 是否切换为漏桶算法，TRUE即切换为漏桶算法 | false |
 
 ## 5.拒绝策略
 
@@ -83,7 +78,7 @@ current.limiting.overflow=true #切换为漏桶算法
 public class MyAspectHandler implements CurrentAspectHandler {
     @Override
     public Object around(ProceedingJoinPoint pjp, CurrentLimiter rateLimiter) throws Throwable {
-        //被注解修饰的方法返回值，慎用！
+        //替代被注解修饰的方法的返回值，慎用！
         //可以结合Controller返回自定义视图
         return "fail";
     }
@@ -96,7 +91,7 @@ public class MyAspectHandler implements CurrentAspectHandler {
 @Component
 public class MyInterceptorHandler implements CurrentInterceptorHandler {
     @Override
-    public void preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public void preHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.getWriter().print("fail");
     }
 
@@ -153,18 +148,28 @@ CurrentProperty 构造方法参数说明：
 | 参数         | 说明                                                         |
 | ------------ | ------------------------------------------------------------ |
 | id           | 标识名。若为IP地址则为IP地址限流，若为用户名则为用户限流，若为访问的URL则为接口限流。 |
-| qps          | 每秒并发量。支持小数、分数，计算规则：次数/时间(秒)。为0禁止访问。 |
-| initialDelay | 首次放入令牌（即允许访问）延迟时间，可作为系统启动保护时间，单位/毫秒。 |
-| failFast     | 是否需开启快速失败。false即切换为阻塞。                      |
-| overflow     | 是否严格控制请求速率和次数，true即切换为漏桶算法。               |
 | time |该规则限流器对象的存活时间（选填） |
 | unit |该规则限流器对象的存活时间单位（选填） |
 
 例如：对接口进行限流，只需要 request.getServletPath() 作为参数 id 的值即可。
 
+关于qps、initialDelay、failFast、overflow参数的意义参见上方限流规则。
+
 **注意：一旦自定义规则，即实现CurrentRuleHandler接口，那么系统默认配置的限流规则会失效。注解限流和拦截限流是可以同时作用的。**
 
-## 8.更新日志
+## 8.限流器回收
+
+在自定义限流规则时增加了两个可选参数：time、unit。对于接口限流和方法限流以及限流器对象很少的情况是不需要考虑的，在应对IP限流、用户限流等拥有大规模数量的前提下，很容易出现用户不再访问系统，但限流器对象却依旧存在的情况，这种情况下建议设置此参数，规定该限流对象存活时间。
+
+假设每小时允许某IP请求次数为100，那么可以设置此限流器存活时间为1小时。
+
+在配置文件中可以指定间隔多少秒可以去检查过期的限制器对象进行回收。
+
+```properties
+current.limiting.recycling=10
+```
+
+## 9.更新日志
 
 0.0.1.RELEASE：单点限流，注解+全局配置。
 
@@ -176,9 +181,11 @@ CurrentProperty 构造方法参数说明：
 
 0.0.5.RELEASE：去掉集群限流器的锁操作，改进令牌桶算法，实现真正的无锁限流。使用享元模式减少大量对象的创建。
 
-0.0.6.RELEASE：使用Lua脚本简化Redis网络请求次数。
+0.0.6.RELEASE：使用Lua脚本减少Redis网络请求次数。
 
-## 9.关于作者
+0.0.7.RELEASE：系统监控可视化组件正在开发中...
+
+## 10.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
