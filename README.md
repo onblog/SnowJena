@@ -185,7 +185,9 @@ current.limiting.recycling=10
 
 0.0.7.RELEASE：从SpringBoot2切换到SpringBoot1.5开发。
 
-0.0.8.RELEASE：系统监控可视化组件正在开发中...
+0.0.8.RELEASE：修复了0.0.7版本的集群限流失效bug。
+
+系统监控可视化组件正在开发中...
 
 ## 10.关于作者
 

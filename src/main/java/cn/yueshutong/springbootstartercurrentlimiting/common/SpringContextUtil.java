@@ -17,7 +17,8 @@ public class SpringContextUtil implements ApplicationContextAware {
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         SpringContextUtil.applicationContext = applicationContext;
-        SpringContextUtil.applicationName = applicationContext.getId();
+        SpringContextUtil.applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
+        SpringContextUtil.applicationName = SpringContextUtil.applicationName == null?"application":SpringContextUtil.applicationName;
         SpringContextUtil.port = applicationContext.getEnvironment().getProperty("server.port");
         SpringContextUtil.port = SpringContextUtil.port == null?"8080":SpringContextUtil.port;
         SpringContextUtil.corePoolSize = applicationContext.getBean(CurrentProperties.class).getCorePoolSize();

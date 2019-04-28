@@ -1,17 +1,15 @@
 package cn.yueshutong.springbootstartercurrentlimiting.core;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
@@ -76,9 +74,9 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
-        Long d = template.opsForValue().increment(BUCKET,-1);
+        Long d = template.opsForValue().increment(BUCKET, -1);
         while (d < 0) { //无效令牌
-            d = template.opsForValue().increment(BUCKET,-1);
+            d = template.opsForValue().increment(BUCKET, -1);
         }
         return true;
     }
@@ -88,7 +86,7 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquireFailed() {
-        Long d = template.opsForValue().increment(BUCKET,-1);
+        Long d = template.opsForValue().increment(BUCKET, -1);
         if (d < 0) { //无效令牌
             return false;
         }
@@ -124,7 +122,7 @@ public class RateLimiterCloud implements RateLimiter {
         keys.add(String.valueOf(size));
         keys.add(BUCKET_PUT_DATE);
         keys.add(String.valueOf(System.currentTimeMillis()));
-        template.execute(redisScript,keys);//执行Lua脚本
+        template.execute(redisScript, keys);//执行Lua脚本
         keys.clear();
     }
 
