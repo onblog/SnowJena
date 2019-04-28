@@ -21,9 +21,9 @@ public class SpringBootStarterCurrentLimitingAutoConfiguration {
      */
     @Bean
     @ConditionalOnProperty(prefix = "current.limiting", name = "cloud-enabled", havingValue = "true")
-    public DefaultRedisScript<List> defaultRedisScript() {
-        DefaultRedisScript<List> defaultRedisScript = new DefaultRedisScript<>();
-        defaultRedisScript.setResultType(List.class);
+    public DefaultRedisScript<Long> defaultRedisScript() {
+        DefaultRedisScript<Long> defaultRedisScript = new DefaultRedisScript<>();
+        defaultRedisScript.setResultType(Long.class);
         defaultRedisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("redis/putbucket.lua")));
         return defaultRedisScript;
     }

@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * spring boot 2.0 拦截器
+ * spring boot 1.x 拦截器
  */
 @Configuration
 @ConditionalOnProperty(prefix = "current.limiting", name = "enabled", havingValue = "true")
-public class CurrentInterceptorConfig implements WebMvcConfigurer {
+public class CurrentInterceptorConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private CurrentProperties properties;

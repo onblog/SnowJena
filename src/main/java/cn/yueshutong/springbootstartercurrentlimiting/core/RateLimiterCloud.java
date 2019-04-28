@@ -1,8 +1,12 @@
 package cn.yueshutong.springbootstartercurrentlimiting.core;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,15 +25,16 @@ public class RateLimiterCloud implements RateLimiter {
     private long size; //令牌桶容量
     private long period; //间隔时间：纳秒
     private long initialDelay; //延迟生效时间：毫秒
-    private final int LOCK_PUT_EXPIRES = 10 * 1000; //实例过期时间：毫秒
-    private String LOCK_PUT; // 放令牌的标识
+    private final int BUCKET_PUT_EXPIRES = 10 * 1000; //实例过期时间：毫秒
+    private String BUCKET_PUT; // 放令牌的标识
     private String BUCKET; //令牌桶标识
-    private String LOCK_PUT_DATE; //记录上一次操作的时间
+    private String BUCKET_PUT_DATE; //记录上一次操作的时间
     private LocalDateTime ExpirationTime; //限流器对象到期时间
     private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort() + this.hashCode(); //唯一实例标识
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
     private DefaultRedisScript redisScript = SpringContextUtil.getBean(DefaultRedisScript.class); //Redis-Lua
     private List<String> keys = new ArrayList<>(4); //Lua-Keys
+
     /**
      * @param QPS          每秒并发量,等于0 默认禁止访问
      * @param initialDelay 首次延迟时间：毫秒
@@ -47,8 +52,8 @@ public class RateLimiterCloud implements RateLimiter {
 
     private void init(String bucket) {
         this.BUCKET = bucket;
-        this.LOCK_PUT = bucket + "$PUT";
-        this.LOCK_PUT_DATE = this.LOCK_PUT + "$DATA";
+        this.BUCKET_PUT = bucket + "$PUT";
+        this.BUCKET_PUT_DATE = this.BUCKET_PUT + "$DATA";
         template.opsForValue().set(BUCKET, String.valueOf(0)); //初始化令牌桶为0
     }
 
@@ -71,9 +76,9 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
-        Long d = template.opsForValue().decrement(BUCKET);
+        Long d = template.opsForValue().increment(BUCKET,-1);
         while (d < 0) { //无效令牌
-            d = template.opsForValue().decrement(BUCKET);
+            d = template.opsForValue().increment(BUCKET,-1);
         }
         return true;
     }
@@ -83,7 +88,7 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquireFailed() {
-        Long d = template.opsForValue().decrement(BUCKET);
+        Long d = template.opsForValue().increment(BUCKET,-1);
         if (d < 0) { //无效令牌
             return false;
         }
@@ -98,13 +103,13 @@ public class RateLimiterCloud implements RateLimiter {
         RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                String appCode = template.opsForValue().get(LOCK_PUT);
-                if (AppCode.equals(appCode) || (appCode == null ? tryLockFailed(template, LOCK_PUT, AppCode) : false)) { //成为leader
+                String appCode = template.opsForValue().get(BUCKET_PUT);
+                if (AppCode.equals(appCode) || (appCode == null ? tryLockFailed(template, BUCKET_PUT, AppCode) : false)) { //成为leader
                     putBucket(); //放令牌
                 } else { //成为候选者
-                    Long s = Long.valueOf(template.opsForValue().get(LOCK_PUT_DATE));
-                    if (System.currentTimeMillis() - s > LOCK_PUT_EXPIRES) {
-                        releaseLock(template, LOCK_PUT); //释放锁
+                    Long s = Long.valueOf(template.opsForValue().get(BUCKET_PUT_DATE));
+                    if (System.currentTimeMillis() - s > BUCKET_PUT_EXPIRES) {
+                        releaseLock(template, BUCKET_PUT); //释放锁
                     }
                 }
             }
@@ -117,10 +122,10 @@ public class RateLimiterCloud implements RateLimiter {
     private void putBucket() {
         keys.add(BUCKET);
         keys.add(String.valueOf(size));
-        keys.add(LOCK_PUT_DATE);
+        keys.add(BUCKET_PUT_DATE);
         keys.add(String.valueOf(System.currentTimeMillis()));
-        template.execute(redisScript,keys); //执行Lua脚本
-        keys.clear(); //清空List
+        template.execute(redisScript,keys);//执行Lua脚本
+        keys.clear();
     }
 
     @Override

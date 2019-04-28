@@ -11,6 +11,7 @@ import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -101,6 +102,16 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
                 }
             }
         }, properties.getRecycling(), properties.getRecycling(), TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
+        //视图渲染之前
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
+        //整个请求结束之后
     }
 
 }
