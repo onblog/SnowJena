@@ -43,13 +43,11 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //读取实现的规则
-        CurrentProperty property = limiterRule.rule(request);
+        CurrentProperty property = limiterRule.rule(request); //读取实现的规则
         if (property==null){ //为NULL则默认不限制
             return true;
         }
-        //初始化限流器
-        RateLimiter rateLimiter = initRateLimiter(property);
+        RateLimiter rateLimiter = initRateLimiter(property); //初始化限流器
         if (property.isFailFast()){ //执行快速失败
             return tryAcquireFailed(request,response,handler,rateLimiter);
         }else { //执行阻塞策略
@@ -62,10 +60,8 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
      * 为了提高性能，不加同步锁，所以刚开始可能存在极短暂的误差。
      */
     private RateLimiter initRateLimiter(CurrentProperty property) {
-        //获取限流器
         if (!map.containsKey(property.getId())){
-            //判断是否是集群
-            if (properties.isCloudEnabled()) {
+            if (properties.isCloudEnabled()) { //判断是否是集群
                 map.put(property.getId(),RateLimiterCloud.of(property.getQps(),property.getInitialDelay(), SpringContextUtil.getApplicationName()+property.getId(),property.isOverflow(),property.getTime(),property.getUnit()));
             } else {
                 map.put(property.getId(),RateLimiterSingle.of(property.getQps(), property.getInitialDelay(),property.isOverflow(),property.getTime(),property.getUnit()));

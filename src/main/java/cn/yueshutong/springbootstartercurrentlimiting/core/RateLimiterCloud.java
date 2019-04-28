@@ -2,15 +2,13 @@ package cn.yueshutong.springbootstartercurrentlimiting.core;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
 import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.tryLockFailed;
@@ -26,11 +24,12 @@ public class RateLimiterCloud implements RateLimiter {
     private final int LOCK_PUT_EXPIRES = 10 * 1000; //实例过期时间：毫秒
     private String LOCK_PUT; // 放令牌的标识
     private String BUCKET; //令牌桶标识
-    private String LOCK_PUT_DATA; //记录上一次操作的时间
+    private String LOCK_PUT_DATE; //记录上一次操作的时间
     private LocalDateTime ExpirationTime; //限流器对象到期时间
     private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort() + this.hashCode(); //唯一实例标识
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
-
+    private DefaultRedisScript redisScript = SpringContextUtil.getBean(DefaultRedisScript.class); //Redis-Lua
+    private List<String> keys = new ArrayList<>(4); //Lua-Keys
     /**
      * @param QPS          每秒并发量,等于0 默认禁止访问
      * @param initialDelay 首次延迟时间：毫秒
@@ -49,7 +48,7 @@ public class RateLimiterCloud implements RateLimiter {
     private void init(String bucket) {
         this.BUCKET = bucket;
         this.LOCK_PUT = bucket + "$PUT";
-        this.LOCK_PUT_DATA = this.LOCK_PUT + "$DATA";
+        this.LOCK_PUT_DATE = this.LOCK_PUT + "$DATA";
         template.opsForValue().set(BUCKET, String.valueOf(0)); //初始化令牌桶为0
     }
 
@@ -101,21 +100,27 @@ public class RateLimiterCloud implements RateLimiter {
             public void run() {
                 String appCode = template.opsForValue().get(LOCK_PUT);
                 if (AppCode.equals(appCode) || (appCode == null ? tryLockFailed(template, LOCK_PUT, AppCode) : false)) { //成为leader
-                    Long s = Long.valueOf(template.opsForValue().get(BUCKET));
-                    if (s < 0) {
-                        template.opsForValue().set(BUCKET, String.valueOf(1)); //空桶放一块令牌
-                    } else if (s < size) {
-                        template.opsForValue().increment(BUCKET);
-                    }
-                    template.opsForValue().set(LOCK_PUT_DATA, String.valueOf(System.currentTimeMillis()));//更新时间
+                    putBucket(); //放令牌
                 } else { //成为候选者
-                    Long s = Long.valueOf(template.opsForValue().get(LOCK_PUT_DATA));
+                    Long s = Long.valueOf(template.opsForValue().get(LOCK_PUT_DATE));
                     if (System.currentTimeMillis() - s > LOCK_PUT_EXPIRES) {
                         releaseLock(template, LOCK_PUT); //释放锁
                     }
                 }
             }
         }, initialDelay, period, TimeUnit.NANOSECONDS);
+    }
+
+    /**
+     * 调用Redis-Lua脚本
+     */
+    private void putBucket() {
+        keys.add(BUCKET);
+        keys.add(String.valueOf(size));
+        keys.add(LOCK_PUT_DATE);
+        keys.add(String.valueOf(System.currentTimeMillis()));
+        template.execute(redisScript,keys); //执行Lua脚本
+        keys.clear(); //清空List
     }
 
     @Override

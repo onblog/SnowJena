@@ -27,8 +27,7 @@ public class CurrentInterceptorConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //是否自定义规则
-        if (rule==null) {
+        if (rule==null) { //是否自定义规则
             registry.addInterceptor(new DefaultCurrentInterceptor(properties, handler)).addPathPatterns("/**");
         }else {
             registry.addInterceptor(new CustomCurrentInterceptor(properties, handler,rule)).addPathPatterns("/**");
