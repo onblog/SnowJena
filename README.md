@@ -12,7 +12,7 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.5.RELEASE</version>
+  <version>0.0.6.RELEASE</version>
 </dependency>
 ```
 
@@ -168,13 +168,15 @@ CurrentProperty 构造方法参数说明：
 
 0.0.1.RELEASE：单点限流，注解+全局配置。
 
-0.0.2.RELEASE：结合Redis实现集群限流。内部使用选举算法选出Master节点。
+0.0.2.RELEASE：结合Redis实现集群限流，使用选举算法选出Master节点。
 
 0.0.3.RELEASE：可自定义规则限流、增加令牌桶算法与漏桶算法的切换，纳秒级并发控制。
 
 0.0.4.RELEASE：解决大规模限流器注册而长时间不使用导致的内存泄漏问题，定时删除过期的限流器对象，秒级。统一线程池管理，并可定义核心线程数。
 
 0.0.5.RELEASE：去掉集群限流器的锁操作，改进令牌桶算法，实现真正的无锁限流。使用享元模式减少大量对象的创建。
+
+0.0.6.RELEASE：使用Lua脚本简化Redis网络请求次数。
 
 ## 9.关于作者
 
