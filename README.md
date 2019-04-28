@@ -12,7 +12,7 @@ CurrentLimiting：基于令牌桶算法和漏桶算法实现的纳秒级分布�
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.7.RELEASE</version>
+  <version>0.0.8.RELEASE</version>
 </dependency>
 ```
 
