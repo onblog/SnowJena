@@ -17,7 +17,7 @@ import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUti
 
 
 /**
- * 令牌桶算法：分布式、Redis
+ * 令牌桶算法：分布式、Redis、无锁
  */
 public class RateLimiterCloud implements RateLimiter {
     private long size; //令牌桶容量
@@ -103,7 +103,7 @@ public class RateLimiterCloud implements RateLimiter {
             public void run() {
                 String appCode = template.opsForValue().get(BUCKET_PUT);
                 if (AppCode.equals(appCode) || (appCode == null ? tryLockFailed(template, BUCKET_PUT, AppCode) : false)) { //成为leader
-                    putBucket(); //放令牌
+                    putBucket();
                 } else { //成为候选者
                     Long s = Long.valueOf(template.opsForValue().get(BUCKET_PUT_DATE));
                     if (System.currentTimeMillis() - s > BUCKET_PUT_EXPIRES) {
@@ -115,7 +115,7 @@ public class RateLimiterCloud implements RateLimiter {
     }
 
     /**
-     * 调用Redis-Lua脚本
+     * 调用Redis-Lua脚本、考虑对象复用
      */
     private void putBucket() {
         keys.add(BUCKET);

@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Aspect
 @ConditionalOnProperty(prefix = "current.limiting", name = "part-enabled", havingValue = "true", matchIfMissing = true)
 public class CurrentAspect {
-    //一个方法一个限流器
+    //One method, one limiter
     private Map<String, RateLimiter> map = new ConcurrentHashMap<>();
 
     @Autowired(required = false)
@@ -31,44 +31,38 @@ public class CurrentAspect {
     @Autowired
     private CurrentProperties properties;
 
-    //声明切点
+    //The statement point of tangency
     @Pointcut("@annotation(cn.yueshutong.springbootstartercurrentlimiting.annotation.CurrentLimiter)")
     public void pointcut() {
     }
 
-    //环绕通知：目标方法执行前后分别执行一些代码，发生异常的时候执行另外一些代码
     @Around("pointcut() && @annotation(currentLimiter)")
     public Object around(ProceedingJoinPoint pjp, CurrentLimiter currentLimiter) throws Throwable {
-        //初始化限流器
         RateLimiter rateLimiter = initCurrentLimiting(pjp,currentLimiter);
-        if (currentLimiter.failFast()){ //执行快速失败
+        if (currentLimiter.failFast()){ //Fast execution fails
             return tryAcquireFailed(pjp, currentLimiter, rateLimiter);
-        }else { //执行阻塞策略
+        }else { //Execute blocking strategy
             rateLimiter.tryAcquire();
             return pjp.proceed();
         }
     }
 
     private Object tryAcquireFailed(ProceedingJoinPoint pjp, CurrentLimiter currentLimiter, RateLimiter rateLimiter) throws Throwable {
-        if (rateLimiter.tryAcquireFailed()) { //取到令牌
+        if (rateLimiter.tryAcquireFailed()) { //To get the token
             return pjp.proceed();
-        }else { //没取到令牌
+        }else { //No token was taken
             return handler==null? RateLimiter.message :handler.around(pjp,currentLimiter);
         }
     }
 
     /**
-     * 初始化限流器
+     * Initialize the current limiter
      * 为了提高性能，不加同步锁，所以存在初始的误差。
      */
     private RateLimiter initCurrentLimiting(ProceedingJoinPoint pjp, CurrentLimiter currentLimiter) {
         String key = pjp.getSignature().toLongString();
         if (!map.containsKey(key)) {
-            if (properties.isCloudEnabled()){
-                map.put(key, RateLimiterCloud.of(currentLimiter.QPS(),currentLimiter.initialDelay(), SpringContextUtil.getApplicationName()+key,currentLimiter.overflow()));
-            }else {
-                map.put(key, RateLimiterSingle.of(currentLimiter.QPS(), currentLimiter.initialDelay(),currentLimiter.overflow()));
-            }
+            map.put(key,RateLimiter.of(currentLimiter.QPS(),currentLimiter.initialDelay(), SpringContextUtil.getApplicationName()+key,currentLimiter.overflow()));
         }
         return map.get(key);
     }

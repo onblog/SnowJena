@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RedisLockUtil {
     /**
-     * 获取锁,获取不到立即失败
+     * Failed to acquire lock immediately
      */
     public static boolean tryLockFailed(StringRedisTemplate template,String Key,String Value) {
         Boolean b = template.opsForValue().setIfAbsent(Key, Value);
@@ -14,7 +14,7 @@ public class RedisLockUtil {
     }
 
     /**
-     * 释放锁
+     * Release the lock
      */
     public static void releaseLock(StringRedisTemplate template,String LOCK) {
         template.delete(LOCK);
