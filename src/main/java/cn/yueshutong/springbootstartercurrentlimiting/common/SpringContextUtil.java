@@ -14,14 +14,16 @@ public class SpringContextUtil implements ApplicationContextAware {
     private static String applicationName;
     private static String port;
     private static int corePoolSize;
+    private static boolean cloudEnabled;
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         SpringContextUtil.applicationContext = applicationContext;
         SpringContextUtil.applicationName = applicationContext.getEnvironment().getProperty("spring.application.name");
-        SpringContextUtil.applicationName = SpringContextUtil.applicationName == null?"application":SpringContextUtil.applicationName;
+        SpringContextUtil.applicationName = SpringContextUtil.applicationName == null ? "application" : SpringContextUtil.applicationName;
         SpringContextUtil.port = applicationContext.getEnvironment().getProperty("server.port");
-        SpringContextUtil.port = SpringContextUtil.port == null?"8080":SpringContextUtil.port;
+        SpringContextUtil.port = SpringContextUtil.port == null ? "8080" : SpringContextUtil.port;
         SpringContextUtil.corePoolSize = applicationContext.getBean(CurrentProperties.class).getCorePoolSize();
+        SpringContextUtil.cloudEnabled = applicationContext.getBean(CurrentProperties.class).isCloudEnabled();
     }
 
     public static ApplicationContext getApplicationContext() {
@@ -36,15 +38,19 @@ public class SpringContextUtil implements ApplicationContextAware {
         return applicationName;
     }
 
-    public static <T> T getBean(String name) throws BeansException {
-        return (T) applicationContext.getBean(name);
+    public static boolean isCloudEnabled() {
+        return cloudEnabled;
+    }
+
+    public static Object getBean(String name) throws BeansException {
+        return applicationContext.getBean(name);
     }
 
     public static int getCorePoolSize() {
         return corePoolSize;
     }
 
-    public static <T> T getBean(Class<?> clz) throws BeansException {
-        return (T) applicationContext.getBean(clz);
+    public static <T> T getBean(Class<T> clz) throws BeansException {
+        return applicationContext.getBean(clz);
     }
 }

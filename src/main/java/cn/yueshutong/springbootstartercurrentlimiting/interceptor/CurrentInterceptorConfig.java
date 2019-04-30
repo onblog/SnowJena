@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * spring boot 1.x 拦截器
+ * spring boot 1.x Interceptor
  */
 @Configuration
 @ConditionalOnProperty(prefix = "current.limiting", name = "enabled", havingValue = "true")
@@ -31,7 +31,7 @@ public class CurrentInterceptorConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        if (rule==null) { //是否自定义规则
+        if (rule==null) { //Whether to customize rules
             registry.addInterceptor(new DefaultCurrentInterceptor(properties, handler, rules)).addPathPatterns("/**");
         }else {
             registry.addInterceptor(new CustomCurrentInterceptor(properties, handler,rule)).addPathPatterns("/**");

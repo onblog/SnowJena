@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface CurrentRuleHandler {
     /**
-     * 拦截规则
+     * Rules for interceptors
      */
     CurrentProperty rule(HttpServletRequest request);
 }

@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface CurrentInterceptorHandler {
     /**
-     * 拦截器拦截后的反馈
+     * After being intercepted by the interceptor..
      */
     void preHandle(HttpServletRequest request, HttpServletResponse response) throws Exception;
 }
