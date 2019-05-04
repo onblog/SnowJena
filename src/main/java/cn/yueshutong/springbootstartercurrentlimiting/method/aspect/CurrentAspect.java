@@ -1,10 +1,8 @@
-package cn.yueshutong.springbootstartercurrentlimiting.aspect;
+package cn.yueshutong.springbootstartercurrentlimiting.method.aspect;
 
-import cn.yueshutong.springbootstartercurrentlimiting.annotation.CurrentLimiter;
+import cn.yueshutong.springbootstartercurrentlimiting.method.annotation.CurrentLimiter;
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiter;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterCloud;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterSingle;
+import cn.yueshutong.springbootstartercurrentlimiting.rateLimiter.RateLimiter;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentAspectHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -32,7 +30,7 @@ public class CurrentAspect {
     private CurrentProperties properties;
 
     //The statement point of tangency
-    @Pointcut("@annotation(cn.yueshutong.springbootstartercurrentlimiting.annotation.CurrentLimiter)")
+    @Pointcut("@annotation(cn.yueshutong.springbootstartercurrentlimiting.method.annotation.CurrentLimiter)")
     public void pointcut() {
     }
 

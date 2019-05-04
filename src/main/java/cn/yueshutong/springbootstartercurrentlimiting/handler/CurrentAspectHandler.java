@@ -1,6 +1,6 @@
 package cn.yueshutong.springbootstartercurrentlimiting.handler;
 
-import cn.yueshutong.springbootstartercurrentlimiting.annotation.CurrentLimiter;
+import cn.yueshutong.springbootstartercurrentlimiting.method.annotation.CurrentLimiter;
 import org.aspectj.lang.ProceedingJoinPoint;
 /**
  * Create by yster@foxmail.com

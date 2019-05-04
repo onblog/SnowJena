@@ -1,13 +1,18 @@
-package cn.yueshutong.springbootstartercurrentlimiting.interceptor;
+package cn.yueshutong.springbootstartercurrentlimiting.current;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiter;
+import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
+import cn.yueshutong.springbootstartercurrentlimiting.rateLimiter.RateLimiter;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
-import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
+import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,14 +20,19 @@ import javax.servlet.http.HttpServletResponse;
  * 系统默认限流规则：通过配置文件指定参数
  * Create by yster@foxmail.com 2019/4/21 0021 11:19
  */
-public class DefaultCurrentInterceptor implements HandlerInterceptor {
-    private RateLimiter rateLimiter;
+@Component
+@ConditionalOnMissingBean(value = CurrentRuleHandler.class)
+public class DefaultCurrentInterceptor implements HandlerInterceptor, MyCurrentInterceptor {
+    @Autowired
     private CurrentRuleProperties limiterRule;
+
+    @Autowired(required = false)
     private CurrentInterceptorHandler interceptorHandler;
 
-    DefaultCurrentInterceptor(CurrentProperties properties, CurrentInterceptorHandler handler, CurrentRuleProperties limiterRule) {
-        this.limiterRule = limiterRule;
-        this.interceptorHandler = handler;
+    private RateLimiter rateLimiter;
+
+    @PostConstruct
+    public void init(){
         this.rateLimiter = RateLimiter.of(limiterRule.getQps(), limiterRule.getInitialDelay(), SpringContextUtil.getApplicationName(), limiterRule.isOverflow());
     }
 

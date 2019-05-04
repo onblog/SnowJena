@@ -1,4 +1,4 @@
-package cn.yueshutong.springbootstartercurrentlimiting.core;
+package cn.yueshutong.springbootstartercurrentlimiting.rateLimiter;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 
@@ -9,8 +9,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public interface RateLimiter {
     String message = "<pre>The specified service is not currently available.</pre>";
-
-    ScheduledExecutorService scheduled = Executors.newScheduledThreadPool(SpringContextUtil.getCorePoolSize());
 
     boolean tryAcquire();
 

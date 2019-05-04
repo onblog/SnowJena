@@ -1,44 +1,51 @@
-package cn.yueshutong.springbootstartercurrentlimiting.interceptor;
+package cn.yueshutong.springbootstartercurrentlimiting.current;
 
+import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiter;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterCloud;
-import cn.yueshutong.springbootstartercurrentlimiting.core.RateLimiterSingle;
+import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
+import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties;
 import cn.yueshutong.springbootstartercurrentlimiting.property.CurrentProperty;
-import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties;
+import cn.yueshutong.springbootstartercurrentlimiting.rateLimiter.RateLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
-import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.tryLockFailed;
 
 /**
  * 自定义扩展限流规则：参数由用户实现CurrentRuleHandler接口指定
  */
-public class CustomCurrentInterceptor implements HandlerInterceptor {
+@Component
+@ConditionalOnBean(value = CurrentRuleHandler.class)
+public class CustomCurrentInterceptor implements HandlerInterceptor, MyCurrentInterceptor {
+    @Autowired
+    private CurrentRecycleProperties recycleProperties;
+
+    @Autowired(required = false)
     private CurrentInterceptorHandler interceptorHandler;
+
+    @Autowired(required = false)
     private CurrentRuleHandler limiterRule;
-    private CurrentProperties properties;
+
     private Map<String, RateLimiter> map = new ConcurrentHashMap<>();
 
-    CustomCurrentInterceptor(CurrentProperties properties, CurrentInterceptorHandler handler, CurrentRuleHandler limiterRule) {
-        this.limiterRule = limiterRule;
-        this.interceptorHandler = handler;
-        this.properties = properties;
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @PostConstruct
+    public void init(){
         this.memoryLeak(); //执行过期对象回收
     }
 
@@ -84,9 +91,13 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
      * 解决大规模限流器注册而长时间不使用导致的内存泄漏问题，定时删除过期的限流器对象，秒级。
      */
     private void memoryLeak() {
-        RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
+        if (!recycleProperties.isEnabled()){ //no use
+            return;
+        }
+        ThreadPool.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
+                logger.debug("Recovering current limiting object...");
                 Iterator<Map.Entry<String, RateLimiter>> iterator = map.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String, RateLimiter> entry = iterator.next();
@@ -97,7 +108,7 @@ public class CustomCurrentInterceptor implements HandlerInterceptor {
                     }
                 }
             }
-        }, properties.getRecycling(), properties.getRecycling(), TimeUnit.SECONDS);
+        }, recycleProperties.getTime(), recycleProperties.getTime(), TimeUnit.SECONDS);
     }
 
     @Override
