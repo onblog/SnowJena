@@ -25,19 +25,13 @@ public class CurrentProperties {
     private boolean cloudEnabled = false;
 
     /**
-     * How many seconds will it take to reclaim the expired limiter object?
-     */
-    private long recycling = 10;
-
-    /**
-     * The number of core threads in the thread pool performing the scheduled task.
+     * The number of rateLimiter threads in the thread pool performing the scheduled task.
      */
     private int corePoolSize = 10;
 
     public boolean isEnabled() {
         return enabled;
     }
-
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -63,15 +57,8 @@ public class CurrentProperties {
         return cloudEnabled;
     }
 
-    public long getRecycling() {
-        return recycling;
-    }
-
-    public void setRecycling(long recycling) {
-        this.recycling = recycling;
-    }
-
     public void setCloudEnabled(boolean cloudEnabled) {
         this.cloudEnabled = cloudEnabled;
     }
+
 }

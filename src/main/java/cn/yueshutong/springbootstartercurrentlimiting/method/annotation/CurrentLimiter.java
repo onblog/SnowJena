@@ -1,4 +1,4 @@
-package cn.yueshutong.springbootstartercurrentlimiting.annotation;
+package cn.yueshutong.springbootstartercurrentlimiting.method.annotation;
 
 import java.lang.annotation.*;
 

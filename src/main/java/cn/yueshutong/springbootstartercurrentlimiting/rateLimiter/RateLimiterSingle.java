@@ -1,10 +1,9 @@
-package cn.yueshutong.springbootstartercurrentlimiting.core;
+package cn.yueshutong.springbootstartercurrentlimiting.rateLimiter;
+
+import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -76,7 +75,7 @@ public class RateLimiterSingle implements RateLimiter {
      * 周期性放令牌，控制访问速率
      */
     private void putScheduled() {
-        RateLimiter.scheduled.scheduleAtFixedRate(() -> {
+        ThreadPool.scheduled.scheduleAtFixedRate(() -> {
             if (size > bucket.longValue()) {
                 bucket.incrementAndGet();
             }

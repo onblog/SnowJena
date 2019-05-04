@@ -166,7 +166,8 @@ CurrentProperty 构造方法参数说明：
 在配置文件中可以指定间隔多少秒可以去检查过期的限制器对象进行回收。
 
 ```properties
-current.limiting.recycling=10
+current.limiting.recyle.enabled=true #默认false
+current.limiting.recyle.time=10 #秒
 ```
 
 ## 9.更新日志
@@ -187,7 +188,7 @@ current.limiting.recycling=10
 
 0.0.8.RELEASE：修复了0.0.7版本的集群限流失效bug。
 
-系统监控可视化组件正在开发中...
+系统监控报警可视化组件正在开发中...
 
 ## 10.关于作者
 

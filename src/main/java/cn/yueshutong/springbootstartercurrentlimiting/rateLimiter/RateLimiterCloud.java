@@ -1,5 +1,6 @@
-package cn.yueshutong.springbootstartercurrentlimiting.core;
+package cn.yueshutong.springbootstartercurrentlimiting.rateLimiter;
 
+import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -7,9 +8,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
@@ -98,7 +97,7 @@ public class RateLimiterCloud implements RateLimiter {
      * 选举算法：通过抢占机制选举leader，其它候选者对leader进行监督，发现leader懈怠即可将其踢下台。由此进入新一轮的抢占...
      */
     private void putScheduled() {
-        RateLimiter.scheduled.scheduleAtFixedRate(new Runnable() {
+        ThreadPool.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 String appCode = template.opsForValue().get(BUCKET_PUT);
