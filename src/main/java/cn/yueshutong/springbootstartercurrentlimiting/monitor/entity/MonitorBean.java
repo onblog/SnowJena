@@ -52,4 +52,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
     public int compareTo(MonitorBean o) {
         return this.getLocalDateTime().compareTo(o.getLocalDateTime());
     }
+
+
+
 }

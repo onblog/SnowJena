@@ -12,9 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +40,8 @@ public class MonitorServiceCloud implements MonitorService {
     @Autowired
     private CurrentMonitorProperties monitorProperties;
 
-    HashOperations<String, Object, Object> opsForHash;
-    SetOperations<String, String> opsForSet;
+    ValueOperations<String, String> opsForValue;
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String APP = SpringContextUtil.getApplicationName();
@@ -46,61 +49,54 @@ public class MonitorServiceCloud implements MonitorService {
     private static final String PRE = "pre";
     private static final String AFTER = "after";
 
+    /**
+     * Key:APP+PRE+time
+     * value:i(++)
+     * setnx+expire
+     */
+
     @PostConstruct
     private void init() {
-        if (template == null) {
-            throw new NullPointerException("你的RedisTemplate不可用！");
-        }
-        opsForHash = template.opsForHash();
-        opsForSet = template.opsForSet();
-        this.recyle();
-    }
-
-    @Override
-    public List<MonitorBean> queryAll() {
-        Set<String> members = opsForSet.members(KEYS);
-        List<MonitorBean> list = new ArrayList<>();
-        members.forEach(k -> {
-            MonitorBean monitorBean = new MonitorBean();
-            monitorBean.setLocalDateTime(DateTime.parse(k.substring(APP.length())));
-            monitorBean.setPre(Integer.valueOf(opsForHash.get(k, PRE).toString()));
-            monitorBean.setAfter(Integer.valueOf(opsForHash.get(k, AFTER).toString()));
-            list.add(monitorBean);
-        });
-        return list;
+        opsForValue = template.opsForValue();
     }
 
     @Override
     public void savePre(String time) {
-        String key = APP + time; // key = now time
-        opsForHash.putIfAbsent(key, PRE, 0); // init
-        opsForHash.increment(key, PRE, 1); // i++
-        opsForSet.add(KEYS, key); //keys
+        String key = APP + PRE + time;
+        opsForValue.setIfAbsent(key, String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
+        opsForValue.increment(key);
     }
 
     @Override
     public void saveAfter(String time) {
-        String key = APP + time; // key = now time
-        opsForHash.putIfAbsent(key, AFTER, 0); // time
-        opsForHash.increment(key, AFTER, 1); //i++
+        String key = APP + AFTER + time;
+        opsForValue.setIfAbsent(key, String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
+        opsForValue.increment(key);
     }
 
-    private void recyle() {
-        ThreadPool.scheduled.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                logger.info("recyle..");
-                Set<String> members = opsForSet.members(KEYS);
-                members.forEach(s -> {
-                    String time = s.substring(APP.length());
-                    LocalDateTime parse = DateTime.parse(time);
-                    if (parse.plus(monitorProperties.getTime(), ChronoUnit.SECONDS).isBefore(LocalDateTime.now())) {
-                        opsForSet.remove(KEYS, s);
-                        opsForHash.delete(s);
-                    }
-                });
+    @Override
+    public List<MonitorBean> queryAll() {
+        List<MonitorBean> list = new ArrayList<>();
+        Set<String> pres = template.keys(APP + PRE + "*");
+        Set<String> keys = template.keys(APP + AFTER + "*");
+        pres.forEach(k -> {
+            String time = k.substring(APP.length() + PRE.length());
+            MonitorBean monitorBean = new MonitorBean();
+            monitorBean.setLocalDateTime(DateTime.parse(time));
+            String pre = template.opsForValue().get(k);
+            if (pre==null){
+                return;
             }
-        }, monitorProperties.getTime(), 10, TimeUnit.SECONDS);
+            monitorBean.setPre(Integer.valueOf(pre));
+            String after = template.opsForValue().get(APP + AFTER + time);
+            if (after==null){
+                return;
+            }
+            monitorBean.setAfter(Integer.valueOf(after));
+            list.add(monitorBean);
+        });
+        list.sort(null);
+        return list;
     }
 
 }
