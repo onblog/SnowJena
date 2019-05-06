@@ -10,23 +10,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * Monitor
- * Key:time
- * Value:Hash
  * Create by yster@foxmail.com 2019/4/30 0030 16:00
  */
 @Component
 @ConditionalOnProperty(prefix = "current.limiting.monitor", name = "enabled", havingValue = "true")
 public class MonitorInterceptor implements HandlerInterceptor {
-    @Autowired(required = false)
-    private RedisTemplate redisTemplate;
-
     @Autowired
     private MonitorService monitorService;
+
     private final static String NOW = "$_NOW_";
 
     @Override
