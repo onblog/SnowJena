@@ -17,6 +17,18 @@ function my_echarts(data) {
         tooltip: {
             trigger: 'axis'
         },
+        toolbox: {
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                restore: {},
+                saveAsImage: {},
+                magicType: {
+                    type: []
+                }
+            }
+        },
         legend: {
             textStyle: {
                 color: '#fff'
@@ -52,7 +64,12 @@ function my_echarts(data) {
             lineStyle: {
                 color: '#009688'
             }
-        }]
+        }],
+        dataZoom: [{ //区域缩放
+            startValue: data[0].time
+        }, {
+            type: 'inside'
+        }],
     };
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);

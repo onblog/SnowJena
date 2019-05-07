@@ -12,7 +12,7 @@ CurrentLimiting：基于令牌桶算法和漏桶算法实现的纳秒级分布�
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.8.RELEASE</version>
+  <version>0.0.9.RELEASE</version>
 </dependency>
 ```
 
@@ -170,6 +170,18 @@ current.limiting.recyle.enabled=true #默认false
 current.limiting.recyle.time=10 #秒
 ```
 
+## 9.监控视图
+
+在0.0.9版本正式推出可视化监控模块，一键开启，支持内存/Redis两种数据存储方式，支持设置监控时长（单位/秒）。
+
+```properties
+current.limiting.monitor.enabled=true
+current.limiting.monitor.in-redis=true
+current.limiting.monitor.time=60
+```
+
+![](picture/monitor.png)
+
 ## 9.更新日志
 
 0.0.1.RELEASE：单点限流，注解+全局配置。
@@ -188,7 +200,9 @@ current.limiting.recyle.time=10 #秒
 
 0.0.8.RELEASE：修复了0.0.7版本的集群限流失效bug。
 
-系统监控报警可视化组件正在开发中...
+0.0.9.RELEASE：增减系统监控可视化组件。
+
+下个迭代：报警模块。
 
 ## 10.关于作者
 
