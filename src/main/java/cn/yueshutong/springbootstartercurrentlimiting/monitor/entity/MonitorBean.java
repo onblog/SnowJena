@@ -46,7 +46,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
     }
 
     public String getTime() {
-        return this.localDateTime.toLocalTime().format(DateTimeFormatter.ISO_TIME);
+        return this.localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
     @Override
