@@ -180,6 +180,8 @@ current.limiting.monitor.in-redis=true
 current.limiting.monitor.time=600
 ```
 
+开启后请访问：~~http://localhost:8080/~~view/current.html
+
 ![](./picture/monitor.png)
 
 ## 9.更新日志
