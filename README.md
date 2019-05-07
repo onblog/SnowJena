@@ -2,7 +2,7 @@
 
 ## 1.简介
 
-基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，开箱即用。[入门Demo](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
+基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，支持可视化QPS监控，开箱即用。[入门示例](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
 
 ![1555848355646](./picture/yulan.png)
 
@@ -180,11 +180,11 @@ current.limiting.monitor.in-redis=true
 current.limiting.monitor.time=600
 ```
 
-开启后请访问：~~http://localhost:8080/~~view/current.html
+开启后请访问：localhost:8080/view/current.html
 
 ![](./picture/monitor.png)
 
-## 9.更新日志
+## 10.更新日志
 
 0.0.1.RELEASE：单点限流，注解+全局配置。
 
@@ -204,9 +204,9 @@ current.limiting.monitor.time=600
 
 0.0.9.RELEASE：增减系统监控可视化组件。
 
-下个迭代：报警模块。
+下个迭代的任务：报警模块。
 
-## 10.关于作者
+## 11.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
@@ -217,3 +217,7 @@ Github：<https://github.com/yueshutong/spring-boot-starter-current-limiting>
 Gitee：<https://gitee.com/zyzpp/spring-boot-starter-current-limiting>
 
 交流QQ群：781927207
+
+如果帮助到你了，请不吝赞赏！如果贵司或团队使用了本限流插件，欢迎在issues留言，我会在底部链接贵司的主页，谢谢！
+
+<img src="https://gitee.com/zyzpp/Doctor/raw/master/picture/%E8%B5%9E%E8%B5%8F%E7%A0%81.png" width="300px">
