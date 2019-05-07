@@ -73,11 +73,11 @@
 
     <distributionManagement>
         <repository>
-            <id>releases</id>
+            <id>releases_maven</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
+            <id>snapshots_maven</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>

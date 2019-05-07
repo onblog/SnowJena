@@ -41,6 +41,9 @@ public class MonitorInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object o, Exception e) throws Exception {
+        if (request.getAttribute(NOW)==null){
+            return;
+        }
         String key = request.getAttribute(NOW).toString();
         request.removeAttribute(NOW);
         ThreadPool.SinglePool.execute(new Runnable() {
