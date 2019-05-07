@@ -107,7 +107,7 @@ public class MonitorServiceSingle implements MonitorService {
                     }
                 }
             }
-        }, monitorProperties.getTime(), 10, TimeUnit.SECONDS);
+        }, monitorProperties.getTime(), 3, TimeUnit.SECONDS);
     }
 
 }

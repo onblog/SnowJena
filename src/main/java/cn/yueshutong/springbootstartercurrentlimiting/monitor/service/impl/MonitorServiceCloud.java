@@ -7,8 +7,6 @@ import cn.yueshutong.springbootstartercurrentlimiting.monitor.MonitorInterceptor
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.entity.MonitorBean;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.service.MonitorService;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -41,8 +39,6 @@ public class MonitorServiceCloud implements MonitorService {
     private CurrentMonitorProperties monitorProperties;
 
     ValueOperations<String, String> opsForValue;
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String APP = SpringContextUtil.getApplicationName();
     private static final String KEYS = APP + "_keys";

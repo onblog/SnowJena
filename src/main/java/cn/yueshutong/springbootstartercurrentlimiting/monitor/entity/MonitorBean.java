@@ -3,6 +3,7 @@ package cn.yueshutong.springbootstartercurrentlimiting.monitor.entity;
 import cn.yueshutong.springbootstartercurrentlimiting.common.DateTime;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Create by yster@foxmail.com 2019/5/4 0004 12:51
@@ -45,7 +46,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
     }
 
     public String getTime() {
-        return DateTime.toString(this.localDateTime);
+        return this.localDateTime.toLocalTime().format(DateTimeFormatter.ISO_TIME);
     }
 
     @Override
