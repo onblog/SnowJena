@@ -184,7 +184,7 @@ current.limiting.monitor.time=600
 
 ![](./picture/monitor.png)
 
-## 9.更新日志
+## 10.更新日志
 
 0.0.1.RELEASE：单点限流，注解+全局配置。
 
@@ -206,7 +206,7 @@ current.limiting.monitor.time=600
 
 下个迭代的任务：报警模块。
 
-## 10.关于作者
+## 11.关于作者
 
 博客：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
@@ -217,3 +217,7 @@ Github：<https://github.com/yueshutong/spring-boot-starter-current-limiting>
 Gitee：<https://gitee.com/zyzpp/spring-boot-starter-current-limiting>
 
 交流QQ群：781927207
+
+如果帮助到你了，请不吝赞赏！如果贵司或团队使用了本限流插件，欢迎在issues留言，我会在底部链接贵司的主页，谢谢！
+
+<img src="https://gitee.com/zyzpp/Doctor/raw/master/picture/%E8%B5%9E%E8%B5%8F%E7%A0%81.png" width="300px">
