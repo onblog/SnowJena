@@ -73,11 +73,26 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
+        if (this.period==Integer.MAX_VALUE){ //QPS为0
+            return false;
+        }
         Long d = template.opsForValue().increment(BUCKET, -1);
         while (d < 0) { //无效令牌
+            sleep();
             d = template.opsForValue().increment(BUCKET, -1);
         }
         return true;
+    }
+
+    private void sleep() {
+        if (this.period<1000*1000){
+            return;
+        }
+        try {
+            Thread.sleep(new Double(this.period/1000/1000).longValue());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
