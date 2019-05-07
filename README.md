@@ -180,7 +180,7 @@ current.limiting.monitor.in-redis=true
 current.limiting.monitor.time=600
 ```
 
-开启后请访问：~~localhost:8080/~~view/current.html
+开启后请访问：localhost:8080/view/current.html
 
 ![](./picture/monitor.png)
 
@@ -204,7 +204,7 @@ current.limiting.monitor.time=600
 
 0.0.9.RELEASE：增减系统监控可视化组件。
 
-下个迭代：报警模块。
+下个迭代的任务：报警模块。
 
 ## 10.关于作者
 
