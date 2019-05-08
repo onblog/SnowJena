@@ -11,7 +11,7 @@
 
     <groupId>cn.yueshutong</groupId>
     <artifactId>spring-boot-starter-current-limiting</artifactId>
-    <version>0.1.0.RELEASE</version>
+    <version>0.1.1.RELEASE</version>
 
     <name>spring-boot-starter-current-limiting</name>
     <url>https://github.com/yueshutong/spring-boot-starter-current-limiting</url>
@@ -86,6 +86,12 @@
         <profile>
             <!-- -P release -->
             <id>release</id>
+            <repositories>
+                <repository>
+                    <id>releases_maven</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </repositories>
             <build>
                 <plugins>
                     <!-- Source -->

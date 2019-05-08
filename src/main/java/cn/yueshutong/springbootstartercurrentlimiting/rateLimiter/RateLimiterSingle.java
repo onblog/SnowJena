@@ -31,6 +31,14 @@ public class RateLimiterSingle implements RateLimiter {
         }
     }
 
+    RateLimiterSingle(long size, long period, long initialDelay, LocalDateTime expirationTime) {
+        this.size = size;
+        this.period = period;
+        this.initialDelay = initialDelay;
+        ExpirationTime = expirationTime;
+        putScheduled();
+    }
+
     public static RateLimiter of(double QPS, long initialDelay, boolean overflow) {
         return new RateLimiterSingle(QPS, initialDelay, overflow);
     }
