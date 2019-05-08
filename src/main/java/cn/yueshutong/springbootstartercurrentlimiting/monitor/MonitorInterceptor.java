@@ -41,6 +41,15 @@ public class MonitorInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object o, Exception e) throws Exception {
+
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
+
+    }
+
+    public void after(HttpServletRequest request, HttpServletResponse response, Object o, Exception e){
         if (request.getAttribute(NOW)==null){
             return;
         }
@@ -52,10 +61,5 @@ public class MonitorInterceptor implements HandlerInterceptor {
                 monitorService.saveAfter(key);
             }
         });
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
-
     }
 }

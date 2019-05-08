@@ -2,6 +2,8 @@ package cn.yueshutong.springbootstartercurrentlimiting.rateLimiter;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 
@@ -31,6 +33,7 @@ public class RateLimiterCloud implements RateLimiter {
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
     private DefaultRedisScript redisScript = SpringContextUtil.getBean(DefaultRedisScript.class); //Redis-Lua
     private List<String> keys = new ArrayList<>(4); //Lua-Keys
+    private Logger logger = LoggerFactory.getLogger(RateLimiterCloud.class);
 
     /**
      * @param QPS          每秒并发量,等于0 默认禁止访问
@@ -73,23 +76,28 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
-        if (this.period==Integer.MAX_VALUE){ //QPS为0
+        if (this.period == Integer.MAX_VALUE) { //QPS为0
             return false;
         }
-        Long d = template.opsForValue().increment(BUCKET, -1);
-        while (d < 0) { //无效令牌
-            sleep();
-            d = template.opsForValue().increment(BUCKET, -1);
+        try {
+            Long d = template.opsForValue().increment(BUCKET, -1);
+            while (d < 0) { //无效令牌
+                sleep();
+                d = template.opsForValue().increment(BUCKET, -1);
+            }
+        } catch (Exception e) {
+            logger.error("Redis is unavailable!");
+            e.printStackTrace();
         }
         return true;
     }
 
     private void sleep() {
-        if (this.period<1000*1000){
+        if (this.period < 1000 * 1000) {
             return;
         }
         try {
-            Thread.sleep(new Double(this.period/1000/1000).longValue());
+            Thread.sleep(new Double(this.period / 1000 / 1000).longValue());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -100,9 +108,14 @@ public class RateLimiterCloud implements RateLimiter {
      */
     @Override
     public boolean tryAcquireFailed() {
-        Long d = template.opsForValue().increment(BUCKET, -1);
-        if (d < 0) { //无效令牌
-            return false;
+        try {
+            Long d = template.opsForValue().increment(BUCKET, -1);
+            if (d < 0) { //无效令牌
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Redis is unavailable!");
+            e.printStackTrace();
         }
         return true;
     }
