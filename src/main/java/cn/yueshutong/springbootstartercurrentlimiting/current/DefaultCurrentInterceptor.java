@@ -2,6 +2,7 @@ package cn.yueshutong.springbootstartercurrentlimiting.current;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
+import cn.yueshutong.springbootstartercurrentlimiting.interceptor.CurrentInterceptorConfig;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.MonitorInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties;
 import cn.yueshutong.springbootstartercurrentlimiting.rateLimiter.RateLimiter;
@@ -9,6 +10,7 @@ import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptor
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  * Create by yster@foxmail.com 2019/4/21 0021 11:19
  */
 @Component
+@ConditionalOnBean(CurrentInterceptorConfig.class)
 @ConditionalOnMissingBean(value = CurrentRuleHandler.class)
 public class DefaultCurrentInterceptor implements HandlerInterceptor, MyCurrentInterceptor {
     @Autowired

@@ -2,8 +2,12 @@ package cn.yueshutong.springbootstartercurrentlimiting.monitor;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.DateTime;
 import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
+import cn.yueshutong.springbootstartercurrentlimiting.interceptor.CurrentInterceptorConfig;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.service.MonitorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -19,12 +23,14 @@ import javax.servlet.http.HttpServletResponse;
  * Create by yster@foxmail.com 2019/4/30 0030 16:00
  */
 @Component
-@ConditionalOnProperty(prefix = "current.limiting.monitor", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(value = {"current.limiting.monitor.enabled","current.limiting.enabled"}, havingValue = "true")
 public class MonitorInterceptor implements HandlerInterceptor {
     @Autowired
     private MonitorService monitorService;
 
     private final static String NOW = "$_NOW_";
+
+    private Logger logger = LoggerFactory.getLogger(MonitorInterceptor.class);
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
@@ -33,7 +39,11 @@ public class MonitorInterceptor implements HandlerInterceptor {
         ThreadPool.SinglePool.execute(new Runnable() {
             @Override
             public void run() {
-                monitorService.savePre(key);
+                try {
+                    monitorService.savePre(key);
+                } catch (Exception e) {
+                    logger.debug(e.getMessage());
+                }
             }
         });
         return true;
@@ -58,7 +68,11 @@ public class MonitorInterceptor implements HandlerInterceptor {
         ThreadPool.SinglePool.execute(new Runnable() {
             @Override
             public void run() {
-                monitorService.saveAfter(key);
+                try {
+                    monitorService.saveAfter(key);
+                } catch (Exception ex) {
+                    logger.debug(ex.getMessage());
+                }
             }
         });
     }
