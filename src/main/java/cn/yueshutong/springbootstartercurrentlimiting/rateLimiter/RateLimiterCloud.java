@@ -28,12 +28,13 @@ public class RateLimiterCloud implements RateLimiter {
     private String BUCKET_PUT; // 放令牌的标识
     private String BUCKET; //令牌桶标识
     private String BUCKET_PUT_DATE; //记录上一次操作的时间
-    private LocalDateTime ExpirationTime; //限流器对象到期时间
+    private LocalDateTime expirationTime; //限流器对象到期时间
     private final String AppCode = SpringContextUtil.getApplicationName() + SpringContextUtil.getPort() + this.hashCode(); //唯一实例标识
     private StringRedisTemplate template = SpringContextUtil.getBean(StringRedisTemplate.class); //获取RedisTemplate
     private DefaultRedisScript redisScript = SpringContextUtil.getBean(DefaultRedisScript.class); //Redis-Lua
     private List<String> keys = new ArrayList<>(4); //Lua-Keys
     private Logger logger = LoggerFactory.getLogger(RateLimiterCloud.class);
+    private RateLimiterSingle rateLimiterSingle = null; //Redis挂掉之后替换为单机限流
 
     /**
      * @param QPS          每秒并发量,等于0 默认禁止访问
@@ -85,9 +86,12 @@ public class RateLimiterCloud implements RateLimiter {
                 sleep();
                 d = template.opsForValue().increment(BUCKET, -1);
             }
-        } catch (Exception e) {
-            logger.error("Redis is unavailable!");
-            e.printStackTrace();
+        } catch (Exception e) { //熔断降级
+            logger.error("Redis is unavailable! Has been switched to single-machine current limiting.");
+            if (rateLimiterSingle==null){
+                rateLimiterSingle = new RateLimiterSingle(size,period,initialDelay,expirationTime);
+            }
+            return rateLimiterSingle.tryAcquire();
         }
         return true;
     }
@@ -113,9 +117,12 @@ public class RateLimiterCloud implements RateLimiter {
             if (d < 0) { //无效令牌
                 return false;
             }
-        } catch (Exception e) {
-            logger.error("Redis is unavailable!");
-            e.printStackTrace();
+        } catch (Exception e) { //熔断降级
+            logger.error("Redis is unavailable! Has been switched to single-machine current limiting.");
+            if (rateLimiterSingle==null){
+                rateLimiterSingle = new RateLimiterSingle(size,period,initialDelay,expirationTime);
+            }
+            return rateLimiterSingle.tryAcquireFailed();
         }
         return true;
     }
@@ -155,11 +162,11 @@ public class RateLimiterCloud implements RateLimiter {
 
     @Override
     public LocalDateTime getExpirationTime() {
-        return ExpirationTime;
+        return expirationTime;
     }
 
     private void setExpirationTime(LocalDateTime expirationTime) {
-        ExpirationTime = expirationTime;
+        this.expirationTime = expirationTime;
     }
 
 }

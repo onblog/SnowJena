@@ -99,6 +99,8 @@ public class MyInterceptorHandler implements CurrentInterceptorHandler {
 ```
 需要注意的是，以上实现类在Application中只能注入一个。
 
+**在集群限流中，若Redis不可用，那么集群限流将自动降级为单机限流，规则自动同步。**
+
 ## 6.集群限流
 
 集群限流的目的是对相同实例（即ApplicationName）的集群进行统一的限流，前提是已经开启并配置好Redis，直接开启即可：
