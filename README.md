@@ -65,13 +65,13 @@ current.limiting.rule.overflow=true #切换为漏桶算法
 | initialDelay | 首次放入令牌（即允许访问）的延迟时间，可作为系统启动保护，单位:毫秒 | 0      |
 | overflow | 是否切换为漏桶算法，TRUE即切换为漏桶算法 | false |
 
-## 5.拒绝策略
+## 5.熔断降级
 
-提供快速失败与CAS阻塞两种限流方案。如果是阻塞则不需要拒绝策略，当获取到令牌后依旧会继续执行，可以当做一种限制速率的措施。这里只讨论快速失败的拒绝策略。
+提供快速失败与CAS阻塞两种限流方案。如果是阻塞则不需要熔断降级，当获取到令牌后依旧会继续执行，可以当做一种限制速率的措施。这里只讨论快速失败的熔断降级。
 
-快速失败的默认策略是统一返回“服务不可用”的英文说明文字，如果用户需要自定义拒绝策略，提供两种接口供实现。
+快速失败的默认设置是统一返回“服务不可用”的英文说明文字，如果用户需要自定义熔断降级，提供两种接口供实现。
 
-针对被注解的方法进行自定义拒绝策略是实现CurrentAspectHandler接口，示例代码：
+针对被注解的方法进行自定义熔断降级是实现CurrentAspectHandler接口，示例代码：
 
 ```java
 @Component
@@ -85,7 +85,7 @@ public class MyAspectHandler implements CurrentAspectHandler {
 }
 ```
 
-针对系统级别的拒绝策略是实现CurrentInterceptorHandler接口，示例代码：
+针对系统级别的熔断降级是实现CurrentInterceptorHandler接口，示例代码：
 
 ```java
 @Component
