@@ -97,7 +97,7 @@ public class MonitorServiceSingle implements MonitorService {
         ThreadPool.scheduled.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                logger.info("recyle...");
+                logger.debug("recyle...");
                 Iterator<Map.Entry<String, MonitorBean>> iterator = map.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String, MonitorBean> e = iterator.next();

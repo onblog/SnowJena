@@ -5,6 +5,7 @@ import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
+import cn.yueshutong.springbootstartercurrentlimiting.monitor.MonitorInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties;
 import cn.yueshutong.springbootstartercurrentlimiting.property.CurrentProperty;
 import cn.yueshutong.springbootstartercurrentlimiting.rateLimiter.RateLimiter;
@@ -33,6 +34,9 @@ import java.util.concurrent.TimeUnit;
 public class CustomCurrentInterceptor implements HandlerInterceptor, MyCurrentInterceptor {
     @Autowired
     private CurrentRecycleProperties recycleProperties;
+
+    @Autowired(required = false)
+    private MonitorInterceptor monitorInterceptor;
 
     @Autowired(required = false)
     private CurrentInterceptorHandler interceptorHandler;
@@ -80,6 +84,7 @@ public class CustomCurrentInterceptor implements HandlerInterceptor, MyCurrentIn
         }
         //No token was taken
         if (interceptorHandler == null) {
+            response.setStatus(403);
             response.getWriter().print(RateLimiter.message);
         } else {
             interceptorHandler.preHandle(request, response);
@@ -119,6 +124,9 @@ public class CustomCurrentInterceptor implements HandlerInterceptor, MyCurrentIn
     @Override
     public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
         //After the entire request is completed
+        if (monitorInterceptor!=null){
+            monitorInterceptor.after(httpServletRequest,httpServletResponse,o,e);
+        }
     }
 
 }
