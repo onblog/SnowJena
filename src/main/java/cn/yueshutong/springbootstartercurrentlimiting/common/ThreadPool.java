@@ -11,6 +11,6 @@ public interface ThreadPool {
 
     ScheduledExecutorService scheduled = Executors.newScheduledThreadPool(SpringContextUtil.getCorePoolSize());
 
-    ExecutorService SinglePool = Executors.newFixedThreadPool(1);
+    ExecutorService SinglePool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
 
 }

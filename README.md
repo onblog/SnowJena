@@ -12,7 +12,7 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.0.9.RELEASE</version>
+  <version>0.1.0.RELEASE</version>
 </dependency>
 ```
 
@@ -182,7 +182,9 @@ current.limiting.monitor.time=600
 
 开启后请访问：localhost:8080/view/current.html
 
-![](./picture/monitor.png)
+![](./picture/monitor.jpg)
+
+监控视图可以很方便的反映系统的QPS与PASS值。（PASS：即设定的QPS值）
 
 ## 10.更新日志
 
@@ -202,9 +204,9 @@ current.limiting.monitor.time=600
 
 0.0.8.RELEASE：修复了0.0.7版本的集群限流失效bug。
 
-0.0.9.RELEASE：增减系统监控可视化组件。
+0.0.9.RELEASE：增减系统监控可视化组件，增加限流器回收的开关。
 
-下个迭代的任务：报警模块。
+0.1.0.RELEASE：修复监控组件的PASS数量bug，考虑redis宕机的处理。
 
 ## 11.关于作者
 
