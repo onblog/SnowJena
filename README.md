@@ -12,7 +12,7 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.1.0.RELEASE</version>
+  <version>0.1.1.RELEASE</version>
 </dependency>
 ```
 
@@ -209,6 +209,8 @@ current.limiting.monitor.time=600
 0.0.9.RELEASE：增减系统监控可视化组件，增加限流器回收的开关。
 
 0.1.0.RELEASE：修复监控组件的PASS数量bug，考虑redis宕机的处理。
+
+0.1.1.RELEASE：加入熔断降级组件，Redis宕机后，集群限流模式自动切换为单机限流，规则同步。
 
 ## 11.关于作者
 
