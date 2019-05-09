@@ -99,9 +99,9 @@ current.limiting.cloud-enabled=true
 ```
 例如QPS为2，两个实例组成集群，效果图如下：
 
-![](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/jiqun1.jpg?raw=true)
+![](../picture/jiqun1.jpg)
 
-![](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/jiqun2.jpg?raw=true)
+![](../picture/jiqun2.jpg)
 
 ## 5.自定义限流规则
 在实际场景中，我们的限流规则并不只是简单的对整个系统或单个接口进行流控，需要考虑的是更复杂的场景。例如：
@@ -169,7 +169,7 @@ current.limiting.monitor.time=600
 
 开启后请访问：localhost:8080/view/current.html
 
-![](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/monitor.jpg?raw=true)
+![](../picture/monitor.jpg)
 
 监控视图可以很方便的反映系统的QPS与PASS值。（PASS：即设定的QPS值）
 
