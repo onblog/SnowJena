@@ -4,7 +4,7 @@
 
 基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持熔断降级，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，支持可视化QPS监控，开箱即用。[入门示例](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
 
-![1555848355646](./picture/yulan.png)
+![1555848355646](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/yulan.png)
 
 ## 2.Maven
 
@@ -114,9 +114,9 @@ current.limiting.cloud-enabled=true
 ```
 例如QPS为2，两个实例组成集群，效果图如下：
 
-![](./picture/jiqun1.jpg)
+![](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/jiqun1.jpg)
 
-![](./picture/jiqun2.jpg)
+![](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/jiqun2.jpg)
 
 ## 7.自定义限流规则
 在实际场景中，我们的限流规则并不只是简单的对整个系统或单个接口进行流控，需要考虑的是更复杂的场景。例如：
@@ -184,7 +184,7 @@ current.limiting.monitor.time=600
 
 开启后请访问：localhost:8080/view/current.html
 
-![](./picture/monitor.jpg)
+![](https://github.com/yueshutong/spring-boot-starter-current-limiting/blob/master/picture/monitor.jpg)
 
 监控视图可以很方便的反映系统的QPS与PASS值。（PASS：即设定的QPS值）
 
