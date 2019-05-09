@@ -6,7 +6,7 @@
 
 Based on token bucket algorithm and bucket algorithm implementation of nanosecond distributed unlocked current-limiting plug-in, perfect embedded SpringBoot, SpringCloud application, current limiting support interface, method, current limiting, IP system current limit, current limiting, user current limiting rules, such as support for fusing downgrade, support system startup protection set time (protection time is not allowed to access), provides a quick failure and CAS block two current-limiting methods, support visualization QPS monitoring, out of the box. Introduction to [example](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
 
-**Document: [中文](https://yueshutong.github.io/CurrentLimiting/README_CN)|[English](https://yueshutong.github.io/CurrentLimiting/README_EN)**
+**Document:** [中文](https://yueshutong.github.io/CurrentLimiting/README_CN)|[English](https://yueshutong.github.io/CurrentLimiting/README_EN)
 
 ## Maven
 
