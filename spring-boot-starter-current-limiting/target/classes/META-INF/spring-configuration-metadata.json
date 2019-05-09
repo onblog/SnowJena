@@ -1,0 +1,118 @@
+{
+  "groups": [
+    {
+      "name": "current.limiting",
+      "type": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties"
+    },
+    {
+      "name": "current.limiting.monitor",
+      "type": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties"
+    },
+    {
+      "name": "current.limiting.recyle",
+      "type": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties"
+    },
+    {
+      "name": "current.limiting.rule",
+      "type": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "current.limiting.cloud-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Do you want to turn on the cluster current limiter?",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "current.limiting.core-pool-size",
+      "type": "java.lang.Integer",
+      "description": "The number of rateLimiter threads in the thread pool performing the scheduled task.",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties",
+      "defaultValue": 10
+    },
+    {
+      "name": "current.limiting.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Do you want to turn on the current limiting ?",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "current.limiting.monitor.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Monitor your application requests and responses.",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "current.limiting.monitor.in-redis",
+      "type": "java.lang.Boolean",
+      "description": "The monitoring module USES the Redis database.",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "current.limiting.monitor.time",
+      "type": "java.lang.Long",
+      "description": "Continuous monitoring duration, unit\/second.",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "current.limiting.part-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Do you want to turn on the annotation current limiter?",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "current.limiting.recyle.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Monitor your application requests and responses.",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "current.limiting.recyle.time",
+      "type": "java.lang.Long",
+      "description": "How many seconds will it take to reclaim the expired limiter object?",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties",
+      "defaultValue": 10
+    },
+    {
+      "name": "current.limiting.rule.fail-fast",
+      "type": "java.lang.Boolean",
+      "description": "When the token is empty, does it fail fast or block?",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "current.limiting.rule.initial-delay",
+      "type": "java.lang.Long",
+      "description": "The delay time for the token to be put in for the first time.",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties",
+      "defaultValue": 0
+    },
+    {
+      "name": "current.limiting.rule.overflow",
+      "type": "java.lang.Boolean",
+      "description": "Whether to switch to leaky bucket algorithm?",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "current.limiting.rule.qps",
+      "type": "java.lang.Double",
+      "description": "application qps: The number\/SEC",
+      "sourceType": "cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRuleProperties",
+      "defaultValue": 100
+    }
+  ],
+  "hints": []
+}
