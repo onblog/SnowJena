@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
@@ -132,16 +133,19 @@ public class RateLimiterCloud implements RateLimiter {
      * 选举算法：通过抢占机制选举leader，其它候选者对leader进行监督，发现leader懈怠即可将其踢下台。由此进入新一轮的抢占...
      */
     private void putScheduled() {
-        ThreadPool.scheduled.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                String appCode = template.opsForValue().get(BUCKET_PUT);
-                if (AppCode.equals(appCode) || (appCode == null ? tryLockFailed(template, BUCKET_PUT, AppCode) : false)) { //成为leader
-                    putBucket();
-                } else { //成为候选者
-                    Long s = Long.valueOf(template.opsForValue().get(BUCKET_PUT_DATE));
-                    if (System.currentTimeMillis() - s > BUCKET_PUT_EXPIRES) {
-                        releaseLock(template, BUCKET_PUT); //释放锁
+        ThreadPool.scheduled.scheduleAtFixedRate(() -> {
+            String appCode = template.opsForValue().get(BUCKET_PUT);
+            if (AppCode.equals(appCode) || (appCode == null && tryLockFailed(template, BUCKET_PUT, AppCode))) { //成为leader
+                putBucket();
+            } else { //成为候选者
+                Long s = Long.valueOf(Objects.requireNonNull(template.opsForValue().get(BUCKET_PUT_DATE)));
+                if (System.currentTimeMillis() - s > BUCKET_PUT_EXPIRES) {
+                    releaseLock(template, BUCKET_PUT); //重新选举
+                }else {
+                    try {
+                        Thread.sleep(BUCKET_PUT_EXPIRES); //休眠
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
