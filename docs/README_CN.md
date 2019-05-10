@@ -1,6 +1,4 @@
 
-![](https://github.com/yueshutong/CurrentLimiting/blob/master/picture/yulan.png?raw=true)
-
 ## 1.方法限流
 
 在需要限流的方法上使用 @CurrentLimiter 注解，不局限于Controller方法，示例代码如下：
@@ -19,6 +17,8 @@ public class MyController {
 ```
 
 该注解参数的具体说明请参见下方限流规则。
+
+![](https://github.com/yueshutong/CurrentLimiting/blob/master/picture/yulan.png?raw=true)
 
 ## 2.系统限流
 
