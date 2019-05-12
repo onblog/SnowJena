@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <current.limiting.version>1.0.0.RELEASE</current.limiting.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -31,7 +32,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
-
         <!-- 以下依赖不会被打包-->
 
         <dependency>
