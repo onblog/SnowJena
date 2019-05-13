@@ -17,6 +17,7 @@ public class LimiterRule {
     private LimiterModel currentModel; //限流器模型（单点/集群）
     private RuleAuthority ruleAuthority; //黑名单/白名单/无
     private String[] limitApp; //黑白名单列表
+    private int weight; //实例权重
     private long version; //版本号
     private double allqps; //理论值，原值，集群
 
