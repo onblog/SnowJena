@@ -19,6 +19,8 @@ Spring Boot
 </dependency>
 ```
 
+![](./picture/monitor.jpg)
+
 ## About
 
 Blog：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
