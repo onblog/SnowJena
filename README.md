@@ -1,12 +1,12 @@
-# CurrentLimiting
+# SnowJena
 
 ## What
 
-基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持熔断降级，支持设置系统启动保护时间（保护时间内不允许访问），提供快速失败与CAS阻塞两种限流方案，支持可视化QPS监控，开箱即用。[入门示例](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
+基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持熔断降级，支持流量塑型，支持可视化监控，支持设置系统启动保护时间（保护时间内不允许访问），提供快速拒绝与匀速器两种限流方案，开箱即用。[入门示例](https://github.com/yueshutong/SnowJena/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
 
-Based on token bucket algorithm and bucket algorithm implementation of nanosecond distributed unlocked current-limiting plug-in, perfect embedded SpringBoot, SpringCloud application, current limiting support interface, method, current limiting, IP system current limit, current limiting, user current limiting rules, such as support for fusing downgrade, support system startup protection set time (protection time is not allowed to access), provides a quick failure and CAS block two current-limiting methods, support visualization QPS monitoring, out of the box. Introduction to [example](https://github.com/yueshutong/spring-boot-starter-current-limiting/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
+Based on token bucket algorithm and bucket algorithm implementation of nanosecond distributed unlocked current-limiting plug-in, perfect embedded SpringBoot, SpringCloud application, current limiting support interface, method, current limiting, IP system current limit, current limiting, user current limiting rules, such as support for fusing downgrade, support system startup protection set time (protection time is not allowed to access), provides a quick failure and CAS block two current-limiting methods, support visualization QPS monitoring, out of the box. Introduction to [example](https://github.com/yueshutong/SnowJena/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
 
-**Document: [中文](https://yueshutong.github.io/CurrentLimiting/README_CN)|[English](https://yueshutong.github.io/CurrentLimiting/README_EN)**
+**Document: [中文](https://yueshutong.github.io/SnowJena/README_CN)|[English](https://yueshutong.github.io/SnowJena/README_EN)**
 
 ## Maven
 
@@ -26,7 +26,7 @@ CurrentLimiting的功能
 
 降级
 
-接触过Spring Cloud、Service Mesh的同学，都知道熔断降级的概念。服务之间会有相互依赖关系，例如服务A做到了1秒上万个QPS，但这时候服务B并无法满足1秒上万个QPS，那么如何保证服务A在高频调用服务B时，服务B仍能正常工作呢？一种比较常见的情况是，服务A调用服务B时，服务B因无法满足高频调用出现响应时间过长的情况，导致服务A也出现响应过长的情况，进而产生连锁反应影响整个依赖链上的所有应用，这时候就需要熔断和降级的方法。CurrentLimiting通过响应时间对资源进行降级两种手段来对服务进行熔断或降级。
+接触过Spring Cloud、Service Mesh的同学，都知道熔断降级的概念。服务之间会有相互依赖关系，例如服务A做到了1秒上万个QPS，但这时候服务B并无法满足1秒上万个QPS，那么如何保证服务A在高频调用服务B时，服务B仍能正常工作呢？一种比较常见的情况是，服务A调用服务B时，服务B因无法满足高频调用出现响应时间过长的情况，导致服务A也出现响应过长的情况，进而产生连锁反应影响整个依赖链上的所有应用，这时候就需要熔断和降级的方法。CurrentLimiting通过响应时间对资源进行降级来对服务进行熔断或降级。
 
 塑形
 
@@ -40,9 +40,9 @@ Blog：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
 Email：[yster@foxmail.com](mailto:yster@foxmail.com)
 
-Github：<https://github.com/yueshutong/CurrentLimiting>
+Github：<https://github.com/yueshutong/SnowJena>
 
-Gitee：<https://gitee.com/zyzpp/CurrentLimiting>
+Gitee：<https://gitee.com/zyzpp/SnowJena>
 
 交流QQ群：781927207
 
