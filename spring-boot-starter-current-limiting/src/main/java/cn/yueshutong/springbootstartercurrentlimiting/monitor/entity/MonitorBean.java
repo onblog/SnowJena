@@ -1,7 +1,5 @@
 package cn.yueshutong.springbootstartercurrentlimiting.monitor.entity;
 
-import cn.yueshutong.springbootstartercurrentlimiting.common.DateTime;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

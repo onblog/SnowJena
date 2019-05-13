@@ -1,12 +1,12 @@
 package cn.yueshutong.springbootstartercurrentlimiting.current;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
-import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentInterceptorHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.handler.CurrentRuleHandler;
 import cn.yueshutong.springbootstartercurrentlimiting.interceptor.CurrentInterceptorConfig;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.MonitorInterceptor;
+import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentRecycleProperties;
 import cn.yueshutong.springbootstartercurrentlimiting.property.CurrentProperty;
 import cn.yueshutong.springbootstartercurrentlimiting.rateLimiter.RateLimiter;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * 自定义扩展限流规则：参数由用户实现CurrentRuleHandler接口指定
  */
 @Component
-@ConditionalOnBean(value = {CurrentRuleHandler.class,CurrentInterceptorConfig.class})
+@ConditionalOnBean(value = {CurrentRuleHandler.class, CurrentInterceptorConfig.class})
 public class CustomCurrentInterceptor implements HandlerInterceptor, MyCurrentInterceptor {
     @Autowired
     private CurrentRecycleProperties recycleProperties;

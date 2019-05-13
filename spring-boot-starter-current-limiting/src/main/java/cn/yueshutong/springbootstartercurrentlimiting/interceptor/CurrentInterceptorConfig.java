@@ -1,7 +1,7 @@
 package cn.yueshutong.springbootstartercurrentlimiting.interceptor;
 
-import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.MonitorInterceptor;
+import cn.yueshutong.springbootstartercurrentlimiting.current.flag.MyCurrentInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;

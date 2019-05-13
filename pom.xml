@@ -11,6 +11,7 @@
     <modules>
         <module>current-limiting-core</module>
         <module>current-limiting-annotation</module>
+        <module>current-limiting-common</module>
     </modules>
 
     <name>CurrentLimiting</name>

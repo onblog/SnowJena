@@ -2,19 +2,15 @@ package cn.yueshutong.springbootstartercurrentlimiting.monitor;
 
 import cn.yueshutong.springbootstartercurrentlimiting.common.DateTime;
 import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
-import cn.yueshutong.springbootstartercurrentlimiting.interceptor.CurrentInterceptorConfig;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.service.MonitorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 

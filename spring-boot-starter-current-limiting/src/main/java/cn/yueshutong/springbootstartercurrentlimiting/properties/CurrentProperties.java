@@ -15,7 +15,7 @@ public class CurrentProperties {
     private boolean enabled = false;
 
     /**
-     * Do you want to turn on the annotation current limiter?
+     * Do you want to turn on the anno current limiter?
      */
     private boolean partEnabled = true;
 
