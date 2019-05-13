@@ -1,12 +1,9 @@
 package cn.yueshutong.springbootstartercurrentlimiting.common;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.util.WeakHashMap;
-
-import static jdk.nashorn.internal.objects.NativeRegExp.source;
 
 public class ReadClasspathFile {
 

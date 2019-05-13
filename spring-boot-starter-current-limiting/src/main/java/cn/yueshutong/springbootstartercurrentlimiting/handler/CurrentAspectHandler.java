@@ -7,7 +7,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
  */
 public interface CurrentAspectHandler {
     /**
-     * After being intercepted by annotations..
+     * After being intercepted by anno..
      */
     Object around(ProceedingJoinPoint pjp, CurrentLimiter rateLimiter)throws Throwable;
 }

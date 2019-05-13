@@ -1,7 +1,8 @@
 package cn.yueshutong.springbootstartercurrentlimiting.rateLimiter;
 
-import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
+import cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil;
 import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
+import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -13,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.releaseLock;
-import static cn.yueshutong.springbootstartercurrentlimiting.common.RedisLockUtil.tryLockFailed;
 
 
 /**
@@ -135,12 +133,12 @@ public class RateLimiterCloud implements RateLimiter {
     private void putScheduled() {
         ThreadPool.scheduled.scheduleAtFixedRate(() -> {
             String appCode = template.opsForValue().get(BUCKET_PUT);
-            if (AppCode.equals(appCode) || (appCode == null && tryLockFailed(template, BUCKET_PUT, AppCode))) { //成为leader
+            if (AppCode.equals(appCode) || (appCode == null && RedisLockUtil.tryLockFailed(template, BUCKET_PUT, AppCode))) { //成为leader
                 putBucket();
             } else { //成为候选者
                 Long s = Long.valueOf(Objects.requireNonNull(template.opsForValue().get(BUCKET_PUT_DATE)));
                 if (System.currentTimeMillis() - s > BUCKET_PUT_EXPIRES) {
-                    releaseLock(template, BUCKET_PUT); //重新选举
+                    RedisLockUtil.releaseLock(template, BUCKET_PUT); //重新选举
                 }else {
                     try {
                         Thread.sleep(BUCKET_PUT_EXPIRES); //休眠

@@ -1,6 +1,5 @@
 package cn.yueshutong.springbootstartercurrentlimiting.monitor.service.impl;
 
-import cn.yueshutong.springbootstartercurrentlimiting.common.RedisNoExistsCondition;
 import cn.yueshutong.springbootstartercurrentlimiting.common.ThreadPool;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.MonitorInterceptor;
 import cn.yueshutong.springbootstartercurrentlimiting.monitor.entity.MonitorBean;
@@ -9,12 +8,8 @@ import cn.yueshutong.springbootstartercurrentlimiting.properties.CurrentMonitorP
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

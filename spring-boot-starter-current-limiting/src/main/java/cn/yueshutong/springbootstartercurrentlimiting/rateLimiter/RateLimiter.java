@@ -4,8 +4,6 @@ import cn.yueshutong.springbootstartercurrentlimiting.common.SpringContextUtil;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public interface RateLimiter {
     String message = "<pre>The specified service is not currently available.</pre>";
