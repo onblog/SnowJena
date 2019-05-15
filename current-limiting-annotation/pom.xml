@@ -29,6 +29,7 @@
             <groupId>cn.yueshutong</groupId>
             <artifactId>current-limiting-core</artifactId>
             <version>1.0.0.RELEASE</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

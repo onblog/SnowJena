@@ -14,6 +14,9 @@ public class DateTimeUtil {
     }
 
     public static String toString(LocalDateTime localDateTime) {
+        if (localDateTime==null){
+            return "";
+        }
         return localDateTime.format(formatter);
     }
 

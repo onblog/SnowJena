@@ -16,7 +16,7 @@ public class RateLimiterConfig {
     private TicketServer ticketServer; //发票服务器
 
     private RateLimiterConfig(){
-
+        //禁止new实例
     }
 
     public static RateLimiterConfig getInstance(){
