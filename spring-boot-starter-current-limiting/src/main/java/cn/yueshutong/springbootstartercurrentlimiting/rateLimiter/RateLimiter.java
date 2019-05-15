@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public interface RateLimiter {
-    String message = "<pre>The specified service is not currently available.</pre>";
+    String message = "<pre>The specified client is not currently available.</pre>";
 
     boolean tryAcquire();
 

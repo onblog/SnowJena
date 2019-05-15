@@ -49,7 +49,7 @@ public class AppTest {
 
     @Test
     public void shoulds() {
-        RateLimiterConfig config = new RateLimiterConfig();
+        RateLimiterConfig config = RateLimiterConfig.getInstance();
         ScheduledFuture<?> scheduledFuture = config.getScheduled().scheduleAtFixedRate(() -> {
             System.out.println("one" + LocalDateTime.now());
         }, 0, 1, TimeUnit.SECONDS);

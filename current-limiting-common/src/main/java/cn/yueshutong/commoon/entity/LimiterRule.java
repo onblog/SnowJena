@@ -9,7 +9,10 @@ import cn.yueshutong.commoon.enums.RuleAuthority;
  * 限流规则
  */
 public class LimiterRule {
+    private String app; //app name
     private String id; //限流规则名称
+    private String name; //相同的限流规则，不同的实例标识
+    private int weight; //实例权重
     private double qps; //实际值，每秒并发量：等于0默认禁止访问
     private long initialDelay; //初次允许访问的延迟时间：毫秒
     private AcquireModel acquireModel; //控制行为：快速失败/阻塞
@@ -17,9 +20,33 @@ public class LimiterRule {
     private LimiterModel currentModel; //限流器模型（单点/集群）
     private RuleAuthority ruleAuthority; //黑名单/白名单/无
     private String[] limitApp; //黑白名单列表
-    private int weight; //实例权重
     private long version; //版本号
     private double allqps; //理论值，原值，集群
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setApp(String app) {
+        this.app = app;
+    }
+
+    public String getApp() {
+        assert app != null;
+        return app;
+    }
 
     public class Rule {
         private long size; //size：令牌桶容量
@@ -69,7 +96,7 @@ public class LimiterRule {
     }
 
     public RuleAuthority getRuleAuthority() {
-        return ruleAuthority==null?RuleAuthority.NULL:ruleAuthority;
+        return ruleAuthority == null ? RuleAuthority.NULL : ruleAuthority;
     }
 
     public void setRuleAuthority(RuleAuthority ruleAuthority) {
@@ -81,7 +108,7 @@ public class LimiterRule {
     }
 
     public String getId() {
-        assert this.id!=null;
+        assert id != null;
         return id;
     }
 
@@ -107,7 +134,7 @@ public class LimiterRule {
 
 
     public Algorithm getAlgorithm() {
-        return algorithm == null? Algorithm.TOKENBUCKET:algorithm;
+        return algorithm == null ? Algorithm.TOKENBUCKET : algorithm;
     }
 
     public void setAlgorithm(Algorithm algorithm) {
@@ -115,7 +142,7 @@ public class LimiterRule {
     }
 
     public AcquireModel getAcquireModel() {
-        return acquireModel==null?AcquireModel.FAILFAST:acquireModel;
+        return acquireModel == null ? AcquireModel.FAILFAST : acquireModel;
     }
 
     public void setAcquireModel(AcquireModel acquireModel) {
@@ -123,7 +150,7 @@ public class LimiterRule {
     }
 
     public LimiterModel getCurrentModel() {
-        return currentModel ==null?LimiterModel.POINT:currentModel;
+        return currentModel == null ? LimiterModel.POINT : currentModel;
     }
 
     public void setCurrentModel(LimiterModel currentModel) {

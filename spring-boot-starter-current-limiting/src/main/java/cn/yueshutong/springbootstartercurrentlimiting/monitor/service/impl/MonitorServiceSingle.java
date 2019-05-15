@@ -64,7 +64,6 @@ public class MonitorServiceSingle implements MonitorService {
 
     @Override
     public void saveAfter(String time) {
-        initMapEntity(time);
         MonitorBean monitorBean = map.get(time);
         lock.lock();
         try {

@@ -2,7 +2,11 @@ package cn.yueshutong.core.rateLimiter;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.core.config.RateLimiterConfig;
+import cn.yueshutong.monitor.entity.MonitorBean;
+import cn.yueshutong.monitor.client.MonitorService;
+import cn.yueshutong.monitor.client.MonitorServiceImpl;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -15,14 +19,22 @@ import java.util.stream.Stream;
  * 分布式、无锁、秒级流控
  */
 public class RateLimiterDefault implements RateLimiter {
-    protected AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
-    protected LimiterRule rule;
-    protected LimiterRule.Rule crule;
-    protected ScheduledFuture<?> scheduledFuture;
+    private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
+    private LimiterRule rule;
+    private LimiterRule.Rule crule;
+    private ScheduledFuture<?> scheduledFuture;
     private RateLimiterConfig config;
 
-    public RateLimiterDefault(LimiterRule rule,RateLimiterConfig config) {
+    @Override
+    public MonitorService getMonitorService() {
+        return monitorService;
+    }
+
+    private MonitorService monitorService;
+
+    public RateLimiterDefault(LimiterRule rule, RateLimiterConfig config) {
         this.config = config;
+        this.monitorService = new MonitorServiceImpl();
         init(rule);
     }
 
@@ -30,7 +42,7 @@ public class RateLimiterDefault implements RateLimiter {
     public void init(LimiterRule rule) {
         this.rule = rule;
         this.crule = rule.new Rule();
-        if (scheduledFuture!=null){
+        if (scheduledFuture != null) {
             distory();
         }
         if (rule.getQps() != 0) {
@@ -38,8 +50,28 @@ public class RateLimiterDefault implements RateLimiter {
         }
     }
 
+    /**
+     * Monirot
+     */
     @Override
     public boolean tryAcquire() {
+        MonitorBean monitor = new MonitorBean();
+        monitor.setLocalDateTime(LocalDateTime.now());
+        monitor.setPre(1);
+        boolean b = tryAcquireFact(); //fact
+        if (b){
+            monitor.setAfter(1);
+        }
+        config.getScheduled().execute(() -> { //异步执行
+            monitorService.save(monitor);
+        });
+        return b;
+    }
+
+    /**
+     * AcquireModel
+     */
+    private boolean tryAcquireFact() {
         if (rule.getQps() == 0) {
             return false;
         }
@@ -48,9 +80,8 @@ public class RateLimiterDefault implements RateLimiter {
                 return tryAcquireFailed();
             case BLOCKING:
                 return tryAcquireSucceed();
-            default:
-                return false;
         }
+        return false;
     }
 
     /**
@@ -78,7 +109,7 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     @Override
-    public LimiterRule getLimiterRule(){
+    public LimiterRule getLimiterRule() {
         return this.rule;
     }
 
@@ -111,7 +142,7 @@ public class RateLimiterDefault implements RateLimiter {
     /**
      * 周期性放令牌，控制访问速率
      */
-    protected void putBucket() {
+    private void putBucket() {
         this.scheduledFuture = config.getScheduled().scheduleAtFixedRate(() -> {
             if (crule.getSize() > bucket.longValue()) {
                 bucket.incrementAndGet();
@@ -119,11 +150,11 @@ public class RateLimiterDefault implements RateLimiter {
         }, rule.getInitialDelay(), crule.getPeriod(), TimeUnit.NANOSECONDS);
     }
 
-    public void distory(){
+    public void distory() {
         this.scheduledFuture.cancel(true);
     }
 
-    protected void sleep() {
+    private void sleep() {
         if (crule.getPeriod() < 1 * 1000 * 1000) { //大于1ms强制休眠
             return;
         }
