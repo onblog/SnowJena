@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
@@ -8,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>current-limiting-core</artifactId>
+    <artifactId>current-limiting-monitor</artifactId>
 
-    <name>current-limiting-core</name>
-    <url>http://www.yueshutong.com</url>
+    <name>current-limiting-monitor</name>
+    <url>http://www.yueshutong.cn</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,23 +21,10 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>cn.yueshutong</groupId>
-            <artifactId>current-limiting-common</artifactId>
-            <version>1.0.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.yueshutong</groupId>
-            <artifactId>current-limiting-monitor</artifactId>
-            <version>1.0.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.11.3</version>
-        </dependency>
+
     </dependencies>
 
     <build>
+
     </build>
 </project>

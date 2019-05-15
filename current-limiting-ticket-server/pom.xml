@@ -32,6 +32,11 @@
             <artifactId>current-limiting-common</artifactId>
             <version>1.0.0.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>cn.yueshutong</groupId>
+            <artifactId>current-limiting-monitor</artifactId>
+            <version>1.0.0.RELEASE</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

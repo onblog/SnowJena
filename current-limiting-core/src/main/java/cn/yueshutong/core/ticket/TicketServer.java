@@ -52,7 +52,8 @@ public class TicketServer {
             if (pos >= serverList.size()) {
                 pos = 0;
             }
-            server = serverList.get(pos++);
+            server = serverList.get(pos);
+            pos++;
         } finally {
             lock.unlock();
         }

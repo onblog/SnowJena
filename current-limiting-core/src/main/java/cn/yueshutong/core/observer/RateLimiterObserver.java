@@ -4,10 +4,12 @@ import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.core.config.RateLimiterConfig;
 import cn.yueshutong.core.exception.RuleBeReplaced;
 import cn.yueshutong.core.rateLimiter.RateLimiter;
+import cn.yueshutong.monitor.entity.MonitorBean;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -30,14 +32,30 @@ public class RateLimiterObserver {
      * 动态更新限流规则
      */
     public static void update(RateLimiter rule, RateLimiterConfig config){
-        config.getScheduled().scheduleAtFixedRate(() -> {
+        config.getScheduled().scheduleWithFixedDelay(() -> {
             String rules = config.getTicketServer().connect("rule", JSON.toJSONString(rule.getLimiterRule()));
             LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
             if (limiterRule.getVersion()>rule.getLimiterRule().getVersion()) {
                 map.get(rule.getId()).init(limiterRule);
+                logger.warn("rule update: "+rule.getId());
             }
-            logger.info("rule:"+rules);
-        },0,2, TimeUnit.SECONDS);
+        },0,1, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 监控数据上报
+     */
+    public static void monitor(RateLimiter rule, RateLimiterConfig config) {
+        config.getScheduled().scheduleWithFixedDelay(() -> {
+            List<MonitorBean> monitorBeans = rule.getMonitorService().getAndDelete();
+            if (monitorBeans.size()<1){
+                return;
+            }
+            String result = config.getTicketServer().connect("monitor", JSON.toJSONString(monitorBeans));
+            if (result!=null) {
+                logger.debug("monitor update success");
+            }
+        },0,3, TimeUnit.SECONDS);
     }
 
 }

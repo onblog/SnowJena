@@ -7,20 +7,27 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * Config
+ * 单例模式
+ * DCL双检查锁
  */
 public class RateLimiterConfig {
-    private String app; //App name
-    private ScheduledExecutorService scheduled; //线程池
+    private static RateLimiterConfig rateLimiterConfig; //实例
+    private ScheduledExecutorService scheduled; //调度线程池
     private TicketServer ticketServer; //发票服务器
 
-    public String getApp() {
-        assert app!=null;
-        return app;
+    private RateLimiterConfig(){
+
     }
 
-    public void setApp(String app) {
-        this.app = app;
+    public static RateLimiterConfig getInstance(){
+        if (rateLimiterConfig==null){
+            synchronized (RateLimiterConfig.class){
+                if (rateLimiterConfig==null) {
+                    rateLimiterConfig = new RateLimiterConfig();
+                }
+            }
+        }
+        return rateLimiterConfig;
     }
 
     public ScheduledExecutorService getScheduled() {

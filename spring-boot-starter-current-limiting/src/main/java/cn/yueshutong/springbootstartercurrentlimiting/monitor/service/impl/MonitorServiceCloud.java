@@ -34,16 +34,14 @@ public class MonitorServiceCloud implements MonitorService {
     ValueOperations<String, String> opsForValue;
 
     private static final String APP = SpringContextUtil.getApplicationName();
-    private static final String KEYS = APP + "_keys";
     private static final String PRE = "pre";
     private static final String AFTER = "after";
 
     /**
-     * Key:APP+PRE+time
+     * Key:APP+PRE/after+time
      * value:i(++)
      * setnx+expire
      */
-
     @PostConstruct
     private void init() {
         opsForValue = template.opsForValue();
@@ -67,7 +65,6 @@ public class MonitorServiceCloud implements MonitorService {
     public List<MonitorBean> queryAll() {
         List<MonitorBean> list = new ArrayList<>();
         Set<String> pres = template.keys(APP + PRE + "*");
-        Set<String> keys = template.keys(APP + AFTER + "*");
         pres.forEach(k -> {
             String time = k.substring(APP.length() + PRE.length());
             MonitorBean monitorBean = new MonitorBean();
