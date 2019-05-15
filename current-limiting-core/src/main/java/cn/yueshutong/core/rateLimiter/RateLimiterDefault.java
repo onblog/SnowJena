@@ -58,6 +58,9 @@ public class RateLimiterDefault implements RateLimiter {
         MonitorBean monitor = new MonitorBean();
         monitor.setLocalDateTime(LocalDateTime.now());
         monitor.setPre(1);
+        monitor.setApp(rule.getApp());
+        monitor.setId(rule.getId());
+        monitor.setName(rule.getName());
         boolean b = tryAcquireFact(); //fact
         if (b){
             monitor.setAfter(1);

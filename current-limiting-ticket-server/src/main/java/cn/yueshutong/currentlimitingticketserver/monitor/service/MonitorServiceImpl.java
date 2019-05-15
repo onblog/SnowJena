@@ -1,6 +1,7 @@
 package cn.yueshutong.currentlimitingticketserver.monitor.service;
 
 import cn.yueshutong.currentlimitingticketserver.properties.CurrentMonitorProperties;
+import cn.yueshutong.monitor.common.DateTimeUtil;
 import cn.yueshutong.monitor.entity.MonitorBean;
 import cn.yueshutong.monitor.service.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class MonitorServiceImpl implements MonitorService {
 
     private ValueOperations<String, String> opsForValue;
 
-    private static final String PRE = "PRE";
-    private static final String AFTER = "AFTER";
+    private static final String PRE = "$PRE$";
+    private static final String AFTER = "$AFTER$";
 
     /**
      * Key:APP+PRE/after+time
@@ -39,18 +40,18 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public void save(List<MonitorBean> monitorBeans) {
         monitorBeans.forEach(s -> {
-            String key = s.getApp() + s.getId()  + s.getName() + "$";
-            opsForValue.setIfAbsent(key + PRE + "$" + s.getData(), String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
-            opsForValue.increment(key);
-            opsForValue.setIfAbsent(key + AFTER + "$" + s.getData(), String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
-            opsForValue.increment(key);
+            String key = s.getApp() + s.getId()  + s.getName();
+            opsForValue.setIfAbsent( PRE + key +"$"+ s.getDate(), String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
+            opsForValue.increment(PRE  + key +"$"+ s.getDate());
+            opsForValue.setIfAbsent( AFTER  + key +"$"+ s.getDate(), String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
+            opsForValue.increment( AFTER  + key +"$"+ s.getDate());
         });
     }
 
     @Override
     public List<MonitorBean> getAll(String app, String id, String name) {
         List<MonitorBean> list = new ArrayList<>();
-        Set<String> pres = template.keys(app + id + name + "$" + PRE + "$*");
+        Set<String> pres = template.keys(PRE + app + id + name + "*");
         if (pres==null){
             return list;
         }
@@ -61,8 +62,9 @@ public class MonitorServiceImpl implements MonitorService {
             monitorBean.setId(id);
             monitorBean.setName(name);
             monitorBean.setPre(Integer.parseInt(pre));
-            String after = opsForValue.get(s.replace("$" + PRE + "$", "$" + AFTER + "$"));
+            String after = opsForValue.get(s.replace(PRE, AFTER));
             monitorBean.setAfter(Integer.parseInt(after));
+            monitorBean.setLocalDateTime(DateTimeUtil.parse(s.substring(s.lastIndexOf("$")+1)));
             list.add(monitorBean);
         });
         return list;
