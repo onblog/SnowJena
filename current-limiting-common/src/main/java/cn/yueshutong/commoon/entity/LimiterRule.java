@@ -12,7 +12,7 @@ public class LimiterRule {
     private String app; //app name
     private String id; //限流规则名称
     private String name; //相同的限流规则，不同的实例标识
-    private int weight; //实例权重
+    private int weight = 1; //实例权重
     private double qps; //实际值，每秒并发量：等于0默认禁止访问
     private long initialDelay; //初次允许访问的延迟时间：毫秒
     private AcquireModel acquireModel; //控制行为：快速失败/阻塞

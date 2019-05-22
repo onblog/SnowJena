@@ -18,6 +18,7 @@ public class MyController {
         if (rateLimiter.tryAcquire()){
             logger.warn("Hi");
         }
+//        logger.info("NO");
         return "Hello World";
     }
 

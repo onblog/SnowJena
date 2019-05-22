@@ -1,8 +1,17 @@
+function GetQueryString(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURI(r[2]);
+    return null;
+}
+var app = GetQueryString("app");
+var id = GetQueryString("id");
+var name = GetQueryString("name");
 setInterval(function () {
-    $.get("/monitor/json?app=app&id=demo&name=", function (data) {
+    $.get("/monitor/json?app="+app+"&id="+id+"&name="+name, function (data) {
         my_echarts(data)
     });
-}, 2000);
+}, 3000);
 function my_echarts(data) {
     var myChart = echarts.init(document.getElementById('view'));//（1）
     // 指定图表的配置项和数据

@@ -33,7 +33,7 @@ public class RateLimiterObserver {
      */
     public static void update(RateLimiter rule, RateLimiterConfig config){
         config.getScheduled().scheduleWithFixedDelay(() -> {
-            String rules = config.getTicketServer().connect("rule", JSON.toJSONString(rule.getLimiterRule()));
+            String rules = config.getTicketServer().connect("heart", JSON.toJSONString(rule.getLimiterRule()));
             LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
             if (limiterRule.getVersion()>rule.getLimiterRule().getVersion()) {
                 map.get(rule.getId()).init(limiterRule);

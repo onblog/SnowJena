@@ -30,11 +30,10 @@ public class RateLimiterDefault implements RateLimiter {
         return monitorService;
     }
 
-    private MonitorService monitorService;
+    private MonitorService monitorService =  new MonitorServiceImpl();
 
     public RateLimiterDefault(LimiterRule rule, RateLimiterConfig config) {
         this.config = config;
-        this.monitorService = new MonitorServiceImpl();
         init(rule);
     }
 

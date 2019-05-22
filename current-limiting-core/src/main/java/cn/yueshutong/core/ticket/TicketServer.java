@@ -66,8 +66,10 @@ public class TicketServer {
             return Jsoup.connect("http://" + server + "/" + path)
                     .data("data", data)
                     .method(Connection.Method.POST)
-                    .post()
-                    .text();
+                    .header("Connection", "close")
+                    .timeout(5000)
+                    .execute()
+                    .body();
         } catch (IOException e) {
             logger.error(server + " The server is not available.");
         }
