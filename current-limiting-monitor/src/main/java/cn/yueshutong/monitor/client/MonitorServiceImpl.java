@@ -1,8 +1,8 @@
 package cn.yueshutong.monitor.client;
 
+import cn.yueshutong.monitor.common.DateTimeUtil;
 import cn.yueshutong.monitor.entity.MonitorBean;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class MonitorServiceImpl implements MonitorService {
             lock.lock();
             try {
                 if (!map.containsKey(time)) {
-                    map.put(time, new MonitorBean(LocalDateTime.now()));
+                    map.put(time, new MonitorBean(DateTimeUtil.parse(time)));
                 }
             } finally {
                 lock.unlock();
@@ -27,17 +27,17 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public void save(MonitorBean monitorBean){
-        initMap(monitorBean.getDate());
-        MonitorBean bean = map.get(monitorBean.getDate());
+    public void save(MonitorBean monitorBean) {
+        initMap(monitorBean.getKey());
         lock.lock();
         try {
+            MonitorBean bean = map.get(monitorBean.getKey());
             bean.setApp(monitorBean.getApp());
             bean.setId(monitorBean.getId());
             bean.setName(monitorBean.getName());
             bean.setPre(monitorBean.getPre() + bean.getPre());
             bean.setAfter(monitorBean.getAfter() + bean.getAfter());
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
@@ -46,10 +46,10 @@ public class MonitorServiceImpl implements MonitorService {
     public List<MonitorBean> getAndDelete() {
         List<MonitorBean> list = new ArrayList<>(map.values());
         list.sort(null);
-        if (list.size()>1) {
+        if (list.size() > 1) {
             list.remove(list.size() - 1);
         }
-        list.forEach(s -> map.remove(s.getDate()));
+        list.forEach(s -> map.remove(s.getKey()));
         return list;
     }
 

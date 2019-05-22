@@ -4,6 +4,8 @@ import cn.yueshutong.currentlimitingticketserver.properties.CurrentMonitorProper
 import cn.yueshutong.monitor.common.DateTimeUtil;
 import cn.yueshutong.monitor.entity.MonitorBean;
 import cn.yueshutong.monitor.service.MonitorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -21,6 +23,8 @@ public class MonitorServiceImpl implements MonitorService {
     private StringRedisTemplate template;
     @Autowired
     private CurrentMonitorProperties monitorProperties;
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private ValueOperations<String, String> opsForValue;
 
@@ -41,17 +45,22 @@ public class MonitorServiceImpl implements MonitorService {
     public void save(List<MonitorBean> monitorBeans) {
         monitorBeans.forEach(s -> {
             String key = s.getApp() + s.getId()  + s.getName();
-            opsForValue.setIfAbsent( PRE + key +"$"+ s.getDate(), String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
-            opsForValue.increment(PRE  + key +"$"+ s.getDate());
-            opsForValue.setIfAbsent( AFTER  + key +"$"+ s.getDate(), String.valueOf(0), monitorProperties.getTime(), TimeUnit.SECONDS);
-            opsForValue.increment( AFTER  + key +"$"+ s.getDate());
+            opsForValue.setIfAbsent( PRE + key +"$"+ s.getKey(), String.valueOf(s.getPre()), monitorProperties.getTime(), TimeUnit.SECONDS);
+            opsForValue.setIfAbsent( AFTER  + key +"$"+ s.getKey(), String.valueOf(s.getAfter()), monitorProperties.getTime(), TimeUnit.SECONDS);
         });
     }
 
     @Override
     public List<MonitorBean> getAll(String app, String id, String name) {
+        String builder = (app == null ? "" : app) +
+                (id == null ? "" : id) +
+                (name == null ? "" : name);
         List<MonitorBean> list = new ArrayList<>();
-        Set<String> pres = template.keys(PRE + app + id + name + "*");
+        if (app==null||id==null){
+            return list;
+        }
+        Set<String> pres = template.keys(PRE + builder);
+        logger.debug(PRE + builder + "*");
         if (pres==null){
             return list;
         }
@@ -61,9 +70,9 @@ public class MonitorServiceImpl implements MonitorService {
             monitorBean.setApp(app);
             monitorBean.setId(id);
             monitorBean.setName(name);
-            monitorBean.setPre(Integer.parseInt(pre));
+            monitorBean.setPre(Integer.parseInt(pre==null? String.valueOf(0) :pre));
             String after = opsForValue.get(s.replace(PRE, AFTER));
-            monitorBean.setAfter(Integer.parseInt(after));
+            monitorBean.setAfter(Integer.parseInt(after==null?String.valueOf(0):after));
             monitorBean.setLocalDateTime(DateTimeUtil.parse(s.substring(s.lastIndexOf("$")+1)));
             list.add(monitorBean);
         });

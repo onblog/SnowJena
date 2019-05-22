@@ -2,9 +2,9 @@
 local key1 = KEYS[1]
 --bucket-size
 local key2 = tonumber(KEYS[2])
---bucket-put-date-key
+--bucket-put-key-key
 local key3 = KEYS[3]
---bucket-put-date-value
+--bucket-put-key-value
 local key4 = KEYS[4]
 --bucket-count
 local s = tonumber(redis.call("get", key1))
