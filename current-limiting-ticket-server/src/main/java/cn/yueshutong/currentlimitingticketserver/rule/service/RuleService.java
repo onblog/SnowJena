@@ -21,7 +21,7 @@ public interface RuleService {
     boolean update(LimiterRule limiterRule);
 
     /**
-     * 查看所有规则
+     * 查看规则
      * @param name app，id，name
      * @return 规则集合
      */
