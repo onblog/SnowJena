@@ -73,7 +73,7 @@ public class RuleServiceImpl implements RuleService {
         String builder = (app == null ? "" : app) +
                 (id == null ? "" : id) +
                 (name == null ? "" : name);
-        Set<String> keys = redisTemplate.keys(prefix+ builder +"*");
+        Set<String> keys = redisTemplate.keys(prefix+ builder);
         assert keys != null;
         List<LimiterRule> limiterRules = new ArrayList<>();
         keys.forEach(s -> {
