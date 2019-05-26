@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>SnowJena控制台</title>
+    <link rel="stylesheet" href="./layui/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">SnowJena控制台</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+<!--            <li class="layui-nav-item"></li>-->
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">规则总览</a>
+<!--                    <dl class="layui-nav-child">-->
+<!--                        <dd><a href="javascript:;">列表一</a></dd>-->
+<!--                        <dd><a href="javascript:;">列表二</a></dd>-->
+<!--                        <dd><a href="javascript:;">列表三</a></dd>-->
+<!--                        <dd><a href="">超链接</a></dd>-->
+<!--                    </dl>-->
+                </li>
+                <li class="layui-nav-item"><a target="_blank" href="https://github.com/yueshutong/SnowJena">项目官网</a></li>
+                <li class="layui-nav-item"><a target="_blank" href="mailto:yster@foxmail.com">邮件咨询</a></li>
+                <li class="layui-nav-item"><a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=82d1b1b67c5f3fea1b7ec389ea4226c06e8cb5a9a1e2ba1af2df8f8c7714869f">加入群聊</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+
+            <table class="layui-hide" id="table" lay-filter="table"></table>
+
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © www.yueshutong.cn
+    </div>
+</div>
+<script src="./layui/layui.all.js"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        table.render({
+            elem: '#table'
+            ,url:'./demo1.json'
+            ,cols: [[
+                {field:'id', width:80, title: 'ID', sort: true}
+                ,{field:'username', width:80, title: '用户名',edit: 'text'}
+                ,{field:'sex', width:80, title: '性别', sort: true,edit: 'text'}
+                ,{field:'city', width:80, title: '城市',edit: 'text'}
+                ,{field:'sign', title: '签名', minWidth: 150,edit: 'text'}
+                ,{field:'experience', width:80, title: '积分', sort: true}
+                ,{field:'score', width:80, title: '评分', sort: true}
+                ,{field:'classify', width:80, title: '职业'}
+                ,{field:'wealth', width:135, title: '财富', sort: true}
+            ]]
+            ,page: true //开启分页
+        });
+        //监听单元格编辑
+        table.on('edit(table)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+        });
+    });
+</script>
+</body>
+</html>
