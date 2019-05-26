@@ -56,7 +56,6 @@ public class RedisLock {
         DefaultRedisScript<Long> defaultRedisScript = new DefaultRedisScript<>();
         defaultRedisScript.setResultType(Long.class);
         defaultRedisScript.setScriptText("if redis.call('get', KEYS[1]) == KEYS[2] then return redis.call('del', KEYS[1]) else return 0 end");
-//        defaultRedisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("delete.lua")));
         return defaultRedisScript;
     }
 

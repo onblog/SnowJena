@@ -21,12 +21,12 @@
     <dependencies>
         <dependency>
             <groupId>cn.yueshutong</groupId>
-            <artifactId>current-limiting-core</artifactId>
+            <artifactId>snowjena-core</artifactId>
             <version>1.0.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>cn.yueshutong</groupId>
-            <artifactId>current-limiting-annotation</artifactId>
+            <artifactId>snowjena-annotation</artifactId>
             <version>1.0.0.RELEASE</version>
         </dependency>
         <dependency>
