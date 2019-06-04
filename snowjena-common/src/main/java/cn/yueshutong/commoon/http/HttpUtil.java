@@ -1,10 +1,12 @@
-package com.example.springbootdemo.common;
+package cn.yueshutong.commoon.http;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,8 +20,8 @@ public class HttpUtil {
     private int connectTimeout = 10000;
     private String method = "GET";
     private boolean doInput = true;
-    private Map<String, String> headers = null;
-    private String data = null;
+    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> data = new HashMap<>();
 
     /**
      * 实例化对象
@@ -65,12 +67,8 @@ public class HttpUtil {
     /**
      * 添加Headers
      */
-    public HttpUtil setHeaders(Map<String, String> map) {
-        String cookie = "Cookie";
-        if (map.containsKey(cookie)) {
-            headers = new HashMap<>();
-            headers.put(cookie, map.get(cookie));
-        }
+    public HttpUtil setHeaders(String key, String value) {
+        this.headers.put(key, value);
         return this;
     }
 
@@ -92,23 +90,11 @@ public class HttpUtil {
     }
 
     /**
-     * 写入数据,接受Map<String,String>或String类型<br>
-     * 例如POST时的参数<br>
-     * demo=1&name=2
+     * 写入参数,不支持GET方式，GET参数需自行在URL追加
+     * POST的参数:demo=1&name=2
      */
-    public HttpUtil setData(Object object) {
-        if (object == null) {
-            return this;
-        } else if (object instanceof String) {
-            this.data = (String) object;
-        } else if (object instanceof Map) {
-            Map map = (Map) object;
-            StringBuilder builder = new StringBuilder();
-            for (Object key : map.keySet()) {
-                builder.append(key + "=" + map.get(key) + "&");
-            }
-            this.data = builder.toString().substring(0, builder.length() > 0 ? builder.length() - 1 : builder.length());
-        }
+    public HttpUtil setData(String key,String value) {
+        data.put(key,value);
         return this;
     }
 
@@ -116,14 +102,12 @@ public class HttpUtil {
      * 发起请求
      */
     public HttpUtil execute() throws IOException {
-        //添加请求头
-        if (headers != null) {
-            for (String key : headers.keySet()) {
-                connection.setRequestProperty(key, headers.get(key));
-            }
-        }
         //直接关闭链接
-        connection.setRequestProperty("Connection", "close");
+        headers.put("Connection", "close");
+        //添加请求头
+        for (String key : headers.keySet()) {
+            connection.setRequestProperty(key, headers.get(key));
+        }
         //设置读去超时时间为10秒
         connection.setReadTimeout(readTimeout);
         //设置链接超时为10秒
@@ -133,20 +117,33 @@ public class HttpUtil {
         //接受输入流
         connection.setDoInput(doInput);
         //写入参数
-        if (data != null && !method.equalsIgnoreCase("GET")) {
+        if (!data.isEmpty() & !method.equalsIgnoreCase("GET")) {
             //启动输出流，当需要传递参数时需要开启
             connection.setDoOutput(true);
             //添加请求参数，注意：如果是GET请求，参数要写在URL中
             OutputStream output = connection.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output, charset));
-            //写入参数 用&分割。
-            writer.write(data);
+            //写入参数 用&分割
+            writer.write(getDataString());
             writer.flush();
             writer.close();
         }
         //发起请求
         connection.connect();
         return this;
+    }
+
+    private String getDataString() {
+        StringBuilder builder = new StringBuilder();
+        List<Map.Entry<String, String>> list = new ArrayList<>(data.entrySet());
+        for (int i = 0; i< list.size(); i++) {
+            Map.Entry<String, String> entry = list.get(i);
+            builder.append(entry.getKey()).append("=").append(entry.getValue());
+            if (i<list.size()-1){
+                builder.append("&");
+            }
+        }
+        return builder.toString();
     }
 
     /**
@@ -186,7 +183,6 @@ public class HttpUtil {
     public static void main(String[] args) throws IOException {
         String body = HttpUtil.connect("http://www.baidu.com")
                 .setMethod("GET")
-                .setCharset("UTF-8")
                 .execute()
                 .getBody();
         System.out.println(body);
