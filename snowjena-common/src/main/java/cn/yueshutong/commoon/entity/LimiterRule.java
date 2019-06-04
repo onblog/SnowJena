@@ -8,28 +8,21 @@ import cn.yueshutong.commoon.enums.RuleAuthority;
 /**
  * 限流规则
  */
-public class LimiterRule {
+public class LimiterRule implements Comparable<LimiterRule>{
     private String app; //app name
     private String id; //限流规则名称
     private String name; //相同的限流规则，不同的实例标识
-    private int weight = 1; //实例权重
-    private double qps; //实际值，每秒并发量：等于0默认禁止访问
+    private long monitor = 10; //监控时长，0为关闭
+    private int number; //APP-ID实例数
+    private double qps; //实际值，每秒并发量：等于0默认禁止访问//由程序修改，不可手动修改
     private long initialDelay; //初次允许访问的延迟时间：毫秒
     private AcquireModel acquireModel; //控制行为：快速失败/阻塞
     private Algorithm algorithm; //算法：令牌桶与漏桶的切换
-    private LimiterModel currentModel; //限流器模型（单点/集群）
+    private LimiterModel limiterModel; //部署方式（单点/集群）
     private RuleAuthority ruleAuthority; //黑名单/白名单/无
     private String[] limitApp; //黑白名单列表
     private long version; //版本号
-    private double allqps; //理论值，原值，集群
-
-    public int getWeight() {
-        return weight;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
+    private double allQps; //理论值，原值，集群，手动修改
 
     public String getName() {
         return name;
@@ -46,6 +39,32 @@ public class LimiterRule {
     public String getApp() {
         assert app != null;
         return app;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public long getMonitor() {
+        return monitor;
+    }
+
+    public void setMonitor(long monitor) {
+        this.monitor = monitor;
+    }
+
+    @Override
+    public int compareTo(LimiterRule o) {
+        if (this.version<o.getVersion()){
+            return -1;
+        }else if (this.version==o.getVersion()){
+            return 0;
+        }
+        return 1;
     }
 
     public class Rule {
@@ -79,12 +98,12 @@ public class LimiterRule {
         this.version = version;
     }
 
-    public double getAllqps() {
-        return allqps;
+    public double getAllQps() {
+        return allQps;
     }
 
-    public void setAllqps(double allqps) {
-        this.allqps = allqps;
+    public void setAllQps(double allQps) {
+        this.allQps = allQps;
     }
 
     public String[] getLimitApp() {
@@ -149,12 +168,12 @@ public class LimiterRule {
         this.acquireModel = acquireModel;
     }
 
-    public LimiterModel getCurrentModel() {
-        return currentModel == null ? LimiterModel.POINT : currentModel;
+    public LimiterModel getLimiterModel() {
+        return limiterModel == null ? LimiterModel.POINT : limiterModel;
     }
 
-    public void setCurrentModel(LimiterModel currentModel) {
-        this.currentModel = currentModel;
+    public void setLimiterModel(LimiterModel limiterModel) {
+        this.limiterModel = limiterModel;
     }
 
 }

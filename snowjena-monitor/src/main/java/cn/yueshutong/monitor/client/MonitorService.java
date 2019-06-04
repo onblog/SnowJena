@@ -18,4 +18,5 @@ public interface MonitorService {
      * 保存一条监控数据
      */
     void save(MonitorBean monitorBean);
+
 }

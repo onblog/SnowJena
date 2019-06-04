@@ -67,7 +67,6 @@ public class TicketServer {
                     .data("data", data)
                     .method(Connection.Method.POST)
                     .header("Connection", "close")
-                    .timeout(5000)
                     .execute()
                     .body();
         } catch (IOException e) {

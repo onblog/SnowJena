@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CurrentLimitingTicketServerApplication {
+public class TicketServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CurrentLimitingTicketServerApplication.class, args);
+        SpringApplication.run(TicketServerApplication.class, args);
     }
 
 }

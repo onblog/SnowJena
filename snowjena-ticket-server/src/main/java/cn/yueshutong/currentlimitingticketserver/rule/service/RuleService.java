@@ -1,8 +1,7 @@
 package cn.yueshutong.currentlimitingticketserver.rule.service;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
-
-import java.util.List;
+import cn.yueshutong.currentlimitingticketserver.rule.entity.Result;
 
 public interface RuleService {
 
@@ -23,7 +22,9 @@ public interface RuleService {
     /**
      * 查看规则
      * @param name app，id，name
+     * @param page
+     * @param limit
      * @return 规则集合
      */
-    List<LimiterRule> getAll(String app,String id,String name);
+    Result<LimiterRule> getAll(String app, String id, String name, int page, int limit);
 }

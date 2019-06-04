@@ -15,4 +15,5 @@ public interface MonitorService {
      * 获取监控数据
      */
     List<MonitorBean> getAll(String app, String id, String name);
+
 }

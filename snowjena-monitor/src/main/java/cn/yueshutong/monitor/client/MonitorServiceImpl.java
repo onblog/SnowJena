@@ -28,15 +28,16 @@ public class MonitorServiceImpl implements MonitorService {
 
     @Override
     public void save(MonitorBean monitorBean) {
-        initMap(monitorBean.getKey());
+        initMap(monitorBean.getDateTime());
         lock.lock();
         try {
-            MonitorBean bean = map.get(monitorBean.getKey());
+            MonitorBean bean = map.get(monitorBean.getDateTime());
             bean.setApp(monitorBean.getApp());
             bean.setId(monitorBean.getId());
             bean.setName(monitorBean.getName());
             bean.setPre(monitorBean.getPre() + bean.getPre());
             bean.setAfter(monitorBean.getAfter() + bean.getAfter());
+            bean.setMonitor(monitorBean.getMonitor());
         } finally {
             lock.unlock();
         }
@@ -49,7 +50,7 @@ public class MonitorServiceImpl implements MonitorService {
         if (list.size() > 1) {
             list.remove(list.size() - 1);
         }
-        list.forEach(s -> map.remove(s.getKey()));
+        list.forEach(s -> map.remove(s.getDateTime()));
         return list;
     }
 
