@@ -9,14 +9,14 @@
     <packaging>pom</packaging>
     <version>1.0.0.RELEASE</version>
     <modules>
-        <module>snowjena-core</module>
-        <module>snowjena-annotation</module>
         <module>snowjena-common</module>
         <module>snowjena-monitor</module>
+        <module>snowjena-core</module>
     </modules>
 
     <name>SnowJena</name>
-    <url>http://github.com/yueshutong</url>
+    <url>https://github.com/yueshutong/SnowJena</url>
+    <description>Current limiting tool based on leak bucket algorithm and token bucket algorithm.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -88,4 +88,113 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <!--以下是发布到Maven中央仓库用到的配置-->
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <tag>master</tag>
+        <url>https://github.com/yueshutong/SnowJena.git</url>
+        <connection>scm:git:git://github.com/yueshutong/SnowJena.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/yueshutong/SnowJena.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>YueShuTong</name>
+            <email>yster@foxmail.com</email>
+            <url>https://www.yueshutong.cn</url>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <repository>
+            <id>releases_maven</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots_maven</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <!-- -P release -->
+            <id>release</id>
+            <repositories>
+                <repository>
+                    <id>releases_maven</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </repositories>
+            <build>
+                <plugins>
+                    <!-- Source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <additionalJOptions>
+                                <additionalJOption>-Xdoclint:none</additionalJOption>
+                            </additionalJOptions>
+                        </configuration>
+                    </plugin>
+                    <!-- GPG -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--release-->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>release</releaseProfiles>
+                            <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

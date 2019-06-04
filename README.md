@@ -1,38 +1,42 @@
 # SnowJena
 
+![](https://img.shields.io/badge/language-Java8-green.svg)
+
+
 ## What
 
-基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，完美嵌入SpringBoot、SpringCloud应用，支持接口限流、方法限流、系统限流、IP限流、用户限流等规则，支持熔断降级，支持流量塑型，支持可视化监控，支持设置系统启动保护时间（保护时间内不允许访问），提供快速拒绝与匀速器两种限流方案，开箱即用。[入门示例](https://github.com/yueshutong/SnowJena/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
+基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，支持熔断降级，支持流量塑型，支持动态配置规则，支持可视化监控，开箱即用。
 
-Based on token bucket algorithm and bucket algorithm implementation of nanosecond distributed unlocked current-limiting plug-in, perfect embedded SpringBoot, SpringCloud application, current limiting support interface, method, current limiting, IP system current limit, current limiting, user current limiting rules, such as support for fusing downgrade, support system startup protection set time (protection time is not allowed to access), provides a quick failure and CAS block two current-limiting methods, support visualization QPS monitoring, out of the box. Introduction to [example](https://github.com/yueshutong/SnowJena/wiki/%E5%A6%82%E4%BD%95%E5%AF%B9CurrentLimiting%E8%BF%9B%E8%A1%8C%E9%99%90%E6%B5%81%E6%B5%8B%E8%AF%95%EF%BC%9F)
+A nanosecond distributed lock-free current limiting plug-in based on token bucket algorithm and leaky bucket algorithm, which supports fuse degradation, flow molding, dynamic configuration rules and visual monitoring, out of the box. 
 
-**Document: [中文](https://yueshutong.github.io/SnowJena/README_CN)|[English](https://yueshutong.github.io/SnowJena/README_EN)**
+## Document
 
-## Maven
+使用文档：[中文](./README_CN)|[English](./README_EN)
 
-Spring Boot
-```xml
-<dependency>
-  <groupId>cn.yueshutong</groupId>
-  <artifactId>spring-boot-starter-current-limiting</artifactId>
-  <version>0.1.1.RELEASE</version>
-</dependency>
-```
-CurrentLimiting的功能
+## Noun
 
-限流
+### 限流
 
-当我们设计了一个函数，准备上线，这时候这个函数会消耗一些资源，处理上限是1秒服务3000个QPS，但如果实际情况遇到高于3000的QPS该如何解决呢？CurrentLimiting提供了当QPS超出某个设定的阈值，系统可以通过直接拒绝、匀速器三种方式来应对，从而起流量控制的作用。
+当我们设计了一个函数，准备上线，这时候这个函数会消耗一些资源，处理上限是1秒服务3000个QPS，但如果实际情况遇到高于3000的QPS该如何解决呢？本项目提供了当QPS超出某个设定的阈值，系统可以通过直接拒绝或匀速器两种方式来应对，从而起流量控制的作用。
 
-降级
+### 降级
 
-接触过Spring Cloud、Service Mesh的同学，都知道熔断降级的概念。服务之间会有相互依赖关系，例如服务A做到了1秒上万个QPS，但这时候服务B并无法满足1秒上万个QPS，那么如何保证服务A在高频调用服务B时，服务B仍能正常工作呢？一种比较常见的情况是，服务A调用服务B时，服务B因无法满足高频调用出现响应时间过长的情况，导致服务A也出现响应过长的情况，进而产生连锁反应影响整个依赖链上的所有应用，这时候就需要熔断和降级的方法。CurrentLimiting通过响应时间对资源进行降级来对服务进行熔断或降级。
+接触过Spring Cloud、Service Mesh的同学，都知道熔断降级的概念。服务之间会有相互依赖关系，例如服务A做到了1秒上万个QPS，但这时候服务B并无法满足1秒上万个QPS，那么如何保证服务A在高频调用服务B时，服务B仍能正常工作呢？一种比较常见的情况是，服务A调用服务B时，服务B因无法满足高频调用出现响应时间过长的情况，导致服务A也出现响应过长的情况，进而产生连锁反应影响整个依赖链上的所有应用，这时候就需要熔断和降级的方法。本项目通过设置快速失败策略来对服务进行熔断或降级。
 
-塑形
+### 塑形
 
-通常我们遇到的流量具有随机性、不规则、不受控的特点，但系统的处理能力往往是有限的，我们需要根据系统的处理能力对流量进行塑形，即规则化，从而根据我们的需要来处理流量。CurrentLimiting通过资源的调用关系、运行指标、控制的效果三个维度来对流量进行控制，开发者可以自行灵活组合，从而达到理想的效果。
+通常我们遇到的流量具有随机性、不规则、不受控的特点，但系统的处理能力往往是有限的，我们需要根据系统的处理能力对流量进行塑形，即规则化，从而根据我们的需要来处理流量。本项目原生自带流量塑性功能，严格控制系统的处理时间间隔。
+
+### 负载保护
+
+平时系统运行都没问题，但遇到大促的时候，发现机器的load非常高，这时候对系统的负载保护就显得非常重要，以防止雪崩。本项目提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。需要注意的是，本项目在系统负载保护方面的机制是根据匀速器来做流量塑性，使系统能够处理的请求，和允许进来的请求，达到平衡。
+
+## Preview
+
+![](./picture/1559627712394.png)
 
 ![](./picture/monitor.jpg)
+
 
 ## About
 
@@ -46,8 +50,6 @@ Gitee：<https://gitee.com/zyzpp/SnowJena>
 
 交流QQ群：781927207
 
-如果帮助到你了，请不吝赞赏！如果贵司或团队使用了本限流插件，欢迎在issues留言，我会在底部链接贵司的主页，谢谢！
-
-If help to you, please do not hesitate to praise! If your company or team used this issue, please feel free to comment on issues, and I will link to your company's homepage at the bottom, thank you!
+如果帮助到你了，请不吝赞赏！如果贵司或团队使用了本限流插件，欢迎在 Issues 留言，我会在底部链接贵司的主页，谢谢！
 
 <img src="https://gitee.com/zyzpp/Doctor/raw/master/picture/%E8%B5%9E%E8%B5%8F%E7%A0%81.png" width="300px">
