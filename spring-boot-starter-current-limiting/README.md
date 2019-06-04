@@ -1,5 +1,15 @@
 # spring-boot-starter-current-limiting
 
+## Maven
+
+```
+<dependency>
+  <groupId>cn.yueshutong</groupId>
+  <artifactId>spring-boot-starter-current-limiting</artifactId>
+  <version>0.1.1.RELEASE</version>
+</dependency>
+```
+
 ## 1.方法限流
 
 在需要限流的方法上使用 @CurrentLimiter 注解，不局限于Controller方法，示例代码如下：
