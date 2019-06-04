@@ -7,9 +7,7 @@
         <version>1.0.0.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>snowjena-core</artifactId>
-
     <name>snowjena-core</name>
     <url>http://www.yueshutong.cn</url>
 
@@ -32,6 +30,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-    </build>
 </project>

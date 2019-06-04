@@ -8,7 +8,6 @@ import cn.yueshutong.core.config.RateLimiterConfig;
 import cn.yueshutong.core.rateLimiter.RateLimiter;
 import cn.yueshutong.core.rateLimiter.RateLimiterFactory;
 import com.alibaba.fastjson.JSON;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class AppTest {
 
     private Logger logger = LoggerFactory.getLogger(AppTest.class);
 
-    @Test
+//    @Test
     public void shouldAnswerWithTrue() throws InterruptedException {
         assertTrue(true);
         long f = 1;
@@ -34,7 +33,7 @@ public class AppTest {
         System.out.println(d);
     }
 
-    @Test
+//    @Test
     public void should() {
         LimiterRule rule = new LimiterRule();
         rule.setId("Default");
@@ -47,7 +46,7 @@ public class AppTest {
         System.out.println(parse);
     }
 
-    @Test
+//    @Test
     public void shoulds() {
         RateLimiterConfig config = RateLimiterConfig.getInstance();
         ScheduledFuture<?> scheduledFuture = config.getScheduled().scheduleAtFixedRate(() -> {
@@ -69,7 +68,7 @@ public class AppTest {
         }
     }
 
-    @Test
+//    @Test
     public void tess() throws InterruptedException {
         LimiterRule rule = new LimiterRule();
         rule.setQps(2);
