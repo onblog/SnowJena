@@ -1,7 +1,6 @@
 # SnowJena
 
 ![](https://img.shields.io/badge/language-Java8-green.svg)
-
 ![](https://img.shields.io/badge/maven-3-green.svg)
 
 
