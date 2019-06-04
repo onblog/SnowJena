@@ -102,7 +102,7 @@ public class AppTest {
 
 2. 启动TicketServer
 
-   下载 TicketServer.jar 包，运行，默认端口8521。
+   下载 [TicketServer.jar](https://github.com/yueshutong/SnowJena/releases) 包，运行，默认端口8521。
 
 启动 TicketServer 后的界面：![1559635413548](./picture/1559635413548.png)
 
