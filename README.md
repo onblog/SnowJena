@@ -7,7 +7,7 @@
 
 ## What
 
-基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流插件，支持熔断降级，支持流量塑型，支持动态配置规则，支持可视化监控，开箱即用。
+基于令牌桶算法和漏桶算法实现的纳秒级分布式无锁限流框架，支持熔断降级，支持流量塑型，支持动态配置规则，支持可视化监控，开箱即用。
 
 A nanosecond distributed lock-free current limiting plug-in based on token bucket algorithm and leaky bucket algorithm, which supports fuse degradation, flow molding, dynamic configuration rules and visual monitoring, out of the box. 
 
