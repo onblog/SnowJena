@@ -1,7 +1,6 @@
 package cn.yueshutong.core.ticket;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
+import cn.yueshutong.commoon.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +62,11 @@ public class TicketServer {
     public String connect(String path,String data) {
         String server = getServer();
         try {
-            return Jsoup.connect("http://" + server + "/" + path)
-                    .data("data", data)
-                    .method(Connection.Method.POST)
-                    .header("Connection", "close")
+            return HttpUtil.connect("http://" + server + "/" + path)
+                    .setData("data",data)
+                    .setMethod("POST")
                     .execute()
-                    .body();
+                    .getBody();
         } catch (IOException e) {
             logger.error(server + " The server is not available.");
         }
