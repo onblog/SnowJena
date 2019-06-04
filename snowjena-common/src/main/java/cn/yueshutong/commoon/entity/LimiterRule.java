@@ -11,9 +11,9 @@ import cn.yueshutong.commoon.enums.RuleAuthority;
 public class LimiterRule implements Comparable<LimiterRule>{
     private String app; //app name
     private String id; //限流规则名称
-    private String name; //相同的限流规则，不同的实例标识
+    private String name; //相同的限流规则，不同的实例标识(不需要用户配置)
     private long monitor = 10; //监控时长，0为关闭
-    private int number; //APP-ID实例数
+    private int number; //APP-ID实例数(不需要用户配置)
     private double qps; //实际值，每秒并发量：等于0默认禁止访问//由程序修改，不可手动修改
     private long initialDelay; //初次允许访问的延迟时间：毫秒
     private AcquireModel acquireModel; //控制行为：快速失败/阻塞
@@ -21,8 +21,8 @@ public class LimiterRule implements Comparable<LimiterRule>{
     private LimiterModel limiterModel; //部署方式（单点/集群）
     private RuleAuthority ruleAuthority; //黑名单/白名单/无
     private String[] limitApp; //黑白名单列表
-    private long version; //版本号
-    private double allQps; //理论值，原值，集群，手动修改
+    private long version; //版本号(不需要用户配置)
+    private double allQps; //理论值，原值，集群，手动修改(不需要用户配置)
 
     public String getName() {
         return name;
