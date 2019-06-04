@@ -55,7 +55,7 @@ public class CurrentResourceAspect {
         rule.setAcquireModel(limiter.acquireModel());
         rule.setAlgorithm(limiter.algorithm());
         rule.setInitialDelay(limiter.initialDelay());
-        rule.setCurrentModel(limiter.currentModel());
+        rule.setLimiterModel(limiter.currentModel());
         return rule;
     }
 }

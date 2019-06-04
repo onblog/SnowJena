@@ -12,10 +12,11 @@ public class MonitorBean implements Comparable<MonitorBean>{
     private String app;
     private String id;
     private String name;
+    private long monitor;
     private int pre;
     private int after;
     private String time;
-    private String key;
+    private String dateTime;
     private LocalDateTime localDateTime;
 
     public MonitorBean() {
@@ -27,6 +28,14 @@ public class MonitorBean implements Comparable<MonitorBean>{
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
+    }
+
+    public long getMonitor() {
+        return monitor;
+    }
+
+    public void setMonitor(long monitor) {
+        this.monitor = monitor;
     }
 
     public void setLocalDateTime(LocalDateTime localDateTime) {
@@ -83,7 +92,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
         return localDateTime!=null?localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")):"";
     }
 
-    public String getKey() {
+    public String getDateTime() {
         return DateTimeUtil.toString(localDateTime);
     }
 
@@ -92,7 +101,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
     }
 
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
     }
 }

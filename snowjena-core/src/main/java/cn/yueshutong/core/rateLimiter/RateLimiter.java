@@ -11,9 +11,9 @@ public interface RateLimiter {
 
     boolean tryAcquire();
 
-    boolean tryAcquire(String o);
+    boolean tryAcquire(String s);
 
     String getId();
 
-    LimiterRule getLimiterRule();
+    LimiterRule getRule();
 }

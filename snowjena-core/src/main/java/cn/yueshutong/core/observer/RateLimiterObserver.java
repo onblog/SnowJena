@@ -21,21 +21,27 @@ public class RateLimiterObserver {
     private static Map<String, RateLimiter> map = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(RateLimiterObserver.class);
 
-    public static void registered(RateLimiter rule) {
+    public static void registered(RateLimiter rule,RateLimiterConfig config) {
         if (map.containsKey(rule.getId())) {
             throw new RuleBeReplaced("Repeat registration for current limiting rules:" + rule.getId());
         }
         map.put(rule.getId(), rule);
+        update(rule,config);
+        monitor(rule,config);
     }
 
     /**
-     * 动态更新限流规则
+     * 发送心跳并更新限流规则
      */
-    public static void update(RateLimiter rule, RateLimiterConfig config){
+    private static void update(RateLimiter rule, RateLimiterConfig config){
         config.getScheduled().scheduleWithFixedDelay(() -> {
-            String rules = config.getTicketServer().connect("heart", JSON.toJSONString(rule.getLimiterRule()));
+            String rules = config.getTicketServer().connect("heart", JSON.toJSONString(rule.getRule()));
+            if (rules==null||"".equals(rules)){
+                logger.debug("rule update fail");
+                return;
+            }
             LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
-            if (limiterRule.getVersion()>rule.getLimiterRule().getVersion()) {
+            if (limiterRule.getVersion()>rule.getRule().getVersion()) {
                 map.get(rule.getId()).init(limiterRule);
                 logger.warn("rule update: "+rule.getId());
             }
@@ -45,15 +51,19 @@ public class RateLimiterObserver {
     /**
      * 监控数据上报
      */
-    public static void monitor(RateLimiter rule, RateLimiterConfig config) {
+    private static void monitor(RateLimiter rule, RateLimiterConfig config) {
         config.getScheduled().scheduleWithFixedDelay(() -> {
+            if (rule.getRule().getMonitor()==0){
+                //监控功能已关闭
+                return;
+            }
             List<MonitorBean> monitorBeans = rule.getMonitorService().getAndDelete();
             if (monitorBeans.size()<1){
                 return;
             }
             String result = config.getTicketServer().connect("monitor", JSON.toJSONString(monitorBeans));
-            if (result!=null) {
-                logger.debug("monitor update success");
+            if (result==null) {
+                logger.debug("monitor data update fail");
             }
         },0,3, TimeUnit.SECONDS);
     }
