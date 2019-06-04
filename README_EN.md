@@ -104,7 +104,7 @@ You need to:
 
    Download the ticketserver.jar and run on the default port 8521. 
 
-Interface after launching TicketServer: ![1559635413548](README_EN.assets/1559635413548.png)
+Interface after launching TicketServer: ![1559635413548](./picture/1559635413548.png)
 
 Client-Side Code
 
