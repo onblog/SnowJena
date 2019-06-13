@@ -104,7 +104,9 @@ public class AppTest {
 
    下载 [TicketServer.jar](https://github.com/yueshutong/SnowJena/releases) 包，运行，默认端口8521。
 
-启动 TicketServer 后的界面：![1559635413548](./picture/1559635413548.png)
+启动 TicketServer 后的界面：
+
+![1559635413548](./picture/1559635413548.png)
 
 客户端代码：
 
@@ -152,7 +154,7 @@ public class AppTest {
 
 ## 监控图表
 
-此时打开你的浏览器，访问 localhost:8521，可以看到控制台视图
+此时打开你的浏览器，访问 localhost:8521，可以看到控制台视图（1.1.0后的版本需要用户名密码admin）
 
 ![1559636053811](./picture/1559636053811.png)
 
