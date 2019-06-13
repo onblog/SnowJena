@@ -12,7 +12,7 @@ A nanosecond distributed lock-free current limiting plug-in based on token bucke
 
 ## Document
 
-使用文档：[中文](https://www.yueshutong.cn/SnowJena/README_CN)|[English](https://www.yueshutong.cn/SnowJena/README_EN)
+使用文档：[中文](https://www.yueshutong.cn/SnowJena/README-CN)|[English](https://www.yueshutong.cn/SnowJena/README-EN)
 
 ## Noun
 
