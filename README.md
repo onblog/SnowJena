@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/Language-Java8-green.svg)
 ![](https://img.shields.io/badge/Maven-3-green.svg)
-![](https://img.shields.io/badge/LICENSE-Apache-green.svg)
+![](https://img.shields.io/badge/License-Apache-green.svg)
 
 ## What
 
