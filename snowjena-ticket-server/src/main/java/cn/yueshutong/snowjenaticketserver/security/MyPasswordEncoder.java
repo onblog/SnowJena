@@ -1,6 +1,8 @@
 package cn.yueshutong.snowjenaticketserver.security;
 
-public class MyPasswordEncoder implements org.springframework.security.crypto.password.PasswordEncoder {
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+public class MyPasswordEncoder implements PasswordEncoder {
     @Override
     public String encode(CharSequence charSequence) {
         return charSequence.toString();

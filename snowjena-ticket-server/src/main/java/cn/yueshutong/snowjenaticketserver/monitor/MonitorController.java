@@ -29,7 +29,7 @@ public class MonitorController {
         return "OK";
     }
 
-    @RequestMapping(value = "/monitor/json")
+    @RequestMapping(value = "/monitor/json",method = RequestMethod.GET)
     @ResponseBody
     public List<MonitorBean> query(String app, String id, String name) {
         List<MonitorBean> monitorBeans = monitorService.getAll(app, id, name);

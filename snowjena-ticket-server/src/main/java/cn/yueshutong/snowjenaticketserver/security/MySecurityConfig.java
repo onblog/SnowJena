@@ -1,6 +1,7 @@
 package cn.yueshutong.snowjenaticketserver.security;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -17,20 +18,19 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().sameOrigin(); //解决不加载iframe
+        http.csrf().ignoringAntMatchers("/monitor", "/heart"); //解决CSRF导致的POST响应403
+
         http.authorizeRequests()
-                .antMatchers("/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/monitor", "/heart" ).permitAll() //允许访问
+                .anyRequest().authenticated() //其他所有资源都需要认证，登陆后访问
                 .and()
                 .formLogin()//开启自动配置的授权功能
-                .usernameParameter("username")  //自定义用户名name值
-                .passwordParameter("password")  //自定义密码name值
-                .permitAll() //登录页都可以访问
                 .and()
-                .logout()//开启自动配置的注销功能
-                .logoutSuccessUrl("/")//注销成功后返回到页面并清空Session
+                .logout()//开启自动注销
                 .and()
                 .rememberMe()
-                .rememberMeParameter("remember")//自定义rememberMe的name值，默认remember-Me
-                .tokenValiditySeconds(604800);//记住我的时间/秒
+        ;
     }
 
     /*定义认证规则*/
