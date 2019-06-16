@@ -53,4 +53,4 @@ Gitee：<https://gitee.com/zyzpp/SnowJena>
 
 如果帮助到你了，请不吝赞赏！如果贵司或团队使用了本限流插件，欢迎在 Issues 留言，我会在底部链接贵司的主页，谢谢！
 
-<img src="https://gitee.com/zyzpp/Doctor/raw/master/picture/%E8%B5%9E%E8%B5%8F%E7%A0%81.png" width="300px">
+<img src="http://ww3.sinaimg.cn/large/006tNc79ly1g43096t4oaj30tc0tc41y.jpg" width="300px">
