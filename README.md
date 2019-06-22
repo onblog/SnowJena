@@ -41,7 +41,7 @@ A nanosecond distributed lock-free current limiting plug-in based on token bucke
 
 ## About
 
-Blog：[https://www.yueshutong.cn](https://www.yueshutong.cn/)
+Blog：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
 
 Email：[yster@foxmail.com](mailto:yster@foxmail.com)
 
