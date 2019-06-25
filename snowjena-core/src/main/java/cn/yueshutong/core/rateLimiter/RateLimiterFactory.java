@@ -20,7 +20,6 @@ public class RateLimiterFactory {
                 return new RateLimiterDefault(rule, config);
             case CLOUD: //集群限流
                 RateLimiter limiterDefault = new RateLimiterDefault(rule, config);
-                rule.setAllQps(rule.getQps());
                 rule.setName(rule.getName() == null ? String.valueOf(limiterDefault.hashCode()) : rule.getName());
                 RateLimiterObserver.registered(limiterDefault,config);
                 return limiterDefault;

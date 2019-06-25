@@ -1,5 +1,6 @@
-package cn.yueshutong.monitor.client;
+package cn.yueshutong.core.monitor;
 
+import cn.yueshutong.monitor.client.MonitorService;
 import cn.yueshutong.monitor.common.DateTimeUtil;
 import cn.yueshutong.monitor.entity.MonitorBean;
 

@@ -35,8 +35,8 @@ public class RuleController {
      * @return 获取实例的规则
      */
     @RequestMapping(value = "/rule",method = RequestMethod.GET)
-    public Result<LimiterRule> get(String app, String id, String name,int page,int limit){
-        return ruleService.getAll(app, id, name, page, limit);
+    public Result<LimiterRule> get(String app, String id, int page,int limit){
+        return ruleService.getAllRule(app, id, page, limit);
     }
 
     /**

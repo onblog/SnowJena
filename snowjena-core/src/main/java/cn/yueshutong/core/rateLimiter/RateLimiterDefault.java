@@ -3,14 +3,14 @@ package cn.yueshutong.core.rateLimiter;
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.core.config.RateLimiterConfig;
-import cn.yueshutong.monitor.entity.MonitorBean;
+import cn.yueshutong.core.monitor.MonitorServiceImpl;
 import cn.yueshutong.monitor.client.MonitorService;
-import cn.yueshutong.monitor.client.MonitorServiceImpl;
+import cn.yueshutong.monitor.entity.MonitorBean;
+import com.alibaba.fastjson.JSON;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -22,9 +22,8 @@ import java.util.stream.Stream;
 public class RateLimiterDefault implements RateLimiter {
     private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
     private LimiterRule rule;
-    private LimiterRule.Rule ruleAnd;
-    private ScheduledFuture<?> scheduledFuture;
     private RateLimiterConfig config;
+    private ScheduledFuture<?> scheduledFuture;
 
     @Override
     public MonitorService getMonitorService() {
@@ -41,13 +40,20 @@ public class RateLimiterDefault implements RateLimiter {
     @Override
     public void init(LimiterRule rule) {
         this.rule = rule;
-        this.ruleAnd = rule.new Rule();
+        putPointBucket();
+    }
+
+    /**
+     * 单点限流，放入令牌
+     */
+    private void putPointBucket() {
         if (this.scheduledFuture != null) {
             this.scheduledFuture.cancel(true);
         }
-        if (rule.getQps() != 0) {
-            putBucket();
+        if (rule.getLimit() == 0 || !rule.getLimiterModel().equals(LimiterModel.POINT)) {
+            return;
         }
+        this.scheduledFuture = config.getScheduledThreadExecutor().scheduleAtFixedRate(() -> bucket.set(rule.getLimit()), rule.getInitialDelay(), rule.getPeriod(), rule.getUnit());
     }
 
     /**
@@ -89,7 +95,7 @@ public class RateLimiterDefault implements RateLimiter {
         if (b) {
             monitor.setAfter(1);
         }
-        config.getScheduled().execute(() -> { //异步执行
+        config.getScheduledThreadExecutor().execute(() -> { //异步执行
             monitorService.save(monitor);
         });
         return b;
@@ -99,18 +105,41 @@ public class RateLimiterDefault implements RateLimiter {
      * 3.AcquireModel
      */
     private boolean tryAcquireFact() {
-        if (rule.getQps() == 0) {
+        if (rule.getLimit() == 0) {
             return false;
         }
+        boolean result = false;
         switch (rule.getAcquireModel()) {
             case FAILFAST:
-                return tryAcquireFailed();
+                result = tryAcquireFailed();
+                break;
             case BLOCKING:
-                return tryAcquireSucceed();
+                result = tryAcquireSucceed();
+                break;
         }
-        return false;
+        //分布式方式下检查剩余令牌数
+        putCloudBucket();
+        return result;
     }
 
+    /**
+     * 集群限流，取批令牌
+     */
+    private void putCloudBucket() {
+        //校验
+        if (!rule.getLimiterModel().equals(LimiterModel.CLOUD) ||
+                bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
+            return;
+        }
+        config.getSingleThread().execute(() -> {
+            //再次校验
+            if (bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
+                return;
+            }
+            String result = config.getTicketServer().connect(RateLimiterConfig.token, JSON.toJSONString(rule));
+            bucket.getAndAdd(Long.parseLong(result));
+        });
+    }
 
     @Override
     public String getId() {
@@ -120,18 +149,6 @@ public class RateLimiterDefault implements RateLimiter {
     @Override
     public LimiterRule getRule() {
         return this.rule;
-    }
-
-    /**
-     * CAS获取令牌,阻塞直到成功
-     */
-    private boolean tryAcquireSucceed() {
-        long l = bucket.longValue();
-        while (!(l > 0 && bucket.compareAndSet(l, l - 1))) {
-            sleep();
-            l = bucket.longValue();
-        }
-        return true;
     }
 
     /**
@@ -149,22 +166,26 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     /**
-     * 周期性放令牌，控制访问速率
+     * CAS获取令牌,阻塞直到成功
      */
-    private void putBucket() {
-        this.scheduledFuture = config.getScheduled().scheduleAtFixedRate(() -> {
-            if (ruleAnd.getSize() > bucket.longValue()) {
-                bucket.incrementAndGet();
-            }
-        }, rule.getInitialDelay(), ruleAnd.getPeriod(), TimeUnit.NANOSECONDS);
+    private boolean tryAcquireSucceed() {
+        long l = bucket.longValue();
+        while (!(l > 0 && bucket.compareAndSet(l, l - 1))) {
+            sleep();
+            l = bucket.longValue();
+        }
+        return true;
     }
 
+    /**
+     * 线程休眠
+     */
     private void sleep() {
-        if (ruleAnd.getPeriod() < 1000 * 1000) { //大于1ms强制休眠
+        if (rule.getUnit().toMillis(rule.getPeriod()) < 1) { //大于1ms强制休眠
             return;
         }
         try {
-            Thread.sleep(ruleAnd.getPeriod() / 1000 / 1000);
+            Thread.sleep(rule.getUnit().toMillis(rule.getPeriod()));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

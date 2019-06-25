@@ -33,17 +33,17 @@ public class RateLimiterObserver {
     /**
      * 发送心跳并更新限流规则
      */
-    private static void update(RateLimiter rule, RateLimiterConfig config){
-        config.getScheduled().scheduleWithFixedDelay(() -> {
-            String rules = config.getTicketServer().connect("heart", JSON.toJSONString(rule.getRule()));
+    private static void update(RateLimiter limiter, RateLimiterConfig config){
+        config.getScheduledThreadExecutor().scheduleWithFixedDelay(() -> {
+            String rules = config.getTicketServer().connect(RateLimiterConfig.heart, JSON.toJSONString(limiter.getRule()));
             if (rules==null||"".equals(rules)){
-                logger.debug("rule update fail");
+                logger.debug("limiter update fail");
                 return;
             }
             LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
-            if (limiterRule.getVersion()>rule.getRule().getVersion()) {
-                map.get(rule.getId()).init(limiterRule);
-                logger.warn("rule update: "+rule.getId());
+            if (limiterRule.getVersion()>limiter.getRule().getVersion()) {
+                map.get(limiter.getId()).init(limiterRule);
+                logger.warn("limiter update: "+limiter.getId());
             }
         },0,1, TimeUnit.SECONDS);
     }
@@ -51,17 +51,17 @@ public class RateLimiterObserver {
     /**
      * 监控数据上报
      */
-    private static void monitor(RateLimiter rule, RateLimiterConfig config) {
-        config.getScheduled().scheduleWithFixedDelay(() -> {
-            if (rule.getRule().getMonitor()==0){
+    private static void monitor(RateLimiter limiter, RateLimiterConfig config) {
+        config.getScheduledThreadExecutor().scheduleWithFixedDelay(() -> {
+            if (limiter.getRule().getMonitor()==0){
                 //监控功能已关闭
                 return;
             }
-            List<MonitorBean> monitorBeans = rule.getMonitorService().getAndDelete();
+            List<MonitorBean> monitorBeans = limiter.getMonitorService().getAndDelete();
             if (monitorBeans.size()<1){
                 return;
             }
-            String result = config.getTicketServer().connect("monitor", JSON.toJSONString(monitorBeans));
+            String result = config.getTicketServer().connect(RateLimiterConfig.monitor, JSON.toJSONString(monitorBeans));
             if (result==null) {
                 logger.debug("monitor data update fail");
             }

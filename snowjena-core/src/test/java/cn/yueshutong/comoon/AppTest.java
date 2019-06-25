@@ -2,7 +2,6 @@ package cn.yueshutong.comoon;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.commoon.enums.AcquireModel;
-import cn.yueshutong.commoon.enums.Algorithm;
 import cn.yueshutong.commoon.enums.RuleAuthority;
 import cn.yueshutong.core.config.RateLimiterConfig;
 import cn.yueshutong.core.rateLimiter.RateLimiter;
@@ -39,7 +38,7 @@ public class AppTest {
         rule.setId("Default");
         rule.setAcquireModel(AcquireModel.BLOCKING);
         rule.setRuleAuthority(RuleAuthority.AUTHORITY_BLACK);
-        rule.setQps(0.2);
+
         String s = JSON.toJSONString(rule);
         System.out.println(s);
         Object parse = JSON.parseObject(s, LimiterRule.class);
@@ -49,10 +48,10 @@ public class AppTest {
 //    @Test
     public void shoulds() {
         RateLimiterConfig config = RateLimiterConfig.getInstance();
-        ScheduledFuture<?> scheduledFuture = config.getScheduled().scheduleAtFixedRate(() -> {
+        ScheduledFuture<?> scheduledFuture = config.getScheduledThreadExecutor().scheduleAtFixedRate(() -> {
             System.out.println("one" + LocalDateTime.now());
         }, 0, 1, TimeUnit.SECONDS);
-        ScheduledFuture<?> scheduledFuture1 = config.getScheduled().scheduleAtFixedRate(() -> {
+        ScheduledFuture<?> scheduledFuture1 = config.getScheduledThreadExecutor().scheduleAtFixedRate(() -> {
             System.out.println("two" + LocalDateTime.now());
         }, 0, 2, TimeUnit.SECONDS);
         try {
@@ -71,8 +70,6 @@ public class AppTest {
 //    @Test
     public void tess() throws InterruptedException {
         LimiterRule rule = new LimiterRule();
-        rule.setQps(2);
-        rule.setAlgorithm(Algorithm.TOKENBUCKET);
         rule.setAcquireModel(AcquireModel.BLOCKING);
         RateLimiter limiter = RateLimiterFactory.of(rule);
         Thread.sleep(1000);

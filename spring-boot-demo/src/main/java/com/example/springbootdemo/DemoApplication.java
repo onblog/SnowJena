@@ -10,9 +10,7 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,7 +30,8 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    @Scheduled(fixedRate = 100,initialDelay = 1000)
+
+//    @Scheduled(fixedRate = 100,initialDelay = 1000)
     public void task(){
         try {
             Jsoup.connect("http://127.0.0.1:"+port+"/hi").get();
@@ -41,13 +40,13 @@ public class DemoApplication {
         }
     }
 
-    @Bean
+//    @Bean
     public RateLimiter rateLimiter(){
         //rule
         LimiterRule limiterRule = new LimiterRule();
         limiterRule.setApp("APP");
         limiterRule.setId("ID");
-        limiterRule.setQps(1);
+
 //        limiterRule.setLimiterModel(LimiterModel.POINT); //POINT限流,没有TicketServer的支持
         limiterRule.setLimiterModel(LimiterModel.CLOUD); //CLOUD限流,有TicketServer的支持(监控、动态规则)
         limiterRule.setRuleAuthority(RuleAuthority.AUTHORITY_BLACK);

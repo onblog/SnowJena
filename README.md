@@ -1,8 +1,8 @@
 # SnowJena
 
 ![](https://img.shields.io/badge/Language-Java8-green.svg)
-![](https://img.shields.io/badge/Maven-3-green.svg)
-![](https://img.shields.io/badge/License-Apache-green.svg)
+![](https://img.shields.io/badge/Maven-3+-green.svg)
+![](https://img.shields.io/badge/License-Apache2.0-green.svg)
 
 ## What
 

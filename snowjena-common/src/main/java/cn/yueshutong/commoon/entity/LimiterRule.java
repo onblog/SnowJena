@@ -1,28 +1,92 @@
 package cn.yueshutong.commoon.entity;
 
-import cn.yueshutong.commoon.enums.Algorithm;
-import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.commoon.enums.AcquireModel;
+import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.commoon.enums.RuleAuthority;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 限流规则
  */
 public class LimiterRule implements Comparable<LimiterRule>{
-    private String app; //app name
-    private String id; //限流规则名称
-    private String name; //相同的限流规则，不同的实例标识(不需要用户配置)
-    private long monitor = 10; //监控时长，0为关闭
-    private int number; //APP-ID实例数(不需要用户配置)
-    private double qps; //实际值，每秒并发量：等于0默认禁止访问//由程序修改，不可手动修改
-    private long initialDelay; //初次允许访问的延迟时间：毫秒
-    private AcquireModel acquireModel; //控制行为：快速失败/阻塞
-    private Algorithm algorithm; //算法：令牌桶与漏桶的切换
-    private LimiterModel limiterModel; //部署方式（单点/集群）
-    private RuleAuthority ruleAuthority; //黑名单/白名单/无
-    private String[] limitApp; //黑白名单列表
-    private long version; //版本号(不需要用户配置)
-    private double allQps; //理论值，原值，集群，手动修改(不需要用户配置)
+    // APP
+    /**
+     * app name
+     */
+    private String app;
+    /**
+     * 限流规则名称
+     */
+    private String id;
+    /**
+     * 相同的限流规则，不同的实例标识(不需要用户配置)
+     */
+    private String name;
+
+    //QPS
+    /**
+     * 每个时间段对应的令牌数
+     */
+    private long limit;
+    /**
+     * 时间段的长度
+     */
+    private long period;
+    /**
+     * 第一次放入令牌的延迟时间
+     */
+    private long initialDelay;
+    /**
+     * 时间段以及延迟时间的单位
+     */
+    private TimeUnit unit;
+
+    //get bucket
+    /**
+     * 每批次取多少个令牌 (0,limit)
+     */
+    private long batch = 1;
+    /**
+     * 现有令牌数/批次令牌数<=? [0,1]
+     */
+    private double remaining = 1;
+
+    //Monitor
+    /**
+     * 监控时长，秒，0为关闭
+     */
+    private long monitor = 10;
+
+    //Select
+    /**
+     * 控制行为：快速失败/阻塞
+     */
+    private AcquireModel acquireModel = AcquireModel.FAILFAST;
+    /**
+     * 部署方式（单点/分布式）
+     */
+    private LimiterModel limiterModel = LimiterModel.POINT;
+    /**
+     * 黑名单/白名单/无
+     */
+    private RuleAuthority ruleAuthority = RuleAuthority.NULL;
+    /**
+     * 黑白名单列表
+     */
+    private String[] limitApp;
+
+    //System
+    /**
+     * APP-ID实例数(不需要用户配置)
+     */
+    private int number;
+    /**
+     * 版本号(不需要用户配置)
+     */
+    private long version;
+//    private double qps; //实际值，每秒并发量：等于0默认禁止访问//由程序修改，不可手动修改
+//    private double allQps; //理论值，原值，集群，手动修改(不需要用户配置)
 
     public String getName() {
         return name;
@@ -57,37 +121,28 @@ public class LimiterRule implements Comparable<LimiterRule>{
         this.monitor = monitor;
     }
 
-    @Override
-    public int compareTo(LimiterRule o) {
-        if (this.version<o.getVersion()){
-            return -1;
-        }else if (this.version==o.getVersion()){
-            return 0;
-        }
-        return 1;
+    public long getPeriod() {
+        assert period!=0;
+        return period;
+    }
+    public long getLimit() {
+        return limit;
     }
 
-    public class Rule {
-        private long size; //size：令牌桶容量
-        private long period; //间隔：纳秒
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+    public void setPeriod(long period) {
+        this.period = period;
+    }
 
-        public long getPeriod() {
-            if (getQps() != 0) {
-                return (long) (1000 * 1000 * 1000 / getQps());
-            }
-            return 0;
-        }
+    public TimeUnit getUnit() {
+        assert unit!=null;
+        return unit;
+    }
 
-        public long getSize() {
-            switch (getAlgorithm()) {
-                case TOKENBUCKET:
-                    return getQps() < 1 ? 1 : (long) getQps();
-                case LEAKBUCKET:
-                    return 1;
-                default:
-                    return 0;
-            }
-        }
+    public void setUnit(TimeUnit unit) {
+        this.unit = unit;
     }
 
     public long getVersion() {
@@ -96,14 +151,6 @@ public class LimiterRule implements Comparable<LimiterRule>{
 
     public void setVersion(long version) {
         this.version = version;
-    }
-
-    public double getAllQps() {
-        return allQps;
-    }
-
-    public void setAllQps(double allQps) {
-        this.allQps = allQps;
     }
 
     public String[] getLimitApp() {
@@ -115,16 +162,13 @@ public class LimiterRule implements Comparable<LimiterRule>{
     }
 
     public RuleAuthority getRuleAuthority() {
-        return ruleAuthority == null ? RuleAuthority.NULL : ruleAuthority;
+        return ruleAuthority;
     }
 
     public void setRuleAuthority(RuleAuthority ruleAuthority) {
         this.ruleAuthority = ruleAuthority;
     }
 
-    public LimiterRule() {
-
-    }
 
     public String getId() {
         assert id != null;
@@ -143,25 +187,8 @@ public class LimiterRule implements Comparable<LimiterRule>{
         this.initialDelay = initialDelay;
     }
 
-    public double getQps() {
-        return qps;
-    }
-
-    public void setQps(double qps) {
-        this.qps = qps;
-    }
-
-
-    public Algorithm getAlgorithm() {
-        return algorithm == null ? Algorithm.TOKENBUCKET : algorithm;
-    }
-
-    public void setAlgorithm(Algorithm algorithm) {
-        this.algorithm = algorithm;
-    }
-
     public AcquireModel getAcquireModel() {
-        return acquireModel == null ? AcquireModel.FAILFAST : acquireModel;
+        return acquireModel;
     }
 
     public void setAcquireModel(AcquireModel acquireModel) {
@@ -169,11 +196,39 @@ public class LimiterRule implements Comparable<LimiterRule>{
     }
 
     public LimiterModel getLimiterModel() {
-        return limiterModel == null ? LimiterModel.POINT : limiterModel;
+        return limiterModel;
     }
 
     public void setLimiterModel(LimiterModel limiterModel) {
         this.limiterModel = limiterModel;
     }
 
+
+    public long getBatch() {
+        return batch;
+    }
+
+    public void setBatch(long batch) {
+        assert batch>0&&batch<=limit;
+        this.batch = batch;
+    }
+
+    public double getRemaining() {
+        return remaining;
+    }
+
+    public void setRemaining(double remaining) {
+        assert remaining>=0&&remaining<=100;
+        this.remaining = remaining;
+    }
+
+    @Override
+    public int compareTo(LimiterRule o) {
+        if (this.version<o.getVersion()){
+            return -1;
+        }else if (this.version==o.getVersion()){
+            return 0;
+        }
+        return 1;
+    }
 }

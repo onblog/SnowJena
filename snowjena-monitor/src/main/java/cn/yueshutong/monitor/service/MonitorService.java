@@ -16,4 +16,6 @@ public interface MonitorService {
      */
     List<MonitorBean> getAll(String app, String id, String name);
 
+
+    boolean clean(String app, String id, String name);
 }

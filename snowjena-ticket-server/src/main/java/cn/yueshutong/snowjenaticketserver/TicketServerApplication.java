@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TicketServerApplication {
 
     public static void main(String[] args) {
+        System.out.println("SnowJean Version 1.1.1.RELEASE");
         SpringApplication.run(TicketServerApplication.class, args);
     }
 
