@@ -26,7 +26,6 @@ public class AppTest {
     public void test1() {
         // 1.配置规则
         LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setQps(1);
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
         // 3.使用
@@ -44,7 +43,6 @@ public class AppTest {
     public void test2() {
         // 1.配置规则
         LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setQps(1);
         limiterRule.setRuleAuthority(RuleAuthority.AUTHORITY_BLACK);
         limiterRule.setLimitApp(new String[]{"user1", "user2"});
         // 2.工厂模式生产限流器
@@ -70,7 +68,6 @@ public class AppTest {
     public void test3() {
         // 1.配置规则
         LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setQps(1);
         limiterRule.setRuleAuthority(RuleAuthority.AUTHORITY_WHITE);
         limiterRule.setLimitApp(new String[]{"user1", "user2"});
         // 2.工厂模式生产限流器
@@ -98,7 +95,6 @@ public class AppTest {
         LimiterRule limiterRule = new LimiterRule();
         limiterRule.setApp("Application"); //应用名
         limiterRule.setId("myId"); //限流器ID
-        limiterRule.setQps(1);
         limiterRule.setLimiterModel(LimiterModel.CLOUD); //分布式限流,需启动TicketServer控制台
         // 2.配置TicketServer地址（支持集群、加权重）
         Map<String,Integer> map = new HashMap<>();

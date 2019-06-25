@@ -3,26 +3,34 @@ package cn.yueshutong.core.config;
 import cn.yueshutong.core.ticket.TicketServer;
 
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * 单例模式
  * DCL双检查锁
  */
 public class RateLimiterConfig {
-    private static RateLimiterConfig rateLimiterConfig; //实例
-    private ScheduledExecutorService scheduled; //调度线程池
-    private TicketServer ticketServer; //发票服务器
+    private static RateLimiterConfig rateLimiterConfig; //单例
 
-    private RateLimiterConfig(){
+    private ScheduledExecutorService scheduledThreadExecutor; //调度线程池
+    private TicketServer ticketServer; //发票服务器
+    private ThreadPoolExecutor singleThread = new ThreadPoolExecutor(1, 1,0L,TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(), Executors.defaultThreadFactory(),
+            new ThreadPoolExecutor.DiscardOldestPolicy());//单例线程池
+
+    //Ticket server interface
+    public static String monitor = "monitor";
+    public static String heart = "heart";
+    public static String token = "token";
+
+    private RateLimiterConfig() {
         //禁止new实例
     }
 
-    public static RateLimiterConfig getInstance(){
-        if (rateLimiterConfig==null){
-            synchronized (RateLimiterConfig.class){
-                if (rateLimiterConfig==null) {
+    public static RateLimiterConfig getInstance() {
+        if (rateLimiterConfig == null) {
+            synchronized (RateLimiterConfig.class) {
+                if (rateLimiterConfig == null) {
                     rateLimiterConfig = new RateLimiterConfig();
                 }
             }
@@ -30,30 +38,34 @@ public class RateLimiterConfig {
         return rateLimiterConfig;
     }
 
-    public ScheduledExecutorService getScheduled() {
-        if (scheduled==null){
-            setScheduled(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()*2));
+    public ScheduledExecutorService getScheduledThreadExecutor() {
+        if (scheduledThreadExecutor == null) {
+            setScheduledThreadExecutor(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
         }
-        return scheduled;
+        return scheduledThreadExecutor;
     }
 
-    public void setScheduled(ScheduledExecutorService scheduled) {
-        this.scheduled = scheduled;
+    public void setScheduledThreadExecutor(ScheduledExecutorService scheduledThreadExecutor) {
+        this.scheduledThreadExecutor = scheduledThreadExecutor;
     }
 
     public TicketServer getTicketServer() {
-        assert ticketServer!=null;
+        assert ticketServer != null;
         return ticketServer;
     }
 
-    public void setTicketServer(Map<String,Integer> ip) {
-        if (this.ticketServer==null){
+    public void setTicketServer(Map<String, Integer> ip) {
+        if (this.ticketServer == null) {
             synchronized (this) {
-                if (this.ticketServer==null) {
+                if (this.ticketServer == null) {
                     this.ticketServer = new TicketServer();
                 }
             }
         }
         this.ticketServer.setIp(ip);
+    }
+
+    public ThreadPoolExecutor getSingleThread() {
+        return singleThread;
     }
 }

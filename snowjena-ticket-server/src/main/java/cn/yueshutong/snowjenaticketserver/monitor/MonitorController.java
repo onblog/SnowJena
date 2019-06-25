@@ -18,6 +18,7 @@ import java.util.List;
 public class MonitorController {
     @Autowired
     MonitorService monitorService;
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @RequestMapping(value = "/monitor",method = RequestMethod.POST)
@@ -35,5 +36,11 @@ public class MonitorController {
         List<MonitorBean> monitorBeans = monitorService.getAll(app, id, name);
         monitorBeans.sort(null);
         return monitorBeans;
+    }
+
+    @RequestMapping(value = "/monitor",method = RequestMethod.DELETE)
+    @ResponseBody
+    public boolean delete(String app, String id, String name) {
+        return monitorService.clean(app, id, name);
     }
 }

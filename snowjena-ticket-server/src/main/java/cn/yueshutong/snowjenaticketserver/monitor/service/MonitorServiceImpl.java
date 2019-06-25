@@ -26,16 +26,15 @@ public class MonitorServiceImpl implements MonitorService {
     private static final String PRE = "$PRE$";
     private static final String AFTER = "$AFTER$";
 
-    /**
-     * Key:APP+PRE/after+time
-     * value:i(++)
-     * setnx+expire
-     */
     @PostConstruct
     private void init() {
         opsForValue = template.opsForValue();
     }
 
+    /**
+     * Key:APP+PRE/after+time
+     * value:i(++)
+     */
     @Override
     public void save(List<MonitorBean> monitorBeans) {
         monitorBeans.forEach(s -> {
@@ -74,4 +73,20 @@ public class MonitorServiceImpl implements MonitorService {
         });
         return new ArrayList<>(map.values());
     }
+
+    @Override
+    public boolean clean(String app, String id, String name) {
+        if (app == null || id == null) {
+            return false;
+        }
+        String builder = app + id + (name == null ? "" : name);
+        Set<String> pres = template.keys(PRE + builder);
+        if (pres == null) {
+            return true;
+        }
+        pres.forEach(s -> template.delete(s));
+        logger.debug("clean monitor data : "+builder);
+        return true;
+    }
+
 }
