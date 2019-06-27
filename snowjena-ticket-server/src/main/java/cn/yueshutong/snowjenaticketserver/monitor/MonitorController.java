@@ -2,6 +2,8 @@ package cn.yueshutong.snowjenaticketserver.monitor;
 
 import cn.yueshutong.monitor.entity.MonitorBean;
 import cn.yueshutong.monitor.service.MonitorService;
+import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
+import cn.yueshutong.snowjenaticketserver.rule.entity.Result;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +23,16 @@ public class MonitorController {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @RequestMapping(value = "/monitor",method = RequestMethod.POST)
+    @RequestMapping(value = "/monitor", method = RequestMethod.POST)
     @ResponseBody
     public String monitor(@RequestParam("data") String rule) {
-        logger.debug("monitor up: "+rule);
+        logger.debug("monitor up: " + rule);
         List<MonitorBean> monitorBeans = JSON.parseArray(rule, MonitorBean.class);
         monitorService.save(monitorBeans);
         return "OK";
     }
 
-    @RequestMapping(value = "/monitor/json",method = RequestMethod.GET)
+    @RequestMapping(value = "/monitor/json", method = RequestMethod.GET)
     @ResponseBody
     public List<MonitorBean> query(String app, String id) {
         List<MonitorBean> monitorBeans = monitorService.getAll(app, id);
@@ -38,9 +40,10 @@ public class MonitorController {
         return monitorBeans;
     }
 
-    @RequestMapping(value = "/monitor",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/monitor", method = RequestMethod.DELETE)
     @ResponseBody
-    public boolean delete(String app, String id) {
-        return monitorService.clean(app, id);
+    public Result delete(String app, String id) {
+        monitorService.clean(app, id);
+        return new Result(ResultEnum.SUCCESS);
     }
 }

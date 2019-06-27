@@ -1,6 +1,8 @@
 package cn.yueshutong.snowjenaticketserver.rule.service;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
+import cn.yueshutong.snowjenaticketserver.exception.TicketServerException;
 import cn.yueshutong.snowjenaticketserver.redisson.SingleRedisLock;
 import cn.yueshutong.snowjenaticketserver.rule.entity.Result;
 import com.alibaba.fastjson.JSON;
@@ -95,7 +97,7 @@ public class RuleServiceImpl implements RuleService {
         if (!result) {
             //该令牌桶已有线程负责存放
             String name = valueOperations.get(RuleService.getBucketPrincipalKey(nowLimiterRule));
-            if (!id.equals(name)){
+            if (!id.equals(name)) {
                 //而且还不是自己
                 return;
             }
@@ -126,8 +128,9 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public boolean update(LimiterRule limiterRule) {
-        if (limiterRule.getBatch()>limiterRule.getLimit()){
-            //抛出警告
+        //Check
+        if (limiterRule.getBatch() > limiterRule.getLimit()) {
+            throw new TicketServerException(ResultEnum.ERROR, "Batch必须<=Limiter");
         }
         //加锁
         redisLock.acquire(RuleService.getLockKey(limiterRule));
@@ -137,7 +140,7 @@ public class RuleServiceImpl implements RuleService {
         if (rule == null || "".equals(rule)) {
             //解锁
             redisLock.release(LOCK + key);
-            return false;
+            throw new TicketServerException(ResultEnum.ERROR,"规则不存在");
         }
         //更新版本号
         LimiterRule limiter = JSON.parseObject(rule, LimiterRule.class);
@@ -154,7 +157,9 @@ public class RuleServiceImpl implements RuleService {
         String builder = (app == null ? "" : app) +
                 (id == null ? "" : id);
         Set<String> keys = redisTemplate.keys(RuleService.RULE + builder);
-        assert keys != null;
+        if (keys == null) {
+            throw new TicketServerException(ResultEnum.ERROR, builder + " return null");
+        }
         //result
         Result<LimiterRule> result = new Result<>();
         result.setCount(keys.size());

@@ -13,13 +13,8 @@
         <div class="layui-logo">SnowJena控制台</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
-            <!--            <li class="layui-nav-item"></li>-->
             <li class="layui-nav-item layui-nav-itemed">
                 <a class="" href="javascript:;">规则总览</a>
-                <!--                    <dl class="layui-nav-child">-->
-                <!--                        <dd><a href="javascript:;">列表一</a></dd>-->
-                <!--                        <dd><a href="">超链接</a></dd>-->
-                <!--                    </dl>-->
             </li>
             <li class="layui-nav-item"><a target="_blank" href="https://github.com/yueshutong/SnowJena">项目官网</a>
             </li>
@@ -85,52 +80,7 @@
                 , field = obj.field; //得到字段
             //校验
             var result = true;
-            if (field == 'limit' || field == 'period' || field == 'initialDelay' || field == 'monitor') {
-                if (isNaN(value)) {
-                    layer.msg("该项只能输入数字");
-                    result = false;
-                }
-                if (result && value < 0) {
-                    layer.msg("不能小于0");
-                    result = false;
-                }
-            } else if (field == 'batch') {
-                if (isNaN(value)) {
-                    layer.msg("该项只能输入数字");
-                    result = false;
-                }
-                if (result && value < 0) {
-                    layer.msg("该项不能小于0");
-                    result = false;
-                }
-                if (result && value >= data.limit) {
-                    layer.msg("该项不能大于等于limit");
-                    result = false;
-                }
-            } else if (field == 'remaining') {
-                if (isNaN(value)) {
-                    layer.msg("该项只能输入数字");
-                    result = false;
-                }
-                if (result && value < 0) {
-                    layer.msg("该项不能小于0");
-                    result = false;
-                }
-                if (result && value > 1) {
-                    layer.msg("该项不能大于1");
-                    result = false;
-                }
-            } else if (field == 'acquireModel') {
-                if (value != 'FAILFAST' && value != 'BLOCKING') {
-                    layer.msg("控制行为只能是FAILFAST或BLOCKING");
-                    result = false;
-                }
-            } else if (field == 'ruleAuthority') {
-                if (value != 'AUTHORITY_WHITE' && value != 'AUTHORITY_BLACK' && value != 'NULL') {
-                    layer.msg("黑/白名单只能是白名单‘AUTHORITY_WHITE’或黑名单‘AUTHORITY_BLACK’或‘NULL’");
-                    result = false;
-                }
-            } else if (field == 'limitUser') {
+            if (field == 'limitUser') {
                 var values = value.split(",");
                 data.limitUser = values;
             }
@@ -146,18 +96,18 @@
                 dataType: "json",
                 success: function (data) {
                     // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
-                    if (data.code == 200) {
-                        layer.msg('更新成功');
+                    if (data.code === 0) {
+                        layer.msg('更新成功', {icon: 1});
                         //表格重载
                         setTimeout(function () {
                             render.reload();
                         }, 3000);
                     } else {
-                        layer.msg('更新失败:' + data.msg);
+                        layer.msg('更新失败:' + data.msg, {icon: 2});
                     }
                 },
                 error: function (XMLHttpResponse, textStatus, errorThrown) {
-                    layer.msg('服务器错误:' + XMLHttpResponse.status);
+                    layer.msg('服务器错误:' + XMLHttpResponse.status+":"+textStatus.msg+":"+errorThrown, {icon: 2});
                 }
             });
         });
@@ -182,18 +132,18 @@
                         dataType: "json",
                         success: function (data) {
                             // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
-                            if (data.code == 200) {
-                                layer.msg('更新成功');
+                            if (data.code === 0) {
+                                layer.msg('更新成功', {icon: 1});
                                 //表格重载
                                 setTimeout(function () {
                                     render.reload();
                                 }, 3000);
                             } else {
-                                layer.msg('更新失败:' + data.msg);
+                                layer.msg('更新失败:' + data.msg, {icon: 2});
                             }
                         },
                         error: function (XMLHttpResponse, textStatus, errorThrown) {
-                            layer.msg('服务器错误:' + XMLHttpResponse.status);
+                            layer.msg('服务器错误:' + XMLHttpResponse.status, {icon: 2});
                         }
                     });
                 });
@@ -210,7 +160,7 @@
                     content: '/monitor/monitor.html?app=' + data.app + '&id=' + data.id
                 });
                 //加载层
-                var index = layer.load(4, {time: 3*1000});
+                layer.load(4, {time: 3*1000});
             }
             if (obj.event === 'clean') {
                 //询问框
@@ -221,9 +171,10 @@
                         url: "/monitor?app=" + data.app + '&id=' + data.id,
                         type: "DELETE",
                         async: false,
+                        dataType: "json",
                         success: function (data) {
                             // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
-                            if (data === true) {
+                            if (data.code === 0) {
                                 layer.msg('删除监控数据成功', {icon: 1});
                             } else {
                                 layer.msg('删除监控数据失败', {icon: 2});

@@ -230,10 +230,10 @@ public class LimiterRule implements Comparable<LimiterRule> {
     /**
      * Build设计模式
      */
-    public static class LimiterRuleBuilder{
+    public static class LimiterRuleBuilder {
         private LimiterRule limiterRule;
 
-        public LimiterRuleBuilder(){
+        public LimiterRuleBuilder() {
             this.limiterRule = new LimiterRule();
         }
 
@@ -302,10 +302,17 @@ public class LimiterRule implements Comparable<LimiterRule> {
             return this;
         }
 
-        public LimiterRule build(){
-            assert this.limiterRule.batch > 0 && this.limiterRule.batch <= this.limiterRule.limit;
-            assert this.limiterRule.remaining >= 0 && this.limiterRule.remaining <= 1;
+        public LimiterRule build() {
+            LimiterRuleBuilder.check(this.limiterRule);
             return this.limiterRule;
+        }
+
+        public static void check(LimiterRule limiterRule) {
+            assert limiterRule.batch > 0 && limiterRule.batch <= limiterRule.limit;
+            assert limiterRule.remaining >= 0 && limiterRule.remaining <= 1;
+            assert limiterRule.period >= 0;
+            assert limiterRule.initialDelay >= 0;
+            assert limiterRule.monitor >= 0;
         }
     }
 }

@@ -21,6 +21,7 @@ public class TicketServer {
     private List<String> serverList = new ArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private int pos = 0;
+    private long start = 0;
 
     public TicketServer() {
     }
@@ -59,16 +60,19 @@ public class TicketServer {
         return server;
     }
 
-    public String connect(String path,String data) {
+    public String connect(String path, String data) {
         String server = getServer();
         try {
             return HttpUtil.connect("http://" + server + "/" + path)
-                    .setData("data",data)
+                    .setData("data", data)
                     .setMethod("POST")
                     .execute()
                     .getBody();
         } catch (IOException e) {
-            logger.error(server + " The server is not available.");
+            if (System.currentTimeMillis() - start >1000) {
+                logger.error("{} The server is not available.", server);
+                start = System.currentTimeMillis();
+            }
         }
         return null;
     }
