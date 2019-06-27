@@ -1,5 +1,7 @@
 package cn.yueshutong.snowjenaticketserver.rule.entity;
 
+import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
+
 import java.util.List;
 
 /**
@@ -10,6 +12,19 @@ public class Result<T> {
     private String msg;
     private long count;
     private List<T> data;
+
+    public Result() {
+    }
+
+    public Result(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public Result(ResultEnum success) {
+        this.code = success.getCode();
+        this.msg = success.getMsg();
+    }
 
     public int getCode() {
         return code;

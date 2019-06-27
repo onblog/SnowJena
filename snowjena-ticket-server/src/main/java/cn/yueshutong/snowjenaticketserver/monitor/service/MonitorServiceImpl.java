@@ -3,6 +3,8 @@ package cn.yueshutong.snowjenaticketserver.monitor.service;
 import cn.yueshutong.monitor.common.DateTimeUtil;
 import cn.yueshutong.monitor.entity.MonitorBean;
 import cn.yueshutong.monitor.service.MonitorService;
+import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
+import cn.yueshutong.snowjenaticketserver.exception.TicketServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +47,11 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public List<MonitorBean> getAll(String app, String id) {
         if (app == null || id == null) {
-            return new ArrayList<>();
+            throw new TicketServerException(ResultEnum.ERROR);
         }
         Set<String> pres = template.keys(MonitorService.getMonitorPreKeys(app, id));
         if (pres == null) {
-            return new ArrayList<>();
+            throw new TicketServerException(ResultEnum.ERROR);
         }
         Map<String, MonitorBean> map = new HashMap<>(); //key：DateTime
         pres.forEach(s -> {
@@ -73,7 +75,7 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public boolean clean(String app, String id) {
         if (app == null || id == null) {
-            return false;
+            throw new TicketServerException(ResultEnum.ERROR);
         }
         Set<String> pres = template.keys(MonitorService.getMonitorPreKeys(app, id));
         if (pres != null) {
