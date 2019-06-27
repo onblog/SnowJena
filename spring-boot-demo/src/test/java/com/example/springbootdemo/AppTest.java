@@ -12,12 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Create by yster@foxmail.com 2019/6/4 0004 15:06
  */
 public class AppTest {
-    Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * 单点限流
@@ -25,7 +26,11 @@ public class AppTest {
     @Test
     public void test1() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule();
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setLimit(1)
+                .setPeriod(1)
+                .setUnit(TimeUnit.SECONDS)
+                .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
         // 3.使用
@@ -42,9 +47,11 @@ public class AppTest {
     @Test
     public void test2() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setRuleAuthority(RuleAuthority.AUTHORITY_BLACK);
-        limiterRule.setLimitApp(new String[]{"user1", "user2"});
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setLimit(1)
+                .setRuleAuthority(RuleAuthority.AUTHORITY_BLACK)
+                .setLimitUser(new String[]{"user1", "user2"})
+                .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
         // 3.使用
@@ -67,9 +74,11 @@ public class AppTest {
     @Test
     public void test3() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setRuleAuthority(RuleAuthority.AUTHORITY_WHITE);
-        limiterRule.setLimitApp(new String[]{"user1", "user2"});
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setLimit(1)
+                .setRuleAuthority(RuleAuthority.AUTHORITY_WHITE)
+                .setLimitUser(new String[]{"user1", "user2"})
+                .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
         // 3.使用
@@ -92,13 +101,16 @@ public class AppTest {
     @Test
     public void test4() throws InterruptedException {
         // 1.限流配置
-        LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setApp("Application"); //应用名
-        limiterRule.setId("myId"); //限流器ID
-        limiterRule.setLimiterModel(LimiterModel.CLOUD); //分布式限流,需启动TicketServer控制台
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setApp("Application")
+                .setId("myId")
+                .setLimit(2)
+                .setBatch(2)
+                .setLimiterModel(LimiterModel.CLOUD) //分布式限流,需启动TicketServer控制台
+                .build();
         // 2.配置TicketServer地址（支持集群、加权重）
-        Map<String,Integer> map = new HashMap<>();
-        map.put("127.0.0.1:8521",1);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("127.0.0.1:8521", 1);
         // 3.全局配置
         RateLimiterConfig config = RateLimiterConfig.getInstance();
         config.setTicketServer(map);

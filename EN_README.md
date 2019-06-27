@@ -174,6 +174,6 @@ Some functions have been briefly mentioned above, while the LimiterRule is expla
 | algorithm     | Algorithm: token bucket/leak bucket           |
 | limiterModel  | Deployment mode: single point/distributed     |
 | ruleAuthority | Blacklist/whitelist/none                      |
-| limitApp      | Black and white list                          |
+| limitUser      | Black and white list                          |
 
 > Documentation continues to improve. Please submit Issues. 

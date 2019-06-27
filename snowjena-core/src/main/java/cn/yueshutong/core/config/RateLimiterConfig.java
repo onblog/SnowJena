@@ -1,6 +1,8 @@
 package cn.yueshutong.core.config;
 
 import cn.yueshutong.core.ticket.TicketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.*;
@@ -11,6 +13,7 @@ import java.util.concurrent.*;
  */
 public class RateLimiterConfig {
     private static RateLimiterConfig rateLimiterConfig; //单例
+    private static Logger logger = LoggerFactory.getLogger(RateLimiterConfig.class);
 
     private ScheduledExecutorService scheduledThreadExecutor; //调度线程池
     private TicketServer ticketServer; //发票服务器
@@ -32,6 +35,7 @@ public class RateLimiterConfig {
             synchronized (RateLimiterConfig.class) {
                 if (rateLimiterConfig == null) {
                     rateLimiterConfig = new RateLimiterConfig();
+                    logger.info("Hello, SnowJean user");
                 }
             }
         }

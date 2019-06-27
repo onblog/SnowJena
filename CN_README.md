@@ -179,6 +179,6 @@ public class AppTest {
 | algorithm     | 算法：令牌桶/漏桶         |
 | limiterModel  | 部署方式：单点/分布式     |
 | ruleAuthority | 黑名单/白名单/无          |
-| limitApp      | 黑白名单列表              |
+| limitUser      | 黑白名单列表              |
 
 > 文档不断完善，请提交Issues。

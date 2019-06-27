@@ -32,10 +32,10 @@ public class RuleController {
     }
 
     /**
-     * @return 获取实例的规则
+     * @return 读取规则
      */
     @RequestMapping(value = "/rule",method = RequestMethod.GET)
-    public Result<LimiterRule> get(String app, String id, int page,int limit){
+    public Result<LimiterRule> getAllRule(String app, String id, int page,int limit){
         return ruleService.getAllRule(app, id, page, limit);
     }
 
@@ -45,10 +45,16 @@ public class RuleController {
      */
     @RequestMapping(value = "/rule",method = RequestMethod.PUT)
     public Result update(@RequestParam("data") String rule){
-        LimiterRule limiterRule = JSON.parseObject(rule, LimiterRule.class);
-        boolean update = ruleService.update(limiterRule);
         Result result = new Result();
-        result.setMsg(Boolean.toString(update));
+        try {
+            LimiterRule limiterRule = JSON.parseObject(rule, LimiterRule.class);
+            boolean update = ruleService.update(limiterRule);
+            result.setCode(update?200:500);
+        } catch (Exception e) {
+            result.setCode(400);
+            result.setMsg(e.getMessage());
+            e.printStackTrace();
+        }
         return result;
     }
 

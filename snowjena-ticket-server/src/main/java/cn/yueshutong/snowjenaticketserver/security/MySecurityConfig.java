@@ -16,10 +16,10 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().sameOrigin(); //解决不加载iframe
-        http.csrf().ignoringAntMatchers("/monitor", "/heart","/token"); //解决CSRF导致的POST响应403
+        http.csrf().ignoringAntMatchers("/monitor", "/heart","/token","/rule"); //解决CSRF导致的POST响应403
 
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/monitor", "/heart", "/token").permitAll() //允许访问
+                .antMatchers(HttpMethod.POST,"/monitor", "/heart", "/token").permitAll() //允许不认证访问
                 .anyRequest().authenticated() //其他所有资源都需要认证，登陆后访问
                 .and()
                 .formLogin()//开启自动配置的授权功能
