@@ -36,14 +36,14 @@ public class RateLimiterObserver {
     private static void update(RateLimiter limiter, RateLimiterConfig config){
         config.getScheduledThreadExecutor().scheduleWithFixedDelay(() -> {
             String rules = config.getTicketServer().connect(RateLimiterConfig.heart, JSON.toJSONString(limiter.getRule()));
-            if (rules==null||"".equals(rules)){
+            if (rules==null){
                 logger.debug("limiter update fail");
                 return;
             }
             LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
             if (limiterRule.getVersion()>limiter.getRule().getVersion()) {
                 map.get(limiter.getId()).init(limiterRule);
-                logger.warn("limiter update: "+limiter.getId());
+                logger.warn("limiter rule update: "+limiter.getRule().getVersion()+" -> "+limiterRule.getVersion());
             }
         },0,1, TimeUnit.SECONDS);
     }

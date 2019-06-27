@@ -36,8 +36,6 @@ public class CurrentLimitingTicketServerApplicationTests {
             lock.release("key");
             System.err.println("======unlock======" + Thread.currentThread().getName());
         },0,1, TimeUnit.MILLISECONDS);
-
-
         try {
             Thread.sleep(8000);
         } catch (InterruptedException e) {

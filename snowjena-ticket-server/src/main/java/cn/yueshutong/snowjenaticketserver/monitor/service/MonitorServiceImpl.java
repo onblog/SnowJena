@@ -23,9 +23,6 @@ public class MonitorServiceImpl implements MonitorService {
 
     private ValueOperations<String, String> opsForValue;
 
-    private static final String PRE = "$PRE$";
-    private static final String AFTER = "$AFTER$";
-
     @PostConstruct
     private void init() {
         opsForValue = template.opsForValue();
@@ -38,19 +35,19 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public void save(List<MonitorBean> monitorBeans) {
         monitorBeans.forEach(s -> {
-            String key = s.getApp() + s.getId() + s.getName();
-            opsForValue.set(PRE + key + "$" + s.getDateTime(), String.valueOf(s.getPre()), s.getMonitor(), TimeUnit.SECONDS);
-            opsForValue.set(AFTER + key + "$" + s.getDateTime(), String.valueOf(s.getAfter()), s.getMonitor(), TimeUnit.SECONDS);
+            opsForValue.increment(MonitorService.getMonitorPreKey(s), s.getPre());
+            template.expire(MonitorService.getMonitorPreKey(s), s.getMonitor(), TimeUnit.SECONDS);
+            opsForValue.increment(MonitorService.getMonitorAfterKey(s), s.getAfter());
+            template.expire(MonitorService.getMonitorAfterKey(s), s.getMonitor(), TimeUnit.SECONDS);
         });
     }
 
     @Override
-    public List<MonitorBean> getAll(String app, String id, String name) {
+    public List<MonitorBean> getAll(String app, String id) {
         if (app == null || id == null) {
             return new ArrayList<>();
         }
-        String builder = app + id + (name == null ? "" : name);
-        Set<String> pres = template.keys(PRE + builder);
+        Set<String> pres = template.keys(MonitorService.getMonitorPreKeys(app, id));
         if (pres == null) {
             return new ArrayList<>();
         }
@@ -60,11 +57,10 @@ public class MonitorServiceImpl implements MonitorService {
             MonitorBean monitorBean = new MonitorBean();
             monitorBean.setApp(app);
             monitorBean.setId(id);
-            monitorBean.setName(name);
             monitorBean.setPre(Integer.parseInt(pre == null ? String.valueOf(0) : pre));
             String after = opsForValue.get(s.replace(PRE, AFTER));
             monitorBean.setAfter(Integer.parseInt(after == null ? String.valueOf(0) : after));
-            monitorBean.setLocalDateTime(DateTimeUtil.parse(s.substring(s.lastIndexOf("$") + 1)));
+            monitorBean.setLocalDateTime(DateTimeUtil.parse(s.substring(s.lastIndexOf(MonitorService.DATE) + MonitorService.DATE.length())));
             if (map.containsKey(monitorBean.getDateTime())) {
                 monitorBean.setPre(monitorBean.getPre() + map.get(monitorBean.getDateTime()).getPre());
                 monitorBean.setAfter(monitorBean.getAfter() + map.get(monitorBean.getDateTime()).getAfter());
@@ -75,17 +71,19 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public boolean clean(String app, String id, String name) {
+    public boolean clean(String app, String id) {
         if (app == null || id == null) {
             return false;
         }
-        String builder = app + id + (name == null ? "" : name);
-        Set<String> pres = template.keys(PRE + builder);
-        if (pres == null) {
-            return true;
+        Set<String> pres = template.keys(MonitorService.getMonitorPreKeys(app, id));
+        if (pres != null) {
+            pres.forEach(s -> template.delete(s));
         }
-        pres.forEach(s -> template.delete(s));
-        logger.debug("clean monitor data : "+builder);
+        Set<String> afters = template.keys(MonitorService.getMonitorAfterKeys(app, id));
+        if (afters != null) {
+            afters.forEach(s -> template.delete(s));
+        }
+        logger.debug("clean monitor data : " + app + "-" + id);
         return true;
     }
 

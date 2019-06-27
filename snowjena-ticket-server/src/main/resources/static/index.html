@@ -39,13 +39,16 @@
 
     <div class="layui-footer">
         <!-- 底部固定区域 -->
-        <sapn style="color: #9E9E9E">© yster@foxmail.com 版权所有,违权必究</sapn>
+        <sapn style="color: #9E9E9E">© github.com/yueshutong 版权所有,违权必究</sapn>
     </div>
 </div>
 
-<script type="text/html" id="barDemo">
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="update">更新</a>
     <a class="layui-btn layui-btn-xs" lay-event="detail">监控</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="clean">删除</a>
 </script>
+
 
 <script src="./layui/layui.all.js"></script>
 <script>
@@ -54,20 +57,24 @@
         var table = layui.table;
         var render = table.render({
             elem: '#table'
+            ,toolbar: true
             , url: '/rule?app=*'
             , cols: [[
-                {field: 'app', width: 100, title: 'APP', sort: true}
-                , {field: 'id', width: 100, title: 'ID', sort: true}
-                , {field: 'name', minWidth: 120, title: 'Name', sort: true}
-                , {field: 'allQps', width: 80, title: 'QPS', edit: 'text'}
-                , {field: 'number', width: 80, title: '实例'}
-                , {field: 'monitor', width: 80, title: '监控/s', edit: 'text', sort: true}
-                , {field: 'initialDelay', width: 100, title: '初始时延'}
-                , {field: 'acquireModel', width: 103, title: '控制行为', edit: 'text', sort: true}
-                , {field: 'algorithm', width: 140, title: '限流算法', edit: 'text', sort: true}
-                , {field: 'ruleAuthority', width: 170, title: '黑/白名单', edit: 'text', sort: true}
-                , {field: 'limitApp', minWidth: 110, title: '名单列表', edit: 'text'}
-                , {fixed: 'right', width:80, align:'center', toolbar: '#barDemo'}
+                {field: 'app', width: 110, title: 'App', sort: true}
+                , {field: 'id', width: 100, title: 'ID'}
+                , {field: 'number', width: 85, title: 'Number'}
+                , {field: 'limit', width: 80, title: 'Limit', edit: 'text'}
+                , {field: 'period', width: 80, title: 'Period', edit: 'text'}
+                , {field: 'initialDelay', width: 100, title: 'InitialDelay', edit: 'text'}
+                , {field: 'unit', width: 100, title: 'Unit', edit: 'text'}
+                , {field: 'batch', width: 80, title: 'Batch', edit: 'text'}
+                , {field: 'remaining', width: 100, title: 'Remaining', edit: 'text'}
+                , {field: 'monitor', width: 80, title: 'Monitor', edit: 'text'}
+                , {field: 'acquireModel', width: 120, title: 'AcquireModel', edit: 'text'}
+                , {field: 'ruleAuthority', width: 170, title: 'RuleAuthority', edit: 'text'}
+                , {field: 'limitUser', minWidth: 110, title: 'LimitUser', edit: 'text'}
+                , {field: 'version', width: 80, title: 'Version'}
+                , {fixed: 'right', width: 160, align: 'center', toolbar: '#tool'}
             ]]
             , page: true //开启分页
         });
@@ -78,22 +85,39 @@
                 , field = obj.field; //得到字段
             //校验
             var result = true;
-            if (field == 'weight') {
+            if (field == 'limit' || field == 'period' || field == 'initialDelay' || field == 'monitor') {
                 if (isNaN(value)) {
-                    layer.msg("你写的不是数字");
+                    layer.msg("该项只能输入数字");
                     result = false;
                 }
                 if (result && value < 0) {
-                    layer.msg("权重不能小于0");
+                    layer.msg("不能小于0");
                     result = false;
                 }
-            } else if (field == 'monitor') {
+            } else if (field == 'batch') {
                 if (isNaN(value)) {
-                    layer.msg("你写的不是数字");
+                    layer.msg("该项只能输入数字");
                     result = false;
                 }
                 if (result && value < 0) {
-                    layer.msg("时长不能小于0");
+                    layer.msg("该项不能小于0");
+                    result = false;
+                }
+                if (result && value >= data.limit) {
+                    layer.msg("该项不能大于等于limit");
+                    result = false;
+                }
+            } else if (field == 'remaining') {
+                if (isNaN(value)) {
+                    layer.msg("该项只能输入数字");
+                    result = false;
+                }
+                if (result && value < 0) {
+                    layer.msg("该项不能小于0");
+                    result = false;
+                }
+                if (result && value > 1) {
+                    layer.msg("该项不能大于1");
                     result = false;
                 }
             } else if (field == 'acquireModel') {
@@ -101,19 +125,14 @@
                     layer.msg("控制行为只能是FAILFAST或BLOCKING");
                     result = false;
                 }
-            } else if (field == 'algorithm') {
-                if (value != 'TOKENBUCKET' && value != 'LEAKBUCKET') {
-                    layer.msg("算法只能是TOKENBUCKET或LEAKBUCKET");
-                    result = false;
-                }
             } else if (field == 'ruleAuthority') {
                 if (value != 'AUTHORITY_WHITE' && value != 'AUTHORITY_BLACK' && value != 'NULL') {
                     layer.msg("黑/白名单只能是白名单‘AUTHORITY_WHITE’或黑名单‘AUTHORITY_BLACK’或‘NULL’");
                     result = false;
                 }
-            } else if (field == 'limitApp') {
+            } else if (field == 'limitUser') {
                 var values = value.split(",");
-                data.limitApp = values;
+                data.limitUser = values;
             }
             //PUT
             if (!result) {
@@ -127,32 +146,93 @@
                 dataType: "json",
                 success: function (data) {
                     // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
-                    if (data.msg == 'true') {
+                    if (data.code == 200) {
                         layer.msg('更新成功');
                         //表格重载
-                        setTimeout(function(){ render.reload(); }, 3000);
+                        setTimeout(function () {
+                            render.reload();
+                        }, 3000);
                     } else {
-                        layer.msg('更新失败');
+                        layer.msg('更新失败:' + data.msg);
                     }
                 },
                 error: function (XMLHttpResponse, textStatus, errorThrown) {
-                    layer.msg('服务器错误 ' + XMLHttpResponse.status);
+                    layer.msg('服务器错误:' + XMLHttpResponse.status);
                 }
             });
         });
         //监听查看工具条
-        table.on('tool(table)', function(obj){
+        table.on('tool(table)', function (obj) {
             var data = obj.data;
-            if(obj.event === 'detail'){
+            if (obj.event === 'update') {
+                layer.prompt({
+                    formType: 2
+                    ,title: '更新规则'
+                    ,anim: 1
+                    ,area: ['250px', '200px']
+                    ,value: JSON.stringify(data, null, 5)
+                }, function(value, index){
+                    layer.close(index);
+                    //这里一般是发送修改的Ajax请求
+                    $.ajax({
+                        url: "/rule",
+                        data: {data: value},
+                        type: "PUT",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            if (data.code == 200) {
+                                layer.msg('更新成功');
+                                //表格重载
+                                setTimeout(function () {
+                                    render.reload();
+                                }, 3000);
+                            } else {
+                                layer.msg('更新失败:' + data.msg);
+                            }
+                        },
+                        error: function (XMLHttpResponse, textStatus, errorThrown) {
+                            layer.msg('服务器错误:' + XMLHttpResponse.status);
+                        }
+                    });
+                });
+            }
+            if (obj.event === 'detail') {
                 //iframe窗
                 layer.open({
                     type: 2,
-                    title: '['+data.app+'-'+data.id+']QPS监控系统',
+                    title: '监控系统' + '[' + data.app + '-' + data.id + ']',
                     shadeClose: true,
                     shade: false,
                     maxmin: true, //开启最大化最小化按钮
                     area: ['893px', '600px'],
-                    content: '/monitor/monitor.html?app='+data.app+'&id='+data.id+'&name=*'
+                    content: '/monitor/monitor.html?app=' + data.app + '&id=' + data.id
+                });
+                //加载层
+                var index = layer.load(4, {time: 3*1000});
+            }
+            if (obj.event === 'clean') {
+                //询问框
+                layer.confirm('是否删除该规则下的所有监控数据？', {
+                    btn: ['删除','取消'] //按钮
+                }, function(){
+                    $.ajax({
+                        url: "/monitor?app=" + data.app + '&id=' + data.id,
+                        type: "DELETE",
+                        async: false,
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            if (data === true) {
+                                layer.msg('删除监控数据成功', {icon: 1});
+                            } else {
+                                layer.msg('删除监控数据失败', {icon: 2});
+                            }
+                        },
+                        error: function (XMLHttpResponse, textStatus, errorThrown) {
+                            layer.msg('服务器错误:' + XMLHttpResponse.status);
+                        }
+                    });
                 });
             }
         });

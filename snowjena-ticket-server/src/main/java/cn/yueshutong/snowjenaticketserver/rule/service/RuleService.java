@@ -8,6 +8,7 @@ public interface RuleService {
     String RULE = "$RULE$"; //规则前戳
     String LOCK = "$LOCK$"; //锁前戳
     String BUCKET = "$BUCKET$"; //令牌桶前戳
+    String BUCKET_PRINCIPAL = "$BUCKET_PRINCIPAL$"; //令牌桶负责的线程
 
     static String getInstanceKey(LimiterRule limiterRule) {
         return INSTANCE + limiterRule.getApp() + limiterRule.getId() + limiterRule.getName();
@@ -23,6 +24,10 @@ public interface RuleService {
 
     static String getBucketKey(LimiterRule limiterRule) {
         return BUCKET + limiterRule.getApp() + limiterRule.getId();
+    }
+
+    static String getBucketPrincipalKey(LimiterRule limiterRule) {
+        return BUCKET_PRINCIPAL + limiterRule.getApp() + limiterRule.getId();
     }
 
     static String getLockKey(LimiterRule limiterRule) {

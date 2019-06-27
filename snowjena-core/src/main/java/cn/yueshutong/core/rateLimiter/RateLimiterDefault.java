@@ -44,19 +44,6 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     /**
-     * 单点限流，放入令牌
-     */
-    private void putPointBucket() {
-        if (this.scheduledFuture != null) {
-            this.scheduledFuture.cancel(true);
-        }
-        if (rule.getLimit() == 0 || !rule.getLimiterModel().equals(LimiterModel.POINT)) {
-            return;
-        }
-        this.scheduledFuture = config.getScheduledThreadExecutor().scheduleAtFixedRate(() -> bucket.set(rule.getLimit()), rule.getInitialDelay(), rule.getPeriod(), rule.getUnit());
-    }
-
-    /**
      * 1.黑/白名单
      */
     @Override
@@ -64,10 +51,10 @@ public class RateLimiterDefault implements RateLimiter {
         boolean allow;
         switch (rule.getRuleAuthority()) {
             case AUTHORITY_BLACK:
-                allow = Stream.of(rule.getLimitApp()).noneMatch(s -> s.equals(o));
+                allow = Stream.of(rule.getLimitUser()).noneMatch(s -> s.equals(o));
                 break;
             case AUTHORITY_WHITE:
-                allow = Arrays.asList(rule.getLimitApp()).contains(o);
+                allow = Arrays.asList(rule.getLimitUser()).contains(o);
                 break;
             default:
                 allow = true;
@@ -123,35 +110,6 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     /**
-     * 集群限流，取批令牌
-     */
-    private void putCloudBucket() {
-        //校验
-        if (!rule.getLimiterModel().equals(LimiterModel.CLOUD) ||
-                bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
-            return;
-        }
-        config.getSingleThread().execute(() -> {
-            //再次校验
-            if (bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
-                return;
-            }
-            String result = config.getTicketServer().connect(RateLimiterConfig.token, JSON.toJSONString(rule));
-            bucket.getAndAdd(Long.parseLong(result));
-        });
-    }
-
-    @Override
-    public String getId() {
-        return rule.getId();
-    }
-
-    @Override
-    public LimiterRule getRule() {
-        return this.rule;
-    }
-
-    /**
      * CAS获取令牌,没有令牌立即失败
      */
     private boolean tryAcquireFailed() {
@@ -181,7 +139,8 @@ public class RateLimiterDefault implements RateLimiter {
      * 线程休眠
      */
     private void sleep() {
-        if (rule.getUnit().toMillis(rule.getPeriod()) < 1) { //大于1ms强制休眠
+        //大于1ms强制休眠
+        if (rule.getUnit().toMillis(rule.getPeriod()) < 1) {
             return;
         }
         try {
@@ -190,5 +149,50 @@ public class RateLimiterDefault implements RateLimiter {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 单点限流，放入令牌
+     */
+    private void putPointBucket() {
+        if (this.scheduledFuture != null) {
+            this.scheduledFuture.cancel(true);
+        }
+        if (rule.getLimit() == 0 || !rule.getLimiterModel().equals(LimiterModel.POINT)) {
+            return;
+        }
+        this.scheduledFuture = config.getScheduledThreadExecutor().scheduleAtFixedRate(() -> bucket.set(rule.getLimit()), rule.getInitialDelay(), rule.getPeriod(), rule.getUnit());
+    }
+
+    /**
+     * 集群限流，取批令牌
+     */
+    private void putCloudBucket() {
+        //校验
+        if (!rule.getLimiterModel().equals(LimiterModel.CLOUD) ||
+                bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
+            return;
+        }
+        config.getSingleThread().execute(() -> {
+            //再次校验
+            if (bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
+                return;
+            }
+            String result = config.getTicketServer().connect(RateLimiterConfig.token, JSON.toJSONString(rule));
+            if (result!=null) {
+                bucket.getAndAdd(Long.parseLong(result));
+            }
+        });
+    }
+
+    @Override
+    public String getId() {
+        return rule.getId();
+    }
+
+    @Override
+    public LimiterRule getRule() {
+        return this.rule;
+    }
+
 
 }

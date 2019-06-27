@@ -372,7 +372,7 @@ layui.define(function (e) {
             return {
                 hint: function (t) {
                     e.hint.call(e, t)
-                }, config: cn.yueshutong.snowjenaticketserver.thread
+                }, config: e.config
             }
         }, i = "laydate", r = ".layui-laydate", o = "layui-this", s = "laydate-disabled", l = "开始日期超出了结束日期<br>建议重新选择",
         d = [100, 2e5], c = "layui-laydate-static", m = "layui-laydate-list", u = "laydate-selected",
@@ -4260,7 +4260,7 @@ layui.define("layer", function (e) {
             return {
                 upload: function (i) {
                     e.upload.call(e, i)
-                }, config: cn.yueshutong.snowjenaticketserver.thread
+                }, config: e.config
             }
         }, r = "upload", u = "layui-upload-file", c = "layui-upload-form", f = "layui-upload-iframe",
         s = "layui-upload-choose", p = function (e) {
@@ -4480,7 +4480,7 @@ layui.define("jquery", function (e) {
                 return layui.onevent.call(this, n, e, i)
             }
         }, a = function () {
-            var e = this, i = cn.yueshutong.snowjenaticketserver.thread;
+            var e = this, i = e.config;
             return {
                 setValue: function (i, t) {
                     return e.slide("set", i, t || 0)
@@ -4645,7 +4645,7 @@ layui.define("jquery", function (e) {
                 return layui.onevent.call(this, "colorpicker", e, i)
             }
         }, r = function () {
-            var e = this, i = cn.yueshutong.snowjenaticketserver.thread;
+            var e = this, i = e.config;
             return {config: i}
         }, t = "colorpicker", n = "layui-show", l = "layui-colorpicker", c = ".layui-colorpicker-main",
         a = "layui-icon-down", s = "layui-icon-close", f = "layui-colorpicker-trigger-span",
@@ -5182,7 +5182,7 @@ layui.define(["laytpl", "laypage", "layer", "form", "util"], function (e) {
                 return layui.onevent.call(this, s, e, t)
             }
         }, c = function () {
-            var e = this, t = cn.yueshutong.snowjenaticketserver.thread, i = t.id || t.index;
+            var e = this, t = e.config, i = t.id || t.index;
             return i && (c.config[i] = t), {
                 reload: function (t) {
                     e.reload.call(e, t)
@@ -5907,7 +5907,7 @@ layui.define("jquery", function (e) {
                 return layui.onevent.call(this, n, e, a)
             }
         }, l = function () {
-            var e = this, a = cn.yueshutong.snowjenaticketserver.thread;
+            var e = this, a = e.config;
             return {
                 setvalue: function (a) {
                     e.setvalue.call(e, a)

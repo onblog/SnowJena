@@ -9,16 +9,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * 限流规则
  */
-public class LimiterRule implements Comparable<LimiterRule>{
+public class LimiterRule implements Comparable<LimiterRule> {
     // APP
     /**
      * app name
      */
-    private String app;
+    private String app = "Application";
     /**
      * 限流规则名称
      */
-    private String id;
+    private String id = "id";
     /**
      * 相同的限流规则，不同的实例标识(不需要用户配置)
      */
@@ -26,31 +26,31 @@ public class LimiterRule implements Comparable<LimiterRule>{
 
     //QPS
     /**
-     * 每个时间段对应的令牌数
+     * 单位时间存放的令牌数
      */
     private long limit;
     /**
-     * 时间段的长度
+     * 单位时间大小
      */
-    private long period;
+    private long period = 1;
     /**
      * 第一次放入令牌的延迟时间
      */
-    private long initialDelay;
+    private long initialDelay = 0;
     /**
-     * 时间段以及延迟时间的单位
+     * 时间单位
      */
-    private TimeUnit unit;
+    private TimeUnit unit = TimeUnit.SECONDS;
 
     //get bucket
     /**
-     * 每批次取多少个令牌 (0,limit)
+     * 每批次取多少个令牌 (0,limit]
      */
     private long batch = 1;
     /**
      * 现有令牌数/批次令牌数<=? [0,1]
      */
-    private double remaining = 1;
+    private double remaining = 0.5;
 
     //Monitor
     /**
@@ -74,7 +74,7 @@ public class LimiterRule implements Comparable<LimiterRule>{
     /**
      * 黑白名单列表
      */
-    private String[] limitApp;
+    private String[] limitUser;
 
     //System
     /**
@@ -88,6 +88,23 @@ public class LimiterRule implements Comparable<LimiterRule>{
 //    private double qps; //实际值，每秒并发量：等于0默认禁止访问//由程序修改，不可手动修改
 //    private double allQps; //理论值，原值，集群，手动修改(不需要用户配置)
 
+
+    public String getApp() {
+        return app;
+    }
+
+    public void setApp(String app) {
+        this.app = app;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -96,35 +113,6 @@ public class LimiterRule implements Comparable<LimiterRule>{
         this.name = name;
     }
 
-    public void setApp(String app) {
-        this.app = app;
-    }
-
-    public String getApp() {
-        assert app != null;
-        return app;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public long getMonitor() {
-        return monitor;
-    }
-
-    public void setMonitor(long monitor) {
-        this.monitor = monitor;
-    }
-
-    public long getPeriod() {
-        assert period!=0;
-        return period;
-    }
     public long getLimit() {
         return limit;
     }
@@ -132,51 +120,13 @@ public class LimiterRule implements Comparable<LimiterRule>{
     public void setLimit(long limit) {
         this.limit = limit;
     }
+
+    public long getPeriod() {
+        return period;
+    }
+
     public void setPeriod(long period) {
         this.period = period;
-    }
-
-    public TimeUnit getUnit() {
-        assert unit!=null;
-        return unit;
-    }
-
-    public void setUnit(TimeUnit unit) {
-        this.unit = unit;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
-    }
-
-    public String[] getLimitApp() {
-        return limitApp;
-    }
-
-    public void setLimitApp(String[] limitApp) {
-        this.limitApp = limitApp;
-    }
-
-    public RuleAuthority getRuleAuthority() {
-        return ruleAuthority;
-    }
-
-    public void setRuleAuthority(RuleAuthority ruleAuthority) {
-        this.ruleAuthority = ruleAuthority;
-    }
-
-
-    public String getId() {
-        assert id != null;
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public long getInitialDelay() {
@@ -185,6 +135,38 @@ public class LimiterRule implements Comparable<LimiterRule>{
 
     public void setInitialDelay(long initialDelay) {
         this.initialDelay = initialDelay;
+    }
+
+    public TimeUnit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(TimeUnit unit) {
+        this.unit = unit;
+    }
+
+    public long getBatch() {
+        return batch;
+    }
+
+    public void setBatch(long batch) {
+        this.batch = batch;
+    }
+
+    public double getRemaining() {
+        return remaining;
+    }
+
+    public void setRemaining(double remaining) {
+        this.remaining = remaining;
+    }
+
+    public long getMonitor() {
+        return monitor;
+    }
+
+    public void setMonitor(long monitor) {
+        this.monitor = monitor;
     }
 
     public AcquireModel getAcquireModel() {
@@ -203,32 +185,127 @@ public class LimiterRule implements Comparable<LimiterRule>{
         this.limiterModel = limiterModel;
     }
 
-
-    public long getBatch() {
-        return batch;
+    public RuleAuthority getRuleAuthority() {
+        return ruleAuthority;
     }
 
-    public void setBatch(long batch) {
-        assert batch>0&&batch<=limit;
-        this.batch = batch;
+    public void setRuleAuthority(RuleAuthority ruleAuthority) {
+        this.ruleAuthority = ruleAuthority;
     }
 
-    public double getRemaining() {
-        return remaining;
+    public String[] getLimitUser() {
+        return limitUser;
     }
 
-    public void setRemaining(double remaining) {
-        assert remaining>=0&&remaining<=100;
-        this.remaining = remaining;
+    public void setLimitUser(String[] limitUser) {
+        this.limitUser = limitUser;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     @Override
     public int compareTo(LimiterRule o) {
-        if (this.version<o.getVersion()){
+        if (this.version < o.getVersion()) {
             return -1;
-        }else if (this.version==o.getVersion()){
+        } else if (this.version == o.getVersion()) {
             return 0;
         }
         return 1;
+    }
+
+    /**
+     * Build设计模式
+     */
+    public static class LimiterRuleBuilder{
+        private LimiterRule limiterRule;
+
+        public LimiterRuleBuilder(){
+            this.limiterRule = new LimiterRule();
+        }
+
+        public LimiterRuleBuilder setApp(String app) {
+            this.limiterRule.app = app;
+            return this;
+        }
+
+        public LimiterRuleBuilder setId(String id) {
+            this.limiterRule.id = id;
+            return this;
+        }
+
+        public LimiterRuleBuilder setMonitor(long monitor) {
+            this.limiterRule.monitor = monitor;
+            return this;
+        }
+
+        public LimiterRuleBuilder setUnit(TimeUnit unit) {
+            this.limiterRule.unit = unit;
+            return this;
+        }
+
+        public LimiterRuleBuilder setPeriod(long period) {
+            this.limiterRule.period = period;
+            return this;
+        }
+
+        public LimiterRuleBuilder setLimit(long limit) {
+            this.limiterRule.limit = limit;
+            return this;
+        }
+
+        public LimiterRuleBuilder setInitialDelay(long initialDelay) {
+            this.limiterRule.initialDelay = initialDelay;
+            return this;
+        }
+
+        public LimiterRuleBuilder setBatch(long batch) {
+            this.limiterRule.batch = batch;
+            return this;
+        }
+
+        public LimiterRuleBuilder setRemaining(double remaining) {
+            this.limiterRule.remaining = remaining;
+            return this;
+        }
+
+        public LimiterRuleBuilder setLimitUser(String[] limitUser) {
+            this.limiterRule.limitUser = limitUser;
+            return this;
+        }
+
+        public LimiterRuleBuilder setRuleAuthority(RuleAuthority ruleAuthority) {
+            this.limiterRule.ruleAuthority = ruleAuthority;
+            return this;
+        }
+
+        public LimiterRuleBuilder setAcquireModel(AcquireModel acquireModel) {
+            this.limiterRule.acquireModel = acquireModel;
+            return this;
+        }
+
+        public LimiterRuleBuilder setLimiterModel(LimiterModel limiterModel) {
+            this.limiterRule.limiterModel = limiterModel;
+            return this;
+        }
+
+        public LimiterRule build(){
+            assert this.limiterRule.batch > 0 && this.limiterRule.batch <= this.limiterRule.limit;
+            assert this.limiterRule.remaining >= 0 && this.limiterRule.remaining <= 1;
+            return this.limiterRule;
+        }
     }
 }

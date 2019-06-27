@@ -32,15 +32,15 @@ public class MonitorController {
 
     @RequestMapping(value = "/monitor/json",method = RequestMethod.GET)
     @ResponseBody
-    public List<MonitorBean> query(String app, String id, String name) {
-        List<MonitorBean> monitorBeans = monitorService.getAll(app, id, name);
+    public List<MonitorBean> query(String app, String id) {
+        List<MonitorBean> monitorBeans = monitorService.getAll(app, id);
         monitorBeans.sort(null);
         return monitorBeans;
     }
 
     @RequestMapping(value = "/monitor",method = RequestMethod.DELETE)
     @ResponseBody
-    public boolean delete(String app, String id, String name) {
-        return monitorService.clean(app, id, name);
+    public boolean delete(String app, String id) {
+        return monitorService.clean(app, id);
     }
 }
