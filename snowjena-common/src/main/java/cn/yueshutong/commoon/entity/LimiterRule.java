@@ -24,6 +24,11 @@ public class LimiterRule implements Comparable<LimiterRule> {
      */
     private String name;
 
+    /**
+     * 是否关闭限流功能
+     */
+    private boolean enable;
+
     //QPS
     /**
      * 单位时间存放的令牌数
@@ -225,6 +230,14 @@ public class LimiterRule implements Comparable<LimiterRule> {
             return 0;
         }
         return 1;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     /**

@@ -67,6 +67,10 @@ public class RateLimiterDefault implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
+        if (rule.isEnable()){
+            //限流功能已关闭
+            return true;
+        }
         if (rule.getLimiterModel() == LimiterModel.POINT) {
             //单点限流不支持监控
             return tryAcquireFact();
