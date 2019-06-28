@@ -1,4 +1,4 @@
-package cn.yueshutong.core.rateLimiter;
+package cn.yueshutong.core.limiter;
 
 import java.util.concurrent.Executors;
 

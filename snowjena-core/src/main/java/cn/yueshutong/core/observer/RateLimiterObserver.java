@@ -3,8 +3,8 @@ package cn.yueshutong.core.observer;
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.core.config.RateLimiterConfig;
-import cn.yueshutong.core.exception.RuleBeReplaced;
-import cn.yueshutong.core.rateLimiter.RateLimiter;
+import cn.yueshutong.core.exception.SnowJeanException;
+import cn.yueshutong.core.limiter.RateLimiter;
 import cn.yueshutong.monitor.entity.MonitorBean;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class RateLimiterObserver {
 
     public static void registered(RateLimiter rule, RateLimiterConfig config) {
         if (map.containsKey(rule.getId())) {
-            throw new RuleBeReplaced("Repeat registration for current limiting rules:" + rule.getId());
+            throw new SnowJeanException("Repeat registration for current limiting rules:" + rule.getId());
         }
         map.put(rule.getId(), rule);
         update(rule, config);

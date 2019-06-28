@@ -1,8 +1,8 @@
-package cn.yueshutong.core.rateLimiter;
+package cn.yueshutong.core.limiter;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.core.config.RateLimiterConfig;
-import cn.yueshutong.core.exception.RuleNotParameter;
+import cn.yueshutong.core.exception.SnowJeanException;
 import cn.yueshutong.core.observer.RateLimiterObserver;
 
 /**
@@ -24,7 +24,7 @@ public class RateLimiterFactory {
                 RateLimiterObserver.registered(limiterDefault,config);
                 return limiterDefault;
             default:
-                throw new RuleNotParameter("CurrentModel Parameter not set");
+                throw new SnowJeanException("CurrentModel Parameter not set");
         }
     }
 

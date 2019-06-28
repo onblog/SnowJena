@@ -1,5 +1,6 @@
 package cn.yueshutong.core.config;
 
+import cn.yueshutong.core.exception.SnowJeanException;
 import cn.yueshutong.core.ticket.TicketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +55,16 @@ public class RateLimiterConfig {
     }
 
     public TicketServer getTicketServer() {
-        assert ticketServer != null;
+        if (ticketServer == null){
+            throw new SnowJeanException("error: ticketServer == null");
+        }
         return ticketServer;
     }
 
     public void setTicketServer(Map<String, Integer> ip) {
-        assert ip.size()>0;
+        if (ip.size()<1){
+            throw new SnowJeanException("ip.size()<1 is not pass!");
+        }
         if (this.ticketServer == null) {
             synchronized (this) {
                 if (this.ticketServer == null) {
