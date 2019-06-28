@@ -5,33 +5,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * 发票服务器
+ * 发票服务器,负载均衡
+ * 自动故障服务检测与切换
  */
 public class TicketServer {
-    private Map<String, Integer> ip;
-
     private Logger logger = LoggerFactory.getLogger(TicketServer.class);
-    private List<String> serverList = new ArrayList<>();
+    private List<String> serverList = new CopyOnWriteArrayList<>(); //读多写少
+    private List<String> backupsList = new CopyOnWriteArrayList<>();
     private ReentrantLock lock = new ReentrantLock();
     private int pos = 0;
     private long start = 0;
 
-    public TicketServer() {
-    }
 
-    public void setIp(Map<String, Integer> ip) {
-        this.ip = ip;
-        initList(ip);
-    }
-
-    private void initList(Map<String, Integer> ip) {
+    public void setServer(Map<String, Integer> ip) {
         // 清空List
         serverList.clear();
         // 重建一个Map，避免服务器的上下线导致的并发问题
@@ -45,10 +38,14 @@ public class TicketServer {
         }
     }
 
-    public String getServer() {
+    private String getServer() {
         String server;
         lock.lock();
         try {
+            if (serverList.size()==0){
+                serverList.addAll(backupsList);
+                backupsList.clear();
+            }
             if (pos >= serverList.size()) {
                 pos = 0;
             }
@@ -73,6 +70,8 @@ public class TicketServer {
                 logger.error("{} The server is not available.", server);
                 start = System.currentTimeMillis();
             }
+            serverList.remove(server);
+            backupsList.add(server);
         }
         return null;
     }

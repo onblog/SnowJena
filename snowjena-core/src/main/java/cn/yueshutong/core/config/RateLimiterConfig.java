@@ -59,6 +59,7 @@ public class RateLimiterConfig {
     }
 
     public void setTicketServer(Map<String, Integer> ip) {
+        assert ip.size()>0;
         if (this.ticketServer == null) {
             synchronized (this) {
                 if (this.ticketServer == null) {
@@ -66,7 +67,7 @@ public class RateLimiterConfig {
                 }
             }
         }
-        this.ticketServer.setIp(ip);
+        this.ticketServer.setServer(ip);
     }
 
     public ThreadPoolExecutor getSingleThread() {
