@@ -1,4 +1,4 @@
-package cn.yueshutong.core.rateLimiter;
+package cn.yueshutong.core.limiter;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.commoon.enums.LimiterModel;
