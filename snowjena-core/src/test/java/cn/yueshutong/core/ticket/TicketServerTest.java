@@ -1,15 +1,11 @@
 package cn.yueshutong.core.ticket;
 
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 public class TicketServerTest {
 
-    @Test
+//    @Test
     public void connect() throws InterruptedException {
         TicketServer ticketServer = new TicketServer();
         Map<String,Integer> ip = new HashMap<>();
