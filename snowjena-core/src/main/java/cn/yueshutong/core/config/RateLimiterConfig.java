@@ -16,9 +16,9 @@ public class RateLimiterConfig {
     private static RateLimiterConfig rateLimiterConfig; //单例
     private static Logger logger = LoggerFactory.getLogger(RateLimiterConfig.class);
 
-    private ScheduledExecutorService scheduledThreadExecutor; //调度线程池
     private TicketServer ticketServer; //发票服务器
-    private ThreadPoolExecutor singleThread = new ThreadPoolExecutor(1, 1,0L,TimeUnit.MILLISECONDS,
+    private ScheduledExecutorService scheduledThreadExecutor; //调度线程池
+    private ThreadPoolExecutor singleThread = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>(), Executors.defaultThreadFactory(),
             new ThreadPoolExecutor.DiscardOldestPolicy());//单例线程池
 
@@ -36,7 +36,7 @@ public class RateLimiterConfig {
             synchronized (RateLimiterConfig.class) {
                 if (rateLimiterConfig == null) {
                     rateLimiterConfig = new RateLimiterConfig();
-                    logger.info("Hello, SnowJean user");
+                    logger.info("SnowJean");
                 }
             }
         }
@@ -44,10 +44,14 @@ public class RateLimiterConfig {
     }
 
     public ScheduledExecutorService getScheduledThreadExecutor() {
-        if (scheduledThreadExecutor == null) {
-            setScheduledThreadExecutor(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
+        if (this.scheduledThreadExecutor == null) {
+            synchronized (this) {
+                if (this.scheduledThreadExecutor == null) {
+                    setScheduledThreadExecutor(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
+                }
+            }
         }
-        return scheduledThreadExecutor;
+        return this.scheduledThreadExecutor;
     }
 
     public void setScheduledThreadExecutor(ScheduledExecutorService scheduledThreadExecutor) {
@@ -55,14 +59,14 @@ public class RateLimiterConfig {
     }
 
     public TicketServer getTicketServer() {
-        if (ticketServer == null){
+        if (ticketServer == null) {
             throw new SnowJeanException("error: ticketServer == null");
         }
         return ticketServer;
     }
 
     public void setTicketServer(Map<String, Integer> ip) {
-        if (ip.size()<1){
+        if (ip.size() < 1) {
             throw new SnowJeanException("ip.size()<1 is not pass!");
         }
         if (this.ticketServer == null) {
@@ -78,4 +82,5 @@ public class RateLimiterConfig {
     public ThreadPoolExecutor getSingleThread() {
         return singleThread;
     }
+
 }

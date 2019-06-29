@@ -37,7 +37,7 @@ public class RateLimiterObserver {
     private static void update(RateLimiter limiter, RateLimiterConfig config) {
         config.getScheduledThreadExecutor().scheduleWithFixedDelay(() -> {
             String rules = config.getTicketServer().connect(RateLimiterConfig.heart, JSON.toJSONString(limiter.getRule()));
-            if (rules == null) {
+            if (rules == null) { //TicketServer挂掉
                 logger.debug("update limiter fail, automatically switch to local current limit");
                 LimiterRule rule = limiter.getRule();
                 rule.setLimiterModel(LimiterModel.POINT);
@@ -45,8 +45,11 @@ public class RateLimiterObserver {
                 return;
             }
             LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
-            if (limiterRule.getVersion() > limiter.getRule().getVersion()) {
-                logger.warn("update rule version: {} -> {}", limiter.getRule().getVersion(), limiterRule.getVersion());
+            if (limiterRule.getVersion() > limiter.getRule().getVersion()) { //版本升级
+                logger.info("update rule version: {} -> {}", limiter.getRule().getVersion(), limiterRule.getVersion());
+                map.get(limiter.getId()).init(limiterRule);
+            } else if (limiterRule.getLimiterModel().equals(LimiterModel.POINT)) { //本地/分布式切换
+                limiterRule.setLimiterModel(LimiterModel.CLOUD);
                 map.get(limiter.getId()).init(limiterRule);
             }
         }, 0, 1, TimeUnit.SECONDS);

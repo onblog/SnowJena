@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@ControllerAdvice
+@ControllerAdvice(annotations = ResultException.class)
 public class ExceptionHandle {
     //记录日志
     private final static Logger logger = LoggerFactory.getLogger(TicketServerException.class);

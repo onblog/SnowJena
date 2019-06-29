@@ -63,7 +63,7 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     /**
-     * 2.Monitor
+     * 2.Check
      */
     @Override
     public boolean tryAcquire() {
@@ -71,9 +71,17 @@ public class RateLimiterDefault implements RateLimiter {
             //限流功能已关闭
             return true;
         }
+        return tryAcquireMonitor();
+    }
+
+
+    /**
+     * 3.Monitor
+     */
+    private boolean tryAcquireMonitor() {
         if (rule.getLimiterModel() == LimiterModel.POINT) {
-            //单点限流不支持监控
-            return tryAcquireFact();
+            //本地限流不支持监控
+            return tryAcquirePut();
         }
         MonitorBean monitor = new MonitorBean();
         monitor.setLocalDateTime(LocalDateTime.now());
@@ -82,7 +90,7 @@ public class RateLimiterDefault implements RateLimiter {
         monitor.setId(rule.getId());
         monitor.setName(rule.getName());
         monitor.setMonitor(rule.getMonitor());
-        boolean b = tryAcquireFact(); //fact
+        boolean b = tryAcquirePut(); //fact
         if (b) {
             monitor.setAfter(1);
         }
@@ -93,7 +101,17 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     /**
-     * 3.AcquireModel
+     * 4.putCloudBucket
+     */
+    private boolean tryAcquirePut() {
+        boolean result  =tryAcquireFact();
+        //分布式方式下检查剩余令牌数
+        putCloudBucket();
+        return result;
+    }
+
+    /**
+     * 5.tryAcquireFact
      */
     private boolean tryAcquireFact() {
         if (rule.getLimit() == 0) {
@@ -108,8 +126,6 @@ public class RateLimiterDefault implements RateLimiter {
                 result = tryAcquireSucceed();
                 break;
         }
-        //分布式方式下检查剩余令牌数
-        putCloudBucket();
         return result;
     }
 
@@ -155,7 +171,7 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     /**
-     * 单点限流，放入令牌
+     * 本地限流，放入令牌
      */
     private void putPointBucket() {
         if (this.scheduledFuture != null) {

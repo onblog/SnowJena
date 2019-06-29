@@ -1,4 +1,4 @@
-# SnowJean使用文档
+# SnowJean使用文档2.0.0
 
 ## Maven
 
@@ -6,28 +6,35 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>snowjena-core</artifactId>
-  <version>1.0.0.RELEASE</version>
+  <version>2.0.0.RELEASE</version>
 </dependency>
 ```
 
-## 单点限流
+## 本地限流
 
-本项目提供了简单易用的API，对于单点限流，只需要通过工厂模式生产限流器，在需要限流的代码运行之前调用tryAcquire()方法即可。
+本项目提供了简单易用的API，对于本地限流，只需要通过工厂模式生产限流器，在需要限流的代码运行之前调用tryAcquire()方法即可。
 
 ```java
 public class AppTest {
     Logger logger = LoggerFactory.getLogger(getClass());
 
+    /**
+     * 本地限流
+     */
     @Test
-    public void test1(){
+    public void test1() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setQps(1); //每秒并发量
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setLimit(1) //限流数量为1
+                .setPeriod(1) //时间间隔默认为1
+                .setUnit(TimeUnit.SECONDS) //时间单位默认为秒
+                //上述规则即为每1秒的令牌数为1
+                .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
         // 3.使用
-        while (true){
-            if (limiter.tryAcquire()){
+        while (true) {
+            if (limiter.tryAcquire()) {
                 logger.info("ok");
             }
         }
@@ -39,10 +46,10 @@ public class AppTest {
 查看控制台打印
 
 ```verilog
-15:10:06.670 [main] INFO com.example.springbootdemo.AppTest - ok
-15:10:07.651 [main] INFO com.example.springbootdemo.AppTest - ok
-15:10:08.653 [main] INFO com.example.springbootdemo.AppTest - ok
-15:10:09.652 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:40.179 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:41.178 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:42.178 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:43.179 [main] INFO com.example.springbootdemo.AppTest - ok
 ```
 
 ## 黑白名单
@@ -54,26 +61,27 @@ public class AppTest {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * 黑白名单
+     * 黑名单
      */
     @Test
-    public void test2(){
+    public void test2() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setQps(1);
-        limiterRule.setRuleAuthority(RuleAuthority.AUTHORITY_BLACK);//黑名单
-        limiterRule.setLimitApp(new String[]{"user1","user2"});//黑名单列表
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setLimit(1)
+                .setRuleAuthority(RuleAuthority.AUTHORITY_BLACK) //黑名单
+                .setLimitUser(new String[]{"user1", "user2"})
+                .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
         // 3.使用
-        while (true){
-            if (limiter.tryAcquire("user1")){
+        while (true) {
+            if (limiter.tryAcquire("user1")) {
                 logger.info("user1");
             }
-            if (limiter.tryAcquire("user2")){
+            if (limiter.tryAcquire("user2")) {
                 logger.info("user2");
             }
-            if (limiter.tryAcquire("user3")){
+            if (limiter.tryAcquire("user3")) {
                 logger.info("user3");
             }
         }
@@ -85,14 +93,15 @@ public class AppTest {
 查看控制台打印
 
 ```verilog
-15:19:22.506 [main] INFO com.example.springbootdemo.AppTest - user3
-15:19:23.522 [main] INFO com.example.springbootdemo.AppTest - user3
-15:19:24.484 [main] INFO com.example.springbootdemo.AppTest - user3
+10:04:28.328 [main] INFO com.example.springbootdemo.AppTest - user3
+10:04:29.323 [main] INFO com.example.springbootdemo.AppTest - user3
+10:04:30.326 [main] INFO com.example.springbootdemo.AppTest - user3
+10:04:31.326 [main] INFO com.example.springbootdemo.AppTest - user3
 ```
 
 ## 分布式限流
 
-分布式限流功能相比单点限流更为强大，支持熔断降级，支持流量塑型，支持动态配置规则，支持可视化监控，开箱即用。 
+分布式限流功能相比本地限流更为强大，支持熔断降级，支持动态配置规则，支持可视化监控，开箱即用。 
 
 使用之前你需要：
 
@@ -106,7 +115,7 @@ public class AppTest {
 
 启动 TicketServer 后的界面：
 
-![1559635413548](./picture/1559635413548.png)
+![](http://ww3.sinaimg.cn/large/006tNc79ly1g4i9r01d90j30yl06ngn6.jpg)
 
 客户端代码：
 
@@ -118,16 +127,18 @@ public class AppTest {
      * 分布式限流
      */
     @Test
-    public void test4() {
+    public void test4() throws InterruptedException {
         // 1.限流配置
-        LimiterRule limiterRule = new LimiterRule();
-        limiterRule.setApp("Application"); //应用名
-        limiterRule.setId("myId"); //限流器ID
-        limiterRule.setQps(1);
-        limiterRule.setLimiterModel(LimiterModel.CLOUD); //分布式限流,需启动TicketServer控制台
+        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+                .setApp("Application")
+                .setId("myId")
+                .setLimit(1) //每秒1个令牌
+                .setBatch(1) //每批次取1个令牌
+                .setLimiterModel(LimiterModel.CLOUD) //分布式限流,需启动TicketServer控制台
+                .build();
         // 2.配置TicketServer地址（支持集群、加权重）
-        Map<String,Integer> map = new HashMap<>();
-        map.put("127.0.0.1:8521",1);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("127.0.0.1:8521", 1);
         // 3.全局配置
         RateLimiterConfig config = RateLimiterConfig.getInstance();
         config.setTicketServer(map);
@@ -138,6 +149,7 @@ public class AppTest {
             if (limiter.tryAcquire()) {
                 logger.info("ok");
             }
+            Thread.sleep(10);
         }
     }
         
@@ -147,38 +159,50 @@ public class AppTest {
 查看控制台打印
 
 ```verilog
-16:07:08.694 [main] INFO com.example.springbootdemo.AppTest - ok
-16:07:09.660 [main] INFO com.example.springbootdemo.AppTest - ok
-16:07:10.643 [main] INFO com.example.springbootdemo.AppTest - ok
+19:46:47.907 [main] INFO com.example.springbootdemo.AppTest - ok
+19:46:48.835 [main] INFO com.example.springbootdemo.AppTest - ok
+19:46:49.872 [main] INFO com.example.springbootdemo.AppTest - ok
+19:46:50.900 [main] INFO com.example.springbootdemo.AppTest - ok
 ```
 
 ## 监控图表
 
 此时打开你的浏览器，访问 localhost:8521，可以看到控制台视图（1.1.0后的版本需要用户名密码admin）
 
-![1559636053811](./picture/1559636053811.png)
+![SnowJean](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia01nyclj31ei0u018x.jpg)
 
-你可以实时修改QPS，控制行为，限流算法，黑白名单，需要注意的是，名单列表以英文,逗号分隔。
+你可以实时修改限流参数，控制行为，黑/白名单，需要注意的是，黑/白名单列表以英文,逗号分隔。
 
-![1559636229219](./picture/1559636229219.png)
+![修改预览](http://ww2.sinaimg.cn/large/006tNc79ly1g4ia12hyx0j31ei0u0dw5.jpg)
 
-你也可以通过监控视图，在线查看系统负载情况。（QPS：收到的请求，PASS：允许的请求）
+![更新预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1dvmasj31ei0u0ngj.jpg)
 
-![1559636333481](./picture/1559636333481.png)
+你也可以通过监控视图，在线查看系统负载情况。（QPS：每秒收到的请求，PASS：每秒允许的请求）
 
+![监控预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia0rnxjmj31ei0u046y.jpg)
 
+删除该规则下的监控数据
+
+![删除预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1n31wrj31ei0u0wwi.jpg)
 
 ## 限流规则
 
-上面简要提到了一些功能，下面详细说明下 LimiterRule 限流规则。
+首先，我们推荐您使用限流规则构造器（LimiterRuleBuilder）生成限流规则，形如以上示例，不过上面的示例只是简要提到了一些限流参数，下面详细说明下 LimiterRule 限流规则。
 
 | 参数          | 说明                      |
 | ------------- | ------------------------- |
-| initialDelay  | 初始时延                  |
-| acquireModel  | 控制行为：快速失败/匀速器 |
-| algorithm     | 算法：令牌桶/漏桶         |
-| limiterModel  | 部署方式：单点/分布式     |
-| ruleAuthority | 黑名单/白名单/无          |
-| limitUser      | 黑白名单列表              |
+| App | ApplicationName |
+| Id | 限流器ID |
+| Unit | 时间单位 |
+| Period | 单位时间大小 |
+| Limit | 单位时间放入的令牌数 |
+| InitialDelay | 第一次放入令牌的延迟时间 |
+| Batch | 每批次取多少个令牌 |
+| Remaining | 现有令牌数/批次令牌数<=? 取值范围[0,1] |
+| Monitor | 监控时长，单位秒，0为关闭 |
+| AcquireModel | 控制行为：快速失败/阻塞 |
+| LimiterModel | 部署方式：本地/分布式   |
+| RuleAuthority | 黑名单/白名单/无          |
+| LimitUser     | 黑白名单列表              |
 
-> 文档不断完善，请提交Issues。
+> 文档不断完善，有问题请提交Issues或者加QQ群。

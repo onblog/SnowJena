@@ -49,7 +49,7 @@ public class LimiterRule implements Comparable<LimiterRule> {
 
     //get bucket
     /**
-     * 每批次取多少个令牌 (0,limit]
+     * 每批次取多少个令牌
      */
     private long batch = 1;
     /**
@@ -69,7 +69,7 @@ public class LimiterRule implements Comparable<LimiterRule> {
      */
     private AcquireModel acquireModel = AcquireModel.FAILFAST;
     /**
-     * 部署方式（单点/分布式）
+     * 部署方式（本地/分布式）
      */
     private LimiterModel limiterModel = LimiterModel.POINT;
     /**
@@ -90,9 +90,6 @@ public class LimiterRule implements Comparable<LimiterRule> {
      * 版本号(不需要用户配置)
      */
     private long version;
-//    private double qps; //实际值，每秒并发量：等于0默认禁止访问//由程序修改，不可手动修改
-//    private double allQps; //理论值，原值，集群，手动修改(不需要用户配置)
-
 
     public String getApp() {
         return app;
@@ -254,74 +251,101 @@ public class LimiterRule implements Comparable<LimiterRule> {
             this.limiterRule.app = app;
             return this;
         }
-
+        /**
+         * 限流规则名称
+         */
         public LimiterRuleBuilder setId(String id) {
             this.limiterRule.id = id;
             return this;
         }
-
-        public LimiterRuleBuilder setMonitor(long monitor) {
-            this.limiterRule.monitor = monitor;
-            return this;
-        }
-
+        /**
+         * 时间单位
+         */
         public LimiterRuleBuilder setUnit(TimeUnit unit) {
             this.limiterRule.unit = unit;
             return this;
         }
-
+        /**
+         * 单位时间大小
+         */
         public LimiterRuleBuilder setPeriod(long period) {
             this.limiterRule.period = period;
             return this;
         }
-
+        /**
+         * 单位时间放入的令牌数
+         */
         public LimiterRuleBuilder setLimit(long limit) {
             this.limiterRule.limit = limit;
             return this;
         }
-
+        /**
+         * 第一次放入令牌的延迟时间
+         */
         public LimiterRuleBuilder setInitialDelay(long initialDelay) {
             this.limiterRule.initialDelay = initialDelay;
             return this;
         }
-
+        /**
+         * 每批次取多少个令牌
+         */
         public LimiterRuleBuilder setBatch(long batch) {
             this.limiterRule.batch = batch;
             return this;
         }
-
+        /**
+         * 现有令牌数/批次令牌数<=? [0,1]
+         */
         public LimiterRuleBuilder setRemaining(double remaining) {
             this.limiterRule.remaining = remaining;
             return this;
         }
-
+        /**
+         * 监控时长，秒，0为关闭
+         */
+        public LimiterRuleBuilder setMonitor(long monitor) {
+            this.limiterRule.monitor = monitor;
+            return this;
+        }
+        /**
+         * 黑白名单列表
+         */
         public LimiterRuleBuilder setLimitUser(String[] limitUser) {
             this.limiterRule.limitUser = limitUser;
             return this;
         }
-
+        /**
+         * 黑名单/白名单/无
+         */
         public LimiterRuleBuilder setRuleAuthority(RuleAuthority ruleAuthority) {
             this.limiterRule.ruleAuthority = ruleAuthority;
             return this;
         }
-
+        /**
+         * 控制行为：快速失败/阻塞
+         */
         public LimiterRuleBuilder setAcquireModel(AcquireModel acquireModel) {
             this.limiterRule.acquireModel = acquireModel;
             return this;
         }
-
+        /**
+         * 部署方式（本地/分布式）
+         */
         public LimiterRuleBuilder setLimiterModel(LimiterModel limiterModel) {
             this.limiterRule.limiterModel = limiterModel;
             return this;
         }
 
+        /**
+         * 构建限流规则对象
+         */
         public LimiterRule build() {
             LimiterRuleBuilder.check(this.limiterRule);
             return this.limiterRule;
         }
 
         public static void check(LimiterRule limiterRule) {
-            assert limiterRule.batch > 0 && limiterRule.batch <= limiterRule.limit;
+            assert limiterRule.batch > 0;
             assert limiterRule.remaining >= 0 && limiterRule.remaining <= 1;
             assert limiterRule.period >= 0;
             assert limiterRule.initialDelay >= 0;

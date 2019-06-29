@@ -174,7 +174,7 @@ public class HttpUtil {
             }
             return builder.toString();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         //失败返回NULL
         return null;

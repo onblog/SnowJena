@@ -128,10 +128,6 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public boolean update(LimiterRule limiterRule) {
-        //Check
-        if (limiterRule.getBatch() > limiterRule.getLimit()) {
-            throw new TicketServerException(ResultEnum.ERROR, "Batch必须<=Limiter");
-        }
         //加锁
         redisLock.acquire(RuleService.getLockKey(limiterRule));
         String key = RuleService.getLimiterRuleKey(limiterRule);
@@ -140,7 +136,7 @@ public class RuleServiceImpl implements RuleService {
         if (rule == null || "".equals(rule)) {
             //解锁
             redisLock.release(LOCK + key);
-            throw new TicketServerException(ResultEnum.ERROR,"规则不存在");
+            throw new TicketServerException(ResultEnum.ERROR, "规则不存在");
         }
         //更新版本号
         LimiterRule limiter = JSON.parseObject(rule, LimiterRule.class);
@@ -154,14 +150,12 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public Result<LimiterRule> getAllRule(String app, String id, int page, int limit) {
-        String builder = (app == null ? "" : app) +
-                (id == null ? "" : id);
-        Set<String> keys = redisTemplate.keys(RuleService.RULE + builder);
+        Set<String> keys = redisTemplate.keys(RuleService.getLimiterRuleKeys(app, id));
         if (keys == null) {
-            throw new TicketServerException(ResultEnum.ERROR, builder + " return null");
+            throw new TicketServerException(ResultEnum.ERROR, RuleService.getLimiterRuleKeys(app, id) + " return null");
         }
         //result
-        Result<LimiterRule> result = new Result<>();
+        Result<LimiterRule> result = new Result<>(ResultEnum.SUCCESS);
         result.setCount(keys.size());
         //list
         List<LimiterRule> limiterRules = new ArrayList<>();
@@ -169,6 +163,7 @@ public class RuleServiceImpl implements RuleService {
                 .forEach(s -> {
                     String s1 = valueOperations.get(s);
                     LimiterRule limiterRule = JSON.parseObject(s1, LimiterRule.class);
+                    updateInstanceNumber(limiterRule);
                     limiterRules.add(limiterRule);
                 });
         result.setData(limiterRules);

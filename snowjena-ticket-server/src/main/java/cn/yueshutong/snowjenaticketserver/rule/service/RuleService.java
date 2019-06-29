@@ -22,6 +22,19 @@ public interface RuleService {
         return RULE + limiterRule.getApp() + limiterRule.getId();
     }
 
+    static String getLimiterRuleKeys(String app, String id) {
+        StringBuilder builder = new StringBuilder();
+        if (app==null||app.isEmpty()){
+            builder.append("*");
+        }else {
+            builder.append(app);
+            if (id!=null) {
+                builder.append(id);
+            }
+        }
+        return RULE + builder.toString();
+    }
+
     static String getBucketKey(LimiterRule limiterRule) {
         return BUCKET + limiterRule.getApp() + limiterRule.getId();
     }
