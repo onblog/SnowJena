@@ -1,8 +1,10 @@
 # spring-boot-starter-current-limiting
 
+**项目重构中，暂时不推荐使用...**
+
 ## Maven
 
-```
+```xml
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>spring-boot-starter-current-limiting</artifactId>
