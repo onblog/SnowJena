@@ -1,8 +1,8 @@
 # SnowJena
 
-![](https://img.shields.io/badge/Language-Java8-green.svg)
-![](https://img.shields.io/badge/Maven-3-green.svg)
-![](https://img.shields.io/badge/License-Apache2.0-green.svg)
+<img src="https://img.shields.io/badge/Language-Java8-green.svg" referrerPolicy="no-referrer"/>
+<img src="https://img.shields.io/badge/Maven-3-green.svg" referrerPolicy="no-referrer"/>
+<img src="https://img.shields.io/badge/License-Apache2.0-green.svg" referrerPolicy="no-referrer"/>
 
 ## What
 
@@ -32,24 +32,24 @@
 
 ## Preview
 
-![SnowJean](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia01nyclj31ei0u018x.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia01nyclj31ei0u018x.jpg" referrerPolicy="no-referrer"/>
 
-![监控预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia0rnxjmj31ei0u046y.jpg)
-
-
-![修改预览](http://ww2.sinaimg.cn/large/006tNc79ly1g4ia12hyx0j31ei0u0dw5.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia0rnxjmj31ei0u046y.jpg" referrerPolicy="no-referrer"/>
 
 
-![更新预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1dvmasj31ei0u0ngj.jpg)
+<img src="http://ww2.sinaimg.cn/large/006tNc79ly1g4ia12hyx0j31ei0u0dw5.jpg" referrerPolicy="no-referrer"/>
 
 
-![删除预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1n31wrj31ei0u0wwi.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1dvmasj31ei0u0ngj.jpg" referrerPolicy="no-referrer"/>
+
+
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1n31wrj31ei0u0wwi.jpg" referrerPolicy="no-referrer"/>
 
 ## About
 
-Blog：[http://www.yueshutong.cn](http://www.yueshutong.cn/)
+Blog：<http://www.yueshutong.cn/>
 
-Email：[yster@foxmail.com](mailto:yster@foxmail.com)
+Email：<mailto:yster@foxmail.com>
 
 Github：<https://github.com/yueshutong/SnowJena>
 

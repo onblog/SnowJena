@@ -115,7 +115,7 @@ public class AppTest {
 
 启动 TicketServer 后的界面：
 
-![](http://ww3.sinaimg.cn/large/006tNc79ly1g4i9r01d90j30yl06ngn6.jpg)
+<img src="http://ww3.sinaimg.cn/large/006tNc79ly1g4i9r01d90j30yl06ngn6.jpg" referrerPolicy="no-referrer"/>
 
 客户端代码：
 
@@ -169,21 +169,21 @@ public class AppTest {
 
 此时打开你的浏览器，访问 localhost:8521，可以看到控制台视图（1.1.0后的版本需要用户名密码admin）
 
-![SnowJean](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia01nyclj31ei0u018x.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia01nyclj31ei0u018x.jpg" referrerPolicy="no-referrer"/>
 
 你可以实时修改限流参数，控制行为，黑/白名单，需要注意的是，黑/白名单列表以英文,逗号分隔。
 
-![修改预览](http://ww2.sinaimg.cn/large/006tNc79ly1g4ia12hyx0j31ei0u0dw5.jpg)
+<img src="http://ww2.sinaimg.cn/large/006tNc79ly1g4ia12hyx0j31ei0u0dw5.jpg" referrerPolicy="no-referrer"/>
 
-![更新预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1dvmasj31ei0u0ngj.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1dvmasj31ei0u0ngj.jpg" referrerPolicy="no-referrer"/>
 
 你也可以通过监控视图，在线查看系统负载情况。（QPS：每秒收到的请求，PASS：每秒允许的请求）
 
-![监控预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia0rnxjmj31ei0u046y.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia0rnxjmj31ei0u046y.jpg" referrerPolicy="no-referrer"/>
 
 删除该规则下的监控数据
 
-![删除预览](http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1n31wrj31ei0u0wwi.jpg)
+<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1n31wrj31ei0u0wwi.jpg" referrerPolicy="no-referrer"/>
 
 ## 限流规则
 
