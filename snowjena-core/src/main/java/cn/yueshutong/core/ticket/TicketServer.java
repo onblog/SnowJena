@@ -66,7 +66,7 @@ public class TicketServer {
                     .execute()
                     .getBody();
         } catch (IOException e) {
-            if (System.currentTimeMillis() - start >1000) {
+            if (System.currentTimeMillis() - start >3000) {
                 logger.error("{} The server is not available.", server);
                 start = System.currentTimeMillis();
             }

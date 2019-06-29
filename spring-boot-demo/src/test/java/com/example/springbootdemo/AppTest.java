@@ -21,7 +21,7 @@ public class AppTest {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * 单点限流
+     * 本地限流
      */
     @Test
     public void test1() {
@@ -29,7 +29,7 @@ public class AppTest {
         LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
                 .setLimit(1)
                 .setPeriod(1)
-                .setUnit(TimeUnit.SECONDS)
+                .setUnit(TimeUnit.SECONDS) //每秒令牌数为1
                 .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(limiterRule);
@@ -104,8 +104,8 @@ public class AppTest {
         LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
                 .setApp("Application")
                 .setId("myId")
-                .setLimit(2)
-                .setBatch(2)
+                .setLimit(1)
+                .setBatch(1)
                 .setLimiterModel(LimiterModel.CLOUD) //分布式限流,需启动TicketServer控制台
                 .build();
         // 2.配置TicketServer地址（支持集群、加权重）

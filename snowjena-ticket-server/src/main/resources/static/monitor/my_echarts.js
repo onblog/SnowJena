@@ -6,10 +6,9 @@ function GetQueryString(name) {
 }
 var app = GetQueryString("app");
 var id = GetQueryString("id");
-var name = GetQueryString("name");
 setInterval(function () {
-    $.get("/monitor/json?app="+app+"&id="+id+"&name="+name, function (data) {
-        my_echarts(data)
+    $.get("/monitor/json?app="+app+"&id="+id, function (data) {
+        my_echarts(data.data)
     });
 }, 3000);
 function my_echarts(data) {

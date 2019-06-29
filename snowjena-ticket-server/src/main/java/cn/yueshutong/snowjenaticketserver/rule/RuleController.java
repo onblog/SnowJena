@@ -2,6 +2,7 @@ package cn.yueshutong.snowjenaticketserver.rule;
 
 import cn.yueshutong.commoon.entity.LimiterRule;
 import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
+import cn.yueshutong.snowjenaticketserver.exception.ResultException;
 import cn.yueshutong.snowjenaticketserver.rule.entity.Result;
 import cn.yueshutong.snowjenaticketserver.rule.service.RuleService;
 import com.alibaba.fastjson.JSON;
@@ -22,7 +23,6 @@ public class RuleController {
 
     /**
      * 心跳包
-     *
      * @param rule 规则字符串
      * @return 最新规则字符串
      */
@@ -34,19 +34,20 @@ public class RuleController {
     }
 
     /**
-     * @return 读取规则
+     * @return 所有规则
      */
     @RequestMapping(value = "/rule", method = RequestMethod.GET)
+    @ResultException
     public Result<LimiterRule> getAllRule(String app, String id, int page, int limit) {
         return ruleService.getAllRule(app, id, page, limit);
     }
 
     /**
      * 修改限流规则
-     *
      * @return true/false
      */
     @RequestMapping(value = "/rule", method = RequestMethod.PUT)
+    @ResultException
     public Result update(@RequestParam("data") String rule) {
         LimiterRule limiterRule = JSON.parseObject(rule, LimiterRule.class);
         LimiterRule.LimiterRuleBuilder.check(limiterRule);
