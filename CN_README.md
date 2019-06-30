@@ -205,4 +205,19 @@ public class AppTest {
 | RuleAuthority | 黑名单/白名单/无          |
 | LimitUser     | 黑白名单列表              |
 
+## 设计模式
+
+- 单例模式：全局配置类
+
+- 观察者模式：动态规则配置
+
+- 工厂模式：限流器的生产
+
+- 建造者模式：限流规则的构造
+
+
+## 高可用
+
+首先，TicketServer是支持集群部署的，在客户端可对集群进行权重配置，但是，目前SnowJean使用的单点Redis数据库，当Redis挂掉，TicketServer集群也就失去了作用，分布式限流将退化为本地限流。
+
 > 文档不断完善，有问题请提交Issues或者加QQ群。
