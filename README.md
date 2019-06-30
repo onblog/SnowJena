@@ -48,7 +48,7 @@
 
 Blog：<http://www.yueshutong.cn/>
 
-Email：<mailto:yster@foxmail.com>
+Email：[yster@foxmail.com](mailto:yster@foxmail.com)
 
 Github：<https://github.com/yueshutong/SnowJena>
 
