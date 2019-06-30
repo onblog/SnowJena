@@ -10,6 +10,38 @@
 
 使用文档：[中文](https://yueshutong.github.io/SnowJena/CN_README)|[English](https://yueshutong.github.io/SnowJena/EN_README)
 
+## Quick Start
+
+### Maven
+
+```xml
+<dependency>
+  <groupId>cn.yueshutong</groupId>
+  <artifactId>snowjena-core</artifactId>
+  <version>2.0.0.RELEASE</version>
+</dependency>
+```
+
+### Use
+
+``` java
+   // 1.配置规则
+   LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+           .setLimit(1) //限流数量为1
+           .setPeriod(1) //时间间隔默认为1
+           .setUnit(TimeUnit.SECONDS) //时间单位默认为秒
+           //上述规则即为每1秒的令牌数为1
+           .build()
+   // 2.工厂模式生产限流器
+   RateLimiter limiter = RateLimiterFactory.of(limiterRule);
+   // 3.使用
+   while (true) {
+      if (limiter.tryAcquire()) {
+          logger.info("ok");
+      }
+   }
+```
+
 ## Noun
 
 ### 限流
@@ -27,6 +59,7 @@
 ### 负载保护
 
 平时系统运行都没问题，但遇到大促的时候，发现机器的load非常高，这时候对系统的负载保护就显得非常重要，以防止雪崩。本项目提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。使系统能够处理的请求，和允许进来的请求，达到平衡。
+
 
 ## Preview
 
