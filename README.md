@@ -10,38 +10,6 @@
 
 使用文档：[中文](https://yueshutong.github.io/SnowJena/CN_README)|[English](https://yueshutong.github.io/SnowJena/EN_README)
 
-## Quick Start
-
-### Maven
-
-```xml
-<dependency>
-  <groupId>cn.yueshutong</groupId>
-  <artifactId>snowjena-core</artifactId>
-  <version>2.0.0.RELEASE</version>
-</dependency>
-```
-
-### Use
-
-``` java
-   // 1.配置规则
-   LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
-           .setLimit(1) //限流数量为1
-           .setPeriod(1) //时间间隔默认为1
-           .setUnit(TimeUnit.SECONDS) //时间单位默认为秒
-           //上述规则即为每1秒的令牌数为1
-           .build()
-   // 2.工厂模式生产限流器
-   RateLimiter limiter = RateLimiterFactory.of(limiterRule);
-   // 3.使用
-   while (true) {
-      if (limiter.tryAcquire()) {
-          logger.info("ok");
-      }
-   }
-```
-
 ## Noun
 
 ### 限流
