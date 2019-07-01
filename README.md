@@ -8,7 +8,7 @@
 
 ## Document
 
-使用文档：[中文](./CN_README)|[English](./EN_README)
+使用文档：[中文](./CN_README.md)|[English](./EN_README.md)
 
 ## Noun
 
