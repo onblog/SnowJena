@@ -36,7 +36,7 @@ public class RateLimiterObserver {
      */
     private static void update(RateLimiter limiter, RateLimiterConfig config) {
         config.getScheduledThreadExecutor().scheduleWithFixedDelay(() -> {
-            String rules = config.getTicketServer().connect(RateLimiterConfig.heart, JSON.toJSONString(limiter.getRule()));
+            String rules = config.getTicketServer().connect(RateLimiterConfig.http_heart, JSON.toJSONString(limiter.getRule()));
             if (rules == null) { //TicketServer挂掉
                 logger.debug("update limiter fail, automatically switch to local current limit");
                 LimiterRule rule = limiter.getRule();
@@ -68,9 +68,9 @@ public class RateLimiterObserver {
             if (monitorBeans.size() < 1) {
                 return;
             }
-            String result = config.getTicketServer().connect(RateLimiterConfig.monitor, JSON.toJSONString(monitorBeans));
+            String result = config.getTicketServer().connect(RateLimiterConfig.http_monitor, JSON.toJSONString(monitorBeans));
             if (result == null) {
-                logger.debug("monitor data update fail");
+                logger.debug("http_monitor data update fail");
             }
         }, 0, 3, TimeUnit.SECONDS);
     }

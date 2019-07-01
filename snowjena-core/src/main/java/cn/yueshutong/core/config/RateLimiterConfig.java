@@ -18,14 +18,11 @@ public class RateLimiterConfig {
 
     private TicketServer ticketServer; //发票服务器
     private ScheduledExecutorService scheduledThreadExecutor; //调度线程池
-    private ThreadPoolExecutor singleThread = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(), Executors.defaultThreadFactory(),
-            new ThreadPoolExecutor.DiscardOldestPolicy());//单例线程池
 
     //Ticket server interface
-    public static String monitor = "monitor";
-    public static String heart = "heart";
-    public static String token = "token";
+    public static String http_monitor = "monitor";
+    public static String http_heart = "heart";
+    public static String http_token = "token";
 
     private RateLimiterConfig() {
         //禁止new实例
@@ -47,7 +44,7 @@ public class RateLimiterConfig {
         if (this.scheduledThreadExecutor == null) {
             synchronized (this) {
                 if (this.scheduledThreadExecutor == null) {
-                    setScheduledThreadExecutor(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
+                    setScheduledThreadExecutor(new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, new ThreadPoolExecutor.DiscardOldestPolicy()));
                 }
             }
         }
@@ -77,10 +74,6 @@ public class RateLimiterConfig {
             }
         }
         this.ticketServer.setServer(ip);
-    }
-
-    public ThreadPoolExecutor getSingleThread() {
-        return singleThread;
     }
 
 }
