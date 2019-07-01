@@ -10,7 +10,7 @@ import com.alibaba.fastjson.JSON;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * 分布式、无锁、秒级流控
  */
 public class RateLimiterDefault implements RateLimiter {
-    private AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
+    private final AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
     private LimiterRule rule;
     private RateLimiterConfig config;
     private ScheduledFuture<?> scheduledFuture;
@@ -67,7 +67,7 @@ public class RateLimiterDefault implements RateLimiter {
      */
     @Override
     public boolean tryAcquire() {
-        if (rule.isEnable()){
+        if (rule.isEnable()) {
             //限流功能已关闭
             return true;
         }
@@ -104,7 +104,7 @@ public class RateLimiterDefault implements RateLimiter {
      * 4.putCloudBucket
      */
     private boolean tryAcquirePut() {
-        boolean result  =tryAcquireFact();
+        boolean result = tryAcquireFact();
         //分布式方式下检查剩余令牌数
         putCloudBucket();
         return result;
@@ -189,17 +189,21 @@ public class RateLimiterDefault implements RateLimiter {
     private void putCloudBucket() {
         //校验
         if (!rule.getLimiterModel().equals(LimiterModel.CLOUD) ||
-                bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
+                bucket.get() / 1.0 * rule.getBatch() > rule.getRemaining()) {
             return;
         }
-        config.getSingleThread().execute(() -> {
-            //再次校验
-            if (bucket.get()/1.0*rule.getBatch()>rule.getRemaining()){
-                return;
-            }
-            String result = config.getTicketServer().connect(RateLimiterConfig.token, JSON.toJSONString(rule));
-            if (result!=null) {
-                bucket.getAndAdd(Long.parseLong(result));
+        //异步任务
+        config.getScheduledThreadExecutor().execute(() -> {
+            //DCL,再次校验
+            if (bucket.get() / 1.0 * rule.getBatch() <= rule.getRemaining()) {
+                synchronized (bucket) {
+                    if (bucket.get() / 1.0 * rule.getBatch() <= rule.getRemaining()) {
+                        String result = config.getTicketServer().connect(RateLimiterConfig.http_token, JSON.toJSONString(rule));
+                        if (result != null) {
+                            bucket.getAndAdd(Long.parseLong(result));
+                        }
+                    }
+                }
             }
         });
     }
