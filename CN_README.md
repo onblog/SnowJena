@@ -107,7 +107,7 @@ public class AppTest {
 <dependency>
     <groupId>cn.yueshutong</groupId>
     <artifactId>snowjena-annotation</artifactId>
-    <version>${snowjean.version}</version>
+    <version>3.0.0.RELEASE</version>
 </dependency>
 ```
 
