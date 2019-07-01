@@ -1,4 +1,4 @@
-# SnowJean使用文档2.0.0
+# SnowJean使用文档3.0.0
 
 ## Maven
 
@@ -6,7 +6,7 @@
 <dependency>
   <groupId>cn.yueshutong</groupId>
   <artifactId>snowjena-core</artifactId>
-  <version>2.0.0.RELEASE</version>
+  <version>3.0.0.RELEASE</version>
 </dependency>
 ```
 
@@ -24,14 +24,14 @@ public class AppTest {
     @Test
     public void test1() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        LimiterRule rateLimiterRule = new LimiterRule.LimiterRuleBuilder()
                 .setLimit(1) //限流数量为1
                 .setPeriod(1) //时间间隔默认为1
                 .setUnit(TimeUnit.SECONDS) //时间单位默认为秒
                 //上述规则即为每1秒的令牌数为1
                 .build();
         // 2.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
         // 3.使用
         while (true) {
             if (limiter.tryAcquire()) {
@@ -66,13 +66,13 @@ public class AppTest {
     @Test
     public void test2() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        LimiterRule rateLimiterRule = new LimiterRule.LimiterRuleBuilder()
                 .setLimit(1)
                 .setRuleAuthority(RuleAuthority.AUTHORITY_BLACK) //黑名单
                 .setLimitUser(new String[]{"user1", "user2"})
                 .build();
         // 2.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
         // 3.使用
         while (true) {
             if (limiter.tryAcquire("user1")) {
@@ -97,6 +97,74 @@ public class AppTest {
 10:04:29.323 [main] INFO com.example.springbootdemo.AppTest - user3
 10:04:30.326 [main] INFO com.example.springbootdemo.AppTest - user3
 10:04:31.326 [main] INFO com.example.springbootdemo.AppTest - user3
+```
+
+## 注解支持
+
+3.0.0版本后的SonwJean支持使用注解的方式，在使用之前，你需要引入注解支持依赖：
+
+```xml
+<dependency>
+    <groupId>cn.yueshutong</groupId>
+    <artifactId>snowjena-annotation</artifactId>
+    <version>${snowjean.version}</version>
+</dependency>
+```
+
+###  AspectJ
+
+若您的应用直接使用了 AspectJ，那么您需要在 `aop.xml` 文件中引入对应的 Aspect：
+
+```xml
+<aspects>
+    <aspect name="cn.yueshutong.annotation.aspect.RateLimiterAspect"/>
+</aspects>
+```
+
+### Spring AOP
+
+若您的应用使用了 Spring AOP，您需要通过配置的方式将其注册为一个 Spring Bean：
+
+``` java
+@Bean
+public RateLimiterAspect rateLimiterAspect(){
+    return new RateLimiterAspect();
+}
+```
+
+### 步骤
+
+使用注解之前需要生产限流器，并设定限流器的ID，比如如下所示：
+
+``` java
+public void register() {
+   RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
+       .setId("limiter") //ID很重要，对应注解@Limiter中的value
+       .setLimit(1)
+       .build();
+   RateLimiter rateLimiter = RateLimiterFactory.of(rateLimiterRule);
+}
+```
+
+项目代码使用注解示例：
+
+``` java
+/**
+* Value:rateLimiter.getId()
+* fallback:fallback函数名称
+*/
+@Limiter(value = "limiter", fallback = "sayFallback")
+public String say() {
+   logger.info("hello");
+   return "hello";
+}
+
+/**
+* fallback函数的参数要与原函数一致
+*/
+public String sayFallback() {
+   return "fallback_hello";
+}
 ```
 
 ## 分布式限流
@@ -129,7 +197,7 @@ public class AppTest {
     @Test
     public void test4() throws InterruptedException {
         // 1.限流配置
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        LimiterRule rateLimiterRule = new LimiterRule.LimiterRuleBuilder()
                 .setApp("Application")
                 .setId("myId")
                 .setLimit(1) //每秒1个令牌
@@ -143,7 +211,7 @@ public class AppTest {
         RateLimiterConfig config = RateLimiterConfig.getInstance();
         config.setTicketServer(map);
         // 4.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule, config);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule, config);
         // 5.使用
         while (true) {
             if (limiter.tryAcquire()) {
@@ -218,6 +286,6 @@ public class AppTest {
 
 ## 高可用
 
-首先，TicketServer是支持集群部署的，在客户端可对集群进行权重配置，但是，目前SnowJean使用的单点Redis数据库，当Redis挂掉，TicketServer集群也就失去了作用，分布式限流将退化为本地限流。
+TicketServer支持集群部署，在客户端可对集群进行权重配置，但目前SnowJean使用单点Redis数据库，当Redis挂掉，TicketServer集群也就失去了作用，分布式限流将退化为本地限流。
 
 > 文档不断完善，有问题请提交Issues或者加QQ群。

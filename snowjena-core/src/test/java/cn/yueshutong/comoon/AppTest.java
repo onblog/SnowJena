@@ -1,6 +1,6 @@
 package cn.yueshutong.comoon;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.commoon.enums.AcquireModel;
 import cn.yueshutong.commoon.enums.RuleAuthority;
 import cn.yueshutong.core.config.RateLimiterConfig;
@@ -34,14 +34,14 @@ public class AppTest {
 
 //    @Test
     public void should() {
-        LimiterRule rule = new LimiterRule();
+        RateLimiterRule rule = new RateLimiterRule();
         rule.setId("Default");
         rule.setAcquireModel(AcquireModel.BLOCKING);
         rule.setRuleAuthority(RuleAuthority.AUTHORITY_BLACK);
 
         String s = JSON.toJSONString(rule);
         System.out.println(s);
-        Object parse = JSON.parseObject(s, LimiterRule.class);
+        Object parse = JSON.parseObject(s, RateLimiterRule.class);
         System.out.println(parse);
     }
 
@@ -69,7 +69,7 @@ public class AppTest {
 
 //    @Test
     public void tess() throws InterruptedException {
-        LimiterRule rule = new LimiterRule();
+        RateLimiterRule rule = new RateLimiterRule();
         rule.setAcquireModel(AcquireModel.BLOCKING);
         RateLimiter limiter = RateLimiterFactory.of(rule);
         Thread.sleep(1000);

@@ -1,6 +1,7 @@
 package cn.yueshutong.snowjenaticketserver.rule;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRuleBuilder;
 import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
 import cn.yueshutong.snowjenaticketserver.exception.ResultException;
 import cn.yueshutong.snowjenaticketserver.rule.entity.Result;
@@ -29,8 +30,8 @@ public class RuleController {
     @RequestMapping(value = "/heart", method = RequestMethod.POST)
     public String heartbeat(@RequestParam("data") String rule) {
         logger.debug("heart:" + rule);
-        LimiterRule limiterRule = JSON.parseObject(rule, LimiterRule.class);
-        return JSON.toJSONString(ruleService.heartbeat(limiterRule));
+        RateLimiterRule rateLimiterRule = JSON.parseObject(rule, RateLimiterRule.class);
+        return JSON.toJSONString(ruleService.heartbeat(rateLimiterRule));
     }
 
     /**
@@ -38,7 +39,7 @@ public class RuleController {
      */
     @RequestMapping(value = "/rule", method = RequestMethod.GET)
     @ResultException
-    public Result<LimiterRule> getAllRule(String app, String id, int page, int limit) {
+    public Result<RateLimiterRule> getAllRule(String app, String id, int page, int limit) {
         return ruleService.getAllRule(app, id, page, limit);
     }
 
@@ -49,9 +50,9 @@ public class RuleController {
     @RequestMapping(value = "/rule", method = RequestMethod.PUT)
     @ResultException
     public Result update(@RequestParam("data") String rule) {
-        LimiterRule limiterRule = JSON.parseObject(rule, LimiterRule.class);
-        LimiterRule.LimiterRuleBuilder.check(limiterRule);
-        ruleService.update(limiterRule);
+        RateLimiterRule rateLimiterRule = JSON.parseObject(rule, RateLimiterRule.class);
+        RateLimiterRuleBuilder.check(rateLimiterRule);
+        ruleService.update(rateLimiterRule);
         return new Result(ResultEnum.SUCCESS);
     }
 

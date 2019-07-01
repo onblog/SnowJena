@@ -1,13 +1,13 @@
 package cn.yueshutong.core.limiter;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.monitor.client.MonitorService;
 
 public interface RateLimiter {
 
     MonitorService getMonitorService();
 
-    void init(LimiterRule rule);
+    void init(RateLimiterRule rule);
 
     boolean tryAcquire();
 
@@ -15,5 +15,5 @@ public interface RateLimiter {
 
     String getId();
 
-    LimiterRule getRule();
+    RateLimiterRule getRule();
 }

@@ -33,7 +33,7 @@ public class RateLimiterConfig {
             synchronized (RateLimiterConfig.class) {
                 if (rateLimiterConfig == null) {
                     rateLimiterConfig = new RateLimiterConfig();
-                    logger.info("SnowJean");
+                    logger.info("Starting [SnowJean]");
                 }
             }
         }

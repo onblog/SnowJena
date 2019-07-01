@@ -1,6 +1,6 @@
 package cn.yueshutong.snowjenaticketserver.token.service;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.snowjenaticketserver.redisson.SingleRedisLock;
 import cn.yueshutong.snowjenaticketserver.rule.service.RuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,28 +25,28 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Long token(LimiterRule limiterRule) {
-        String s = valueOperations.get(RuleService.getBucketKey(limiterRule));
+    public Long token(RateLimiterRule rateLimiterRule) {
+        String s = valueOperations.get(RuleService.getBucketKey(rateLimiterRule));
         if (s==null||"".equals(s)){
             return 0L;
         }
         long l = Long.parseLong(s);
         if (l>0){
             //加锁
-            redisLock.acquire(RuleService.getLockKey(limiterRule));
-            l = Long.parseLong(valueOperations.get(RuleService.getBucketKey(limiterRule)));
+            redisLock.acquire(RuleService.getLockKey(rateLimiterRule));
+            l = Long.parseLong(valueOperations.get(RuleService.getBucketKey(rateLimiterRule)));
             long result;
             if (l<=0){
                 result =  0L;
-            }else if (l>=limiterRule.getLimit()){
-                valueOperations.decrement(RuleService.getBucketKey(limiterRule),limiterRule.getLimit());
-                result = limiterRule.getLimit();
+            }else if (l>= rateLimiterRule.getLimit()){
+                valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule), rateLimiterRule.getLimit());
+                result = rateLimiterRule.getLimit();
             }else {
-                valueOperations.decrement(RuleService.getBucketKey(limiterRule),l);
+                valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule),l);
                 result = l;
             }
             //解锁
-            redisLock.release(RuleService.getLockKey(limiterRule));
+            redisLock.release(RuleService.getLockKey(rateLimiterRule));
             return result;
         }
         return 0L;

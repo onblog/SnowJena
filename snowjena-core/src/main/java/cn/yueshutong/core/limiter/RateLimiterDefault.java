@@ -1,6 +1,6 @@
 package cn.yueshutong.core.limiter;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.core.config.RateLimiterConfig;
 import cn.yueshutong.core.monitor.MonitorServiceImpl;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class RateLimiterDefault implements RateLimiter {
     private final AtomicLong bucket = new AtomicLong(0); //令牌桶初始容量：0
-    private LimiterRule rule;
+    private RateLimiterRule rule;
     private RateLimiterConfig config;
     private ScheduledFuture<?> scheduledFuture;
 
@@ -32,13 +32,13 @@ public class RateLimiterDefault implements RateLimiter {
 
     private MonitorService monitorService = new MonitorServiceImpl();
 
-    RateLimiterDefault(LimiterRule rule, RateLimiterConfig config) {
+    RateLimiterDefault(RateLimiterRule rule, RateLimiterConfig config) {
         this.config = config;
         init(rule);
     }
 
     @Override
-    public void init(LimiterRule rule) {
+    public void init(RateLimiterRule rule) {
         this.rule = rule;
         putPointBucket();
     }
@@ -214,7 +214,7 @@ public class RateLimiterDefault implements RateLimiter {
     }
 
     @Override
-    public LimiterRule getRule() {
+    public RateLimiterRule getRule() {
         return this.rule;
     }
 

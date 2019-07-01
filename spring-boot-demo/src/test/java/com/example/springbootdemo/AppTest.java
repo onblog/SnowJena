@@ -1,6 +1,7 @@
 package com.example.springbootdemo;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRuleBuilder;
 import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.commoon.enums.RuleAuthority;
 import cn.yueshutong.core.config.RateLimiterConfig;
@@ -26,13 +27,13 @@ public class AppTest {
     @Test
     public void test1() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
                 .setLimit(1)
                 .setPeriod(1)
                 .setUnit(TimeUnit.SECONDS) //每秒令牌数为1
                 .build();
         // 2.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
         // 3.使用
         while (true) {
             if (limiter.tryAcquire()) {
@@ -47,13 +48,13 @@ public class AppTest {
     @Test
     public void test2() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
                 .setLimit(1)
                 .setRuleAuthority(RuleAuthority.AUTHORITY_BLACK)
                 .setLimitUser(new String[]{"user1", "user2"})
                 .build();
         // 2.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
         // 3.使用
         while (true) {
             if (limiter.tryAcquire("user1")) {
@@ -74,13 +75,13 @@ public class AppTest {
     @Test
     public void test3() {
         // 1.配置规则
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
                 .setLimit(1)
                 .setRuleAuthority(RuleAuthority.AUTHORITY_WHITE)
                 .setLimitUser(new String[]{"user1", "user2"})
                 .build();
         // 2.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
         // 3.使用
         while (true) {
             if (limiter.tryAcquire("user1")) {
@@ -101,7 +102,7 @@ public class AppTest {
     @Test
     public void test4() throws InterruptedException {
         // 1.限流配置
-        LimiterRule limiterRule = new LimiterRule.LimiterRuleBuilder()
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
                 .setApp("Application")
                 .setId("myId")
                 .setLimit(1)
@@ -115,7 +116,7 @@ public class AppTest {
         RateLimiterConfig config = RateLimiterConfig.getInstance();
         config.setTicketServer(map);
         // 4.工厂模式生产限流器
-        RateLimiter limiter = RateLimiterFactory.of(limiterRule, config);
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule, config);
         // 5.使用
         while (true) {
             if (limiter.tryAcquire()) {

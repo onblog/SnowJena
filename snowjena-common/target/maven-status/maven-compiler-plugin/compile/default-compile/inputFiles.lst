@@ -1,6 +1,7 @@
+/Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/entity/RateLimiterRule.java
 /Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/enums/AcquireModel.java
 /Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/http/HttpUtil.java
 /Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/enums/Algorithm.java
-/Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/entity/LimiterRule.java
 /Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/enums/LimiterModel.java
 /Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/enums/RuleAuthority.java
+/Users/yueshutong/IdeaProjects/SnowJena/snowjena-common/src/main/java/cn/yueshutong/commoon/entity/RateLimiterRuleBuilder.java

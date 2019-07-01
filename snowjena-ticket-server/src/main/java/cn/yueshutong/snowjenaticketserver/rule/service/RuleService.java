@@ -1,6 +1,6 @@
 package cn.yueshutong.snowjenaticketserver.rule.service;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.snowjenaticketserver.rule.entity.Result;
 
 public interface RuleService {
@@ -10,16 +10,16 @@ public interface RuleService {
     String BUCKET = "$BUCKET$"; //令牌桶前戳
     String BUCKET_PRINCIPAL = "$BUCKET_PRINCIPAL$"; //令牌桶负责的线程
 
-    static String getInstanceKey(LimiterRule limiterRule) {
-        return INSTANCE + limiterRule.getApp() + limiterRule.getId() + limiterRule.getName();
+    static String getInstanceKey(RateLimiterRule rateLimiterRule) {
+        return INSTANCE + rateLimiterRule.getApp() + rateLimiterRule.getId() + rateLimiterRule.getName();
     }
 
-    static String getInstanceKeys(LimiterRule limiterRule) {
-        return INSTANCE + limiterRule.getApp() + limiterRule.getId() + "*";
+    static String getInstanceKeys(RateLimiterRule rateLimiterRule) {
+        return INSTANCE + rateLimiterRule.getApp() + rateLimiterRule.getId() + "*";
     }
 
-    static String getLimiterRuleKey(LimiterRule limiterRule) {
-        return RULE + limiterRule.getApp() + limiterRule.getId();
+    static String getLimiterRuleKey(RateLimiterRule rateLimiterRule) {
+        return RULE + rateLimiterRule.getApp() + rateLimiterRule.getId();
     }
 
     static String getLimiterRuleKeys(String app, String id) {
@@ -35,32 +35,32 @@ public interface RuleService {
         return RULE + builder.toString();
     }
 
-    static String getBucketKey(LimiterRule limiterRule) {
-        return BUCKET + limiterRule.getApp() + limiterRule.getId();
+    static String getBucketKey(RateLimiterRule rateLimiterRule) {
+        return BUCKET + rateLimiterRule.getApp() + rateLimiterRule.getId();
     }
 
-    static String getBucketPrincipalKey(LimiterRule limiterRule) {
-        return BUCKET_PRINCIPAL + limiterRule.getApp() + limiterRule.getId();
+    static String getBucketPrincipalKey(RateLimiterRule rateLimiterRule) {
+        return BUCKET_PRINCIPAL + rateLimiterRule.getApp() + rateLimiterRule.getId();
     }
 
-    static String getLockKey(LimiterRule limiterRule) {
-        return LOCK + limiterRule.getApp() + limiterRule.getId();
+    static String getLockKey(RateLimiterRule rateLimiterRule) {
+        return LOCK + rateLimiterRule.getApp() + rateLimiterRule.getId();
     }
 
 
     /**
      * 心跳 Heartbeat
-     * @param limiterRule 客户端
+     * @param rateLimiterRule 客户端
      * @return 新规则
      */
-    LimiterRule heartbeat(LimiterRule limiterRule);
+    RateLimiterRule heartbeat(RateLimiterRule rateLimiterRule);
 
     /**
      * 更新规则一定更新版本号
-     * @param limiterRule 参数
+     * @param rateLimiterRule 参数
      * @return 结果
      */
-    boolean update(LimiterRule limiterRule);
+    boolean update(RateLimiterRule rateLimiterRule);
 
     /**
      * 查看规则
@@ -69,6 +69,6 @@ public interface RuleService {
      * @param limit
      * @return 规则集合
      */
-    Result<LimiterRule> getAllRule(String app, String id,int page, int limit);
+    Result<RateLimiterRule> getAllRule(String app, String id, int page, int limit);
 
 }

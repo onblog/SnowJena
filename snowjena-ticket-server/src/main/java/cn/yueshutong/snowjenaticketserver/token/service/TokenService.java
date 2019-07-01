@@ -1,7 +1,7 @@
 package cn.yueshutong.snowjenaticketserver.token.service;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 
 public interface TokenService {
-    Object token(LimiterRule limiterRule);
+    Object token(RateLimiterRule rateLimiterRule);
 }
