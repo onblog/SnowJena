@@ -1,6 +1,6 @@
 package cn.yueshutong.core.observer;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.commoon.enums.LimiterModel;
 import cn.yueshutong.core.config.RateLimiterConfig;
 import cn.yueshutong.core.exception.SnowJeanException;
@@ -22,13 +22,24 @@ public class RateLimiterObserver {
     private static Map<String, RateLimiter> map = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(RateLimiterObserver.class);
 
-    public static void registered(RateLimiter rule, RateLimiterConfig config) {
-        if (map.containsKey(rule.getId())) {
-            throw new SnowJeanException("Repeat registration for current limiting rules:" + rule.getId());
+    /**
+     * 注册限流器
+     */
+    public static void registered(RateLimiter limiter, RateLimiterConfig config) {
+        if (map.containsKey(limiter.getId())) {
+            throw new SnowJeanException("Repeat registration for current limiting rules:" + limiter.getId());
         }
-        map.put(rule.getId(), rule);
-        update(rule, config);
-        monitor(rule, config);
+        map.put(limiter.getId(), limiter);
+        if (!limiter.getRule().getLimiterModel().equals(LimiterModel.CLOUD)){
+            //本地限流只注册
+            return;
+        }
+        update(limiter, config);
+        monitor(limiter, config);
+    }
+
+    public static Map<String, RateLimiter> getMap() {
+        return map;
     }
 
     /**
@@ -39,18 +50,18 @@ public class RateLimiterObserver {
             String rules = config.getTicketServer().connect(RateLimiterConfig.http_heart, JSON.toJSONString(limiter.getRule()));
             if (rules == null) { //TicketServer挂掉
                 logger.debug("update limiter fail, automatically switch to local current limit");
-                LimiterRule rule = limiter.getRule();
+                RateLimiterRule rule = limiter.getRule();
                 rule.setLimiterModel(LimiterModel.POINT);
                 limiter.init(rule);
                 return;
             }
-            LimiterRule limiterRule = JSON.parseObject(rules, LimiterRule.class);
-            if (limiterRule.getVersion() > limiter.getRule().getVersion()) { //版本升级
-                logger.info("update rule version: {} -> {}", limiter.getRule().getVersion(), limiterRule.getVersion());
-                map.get(limiter.getId()).init(limiterRule);
-            } else if (limiterRule.getLimiterModel().equals(LimiterModel.POINT)) { //本地/分布式切换
-                limiterRule.setLimiterModel(LimiterModel.CLOUD);
-                map.get(limiter.getId()).init(limiterRule);
+            RateLimiterRule rateLimiterRule = JSON.parseObject(rules, RateLimiterRule.class);
+            if (rateLimiterRule.getVersion() > limiter.getRule().getVersion()) { //版本升级
+                logger.info("update rule version: {} -> {}", limiter.getRule().getVersion(), rateLimiterRule.getVersion());
+                map.get(limiter.getId()).init(rateLimiterRule);
+            } else if (rateLimiterRule.getLimiterModel().equals(LimiterModel.POINT)) { //本地/分布式切换
+                rateLimiterRule.setLimiterModel(LimiterModel.CLOUD);
+                map.get(limiter.getId()).init(rateLimiterRule);
             }
         }, 0, 1, TimeUnit.SECONDS);
     }

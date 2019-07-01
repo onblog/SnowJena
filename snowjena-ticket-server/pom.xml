@@ -11,24 +11,31 @@
 
     <groupId>cn.yueshutong</groupId>
     <artifactId>snowjena-ticket-server</artifactId>
-    <version>2.0.0.RELEASE</version>
+    <version>3.0.0.RELEASE</version>
 
     <name>snowjena-ticket-server</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
         <java.version>1.8</java.version>
+        <snowjean.version>3.0.0.RELEASE</snowjean.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <groupId>cn.yueshutong</groupId>
+            <artifactId>snowjena-common</artifactId>
+            <version>${snowjean.version}</version>
         </dependency>
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <groupId>cn.yueshutong</groupId>
+            <artifactId>snowjena-monitor</artifactId>
+            <version>${snowjean.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -38,15 +45,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>cn.yueshutong</groupId>
-            <artifactId>snowjena-common</artifactId>
-            <version>1.0.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.yueshutong</groupId>
-            <artifactId>snowjena-monitor</artifactId>
-            <version>1.0.0.RELEASE</version>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -58,6 +61,7 @@
             <artifactId>redisson</artifactId>
             <version>3.11.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>

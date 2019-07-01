@@ -1,6 +1,6 @@
 package cn.yueshutong.snowjenaticketserver.token;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.snowjenaticketserver.token.service.TokenService;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +16,8 @@ public class TokenController {
 
     @RequestMapping(value = "/token",method = RequestMethod.POST)
     public String token(@RequestParam("data") String rule){
-        LimiterRule limiterRule = JSON.parseObject(rule, LimiterRule.class);
-        return JSON.toJSONString(tokenService.token(limiterRule));
+        RateLimiterRule rateLimiterRule = JSON.parseObject(rule, RateLimiterRule.class);
+        return JSON.toJSONString(tokenService.token(rateLimiterRule));
     }
 
 }

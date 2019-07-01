@@ -1,6 +1,6 @@
 package cn.yueshutong.snowjenaticketserver.rule.service;
 
-import cn.yueshutong.commoon.entity.LimiterRule;
+import cn.yueshutong.commoon.entity.RateLimiterRule;
 import cn.yueshutong.snowjenaticketserver.exception.ResultEnum;
 import cn.yueshutong.snowjenaticketserver.exception.TicketServerException;
 import cn.yueshutong.snowjenaticketserver.redisson.SingleRedisLock;
@@ -43,69 +43,69 @@ public class RuleServiceImpl implements RuleService {
     }
 
     @Override
-    public LimiterRule heartbeat(LimiterRule limiterRule) {
+    public RateLimiterRule heartbeat(RateLimiterRule rateLimiterRule) {
         //1.读取最新的规则
-        LimiterRule nowLimiterRule = readMostNewRule(limiterRule);
+        RateLimiterRule nowRateLimiterRule = readMostNewRule(rateLimiterRule);
         //2.标记实例状况
-        valueOperations.set(RuleService.getInstanceKey(nowLimiterRule), RuleService.INSTANCE, 5, TimeUnit.SECONDS);
+        valueOperations.set(RuleService.getInstanceKey(nowRateLimiterRule), RuleService.INSTANCE, 5, TimeUnit.SECONDS);
         //3.实时更新实例数量
-        updateInstanceNumber(nowLimiterRule);
+        updateInstanceNumber(nowRateLimiterRule);
         //4.检查令牌桶状况
-        putTokenBucket(nowLimiterRule, limiterRule);
-        return nowLimiterRule;
+        putTokenBucket(nowRateLimiterRule, rateLimiterRule);
+        return nowRateLimiterRule;
     }
 
     /**
      * 读取最新的规则
      */
-    private LimiterRule readMostNewRule(LimiterRule limiterRule) {
-        String rule = valueOperations.get(RuleService.getLimiterRuleKey(limiterRule));
+    private RateLimiterRule readMostNewRule(RateLimiterRule rateLimiterRule) {
+        String rule = valueOperations.get(RuleService.getLimiterRuleKey(rateLimiterRule));
         if (rule == null || "".equals(rule)) {
             //规则添加
-            valueOperations.set(RuleService.getLimiterRuleKey(limiterRule), JSON.toJSONString(limiterRule), 5, TimeUnit.SECONDS);
+            valueOperations.set(RuleService.getLimiterRuleKey(rateLimiterRule), JSON.toJSONString(rateLimiterRule), 5, TimeUnit.SECONDS);
         } else {
             //规则延时
-            redisTemplate.expire(RuleService.getLimiterRuleKey(limiterRule), 5, TimeUnit.SECONDS);
+            redisTemplate.expire(RuleService.getLimiterRuleKey(rateLimiterRule), 5, TimeUnit.SECONDS);
             //读取最新
-            LimiterRule limiter = JSON.parseObject(rule, LimiterRule.class);
-            if (limiter.getVersion() > limiterRule.getVersion()) {
-                limiter.setName(limiterRule.getName());
+            RateLimiterRule limiter = JSON.parseObject(rule, RateLimiterRule.class);
+            if (limiter.getVersion() > rateLimiterRule.getVersion()) {
+                limiter.setName(rateLimiterRule.getName());
                 return limiter;
             }
         }
-        return limiterRule;
+        return rateLimiterRule;
     }
 
     /**
      * 更新实例数
      */
-    private void updateInstanceNumber(LimiterRule limiterRule) {
-        Set<String> keys = redisTemplate.keys(RuleService.getInstanceKeys(limiterRule));
+    private void updateInstanceNumber(RateLimiterRule rateLimiterRule) {
+        Set<String> keys = redisTemplate.keys(RuleService.getInstanceKeys(rateLimiterRule));
         if (keys != null) {
             int size = keys.size();
-            limiterRule.setNumber(size);
+            rateLimiterRule.setNumber(size);
         }
     }
 
     /**
      * 检查令牌桶状况
      */
-    private void putTokenBucket(LimiterRule nowLimiterRule, LimiterRule oldLimiterRule) {
+    private void putTokenBucket(RateLimiterRule nowRateLimiterRule, RateLimiterRule oldRateLimiterRule) {
         //检查该令牌桶负责人
-        Boolean result = valueOperations.setIfAbsent(RuleService.getBucketPrincipalKey(nowLimiterRule), id,
-                nowLimiterRule.getUnit().toSeconds(nowLimiterRule.getInitialDelay()) + 1, TimeUnit.SECONDS);
+        Boolean result = valueOperations.setIfAbsent(RuleService.getBucketPrincipalKey(nowRateLimiterRule), id,
+                nowRateLimiterRule.getUnit().toSeconds(nowRateLimiterRule.getInitialDelay()) + 1, TimeUnit.SECONDS);
         if (!result) {
             //该令牌桶已有线程负责存放
-            String name = valueOperations.get(RuleService.getBucketPrincipalKey(nowLimiterRule));
+            String name = valueOperations.get(RuleService.getBucketPrincipalKey(nowRateLimiterRule));
             if (!id.equals(name)) {
                 //而且还不是自己
                 return;
             }
         }
         //分配向桶里存放令牌的任务
-        if (taskMap.containsKey(RuleService.getBucketKey(nowLimiterRule))) {
-            if (nowLimiterRule.getVersion() > oldLimiterRule.getVersion()) {
-                ScheduledFuture scheduledFuture = taskMap.get(RuleService.getBucketKey(nowLimiterRule));
+        if (taskMap.containsKey(RuleService.getBucketKey(nowRateLimiterRule))) {
+            if (nowRateLimiterRule.getVersion() > oldRateLimiterRule.getVersion()) {
+                ScheduledFuture scheduledFuture = taskMap.get(RuleService.getBucketKey(nowRateLimiterRule));
                 scheduledFuture.cancel(true);
             } else {
                 return;
@@ -113,24 +113,24 @@ public class RuleServiceImpl implements RuleService {
         }
         //执行任务
         ScheduledFuture<?> scheduledFuture = scheduledExecutor.scheduleAtFixedRate(() -> {
-            String rule = valueOperations.get(RuleService.getLimiterRuleKey(nowLimiterRule));
+            String rule = valueOperations.get(RuleService.getLimiterRuleKey(nowRateLimiterRule));
             if (rule == null || "".equals(rule)) {
-                logger.debug("task cancel : " + RuleService.getLimiterRuleKey(nowLimiterRule));
-                taskMap.get(RuleService.getBucketKey(nowLimiterRule)).cancel(true);
-                taskMap.remove(RuleService.getBucketKey(nowLimiterRule));
+                logger.debug("task cancel : " + RuleService.getLimiterRuleKey(nowRateLimiterRule));
+                taskMap.get(RuleService.getBucketKey(nowRateLimiterRule)).cancel(true);
+                taskMap.remove(RuleService.getBucketKey(nowRateLimiterRule));
                 return;
             }
-            valueOperations.set(RuleService.getBucketKey(nowLimiterRule), String.valueOf(nowLimiterRule.getLimit()),
-                    nowLimiterRule.getUnit().toSeconds(nowLimiterRule.getPeriod()) + 1, TimeUnit.SECONDS);
-        }, nowLimiterRule.getInitialDelay(), nowLimiterRule.getPeriod(), nowLimiterRule.getUnit());
-        taskMap.put(RuleService.getBucketKey(nowLimiterRule), scheduledFuture);
+            valueOperations.set(RuleService.getBucketKey(nowRateLimiterRule), String.valueOf(nowRateLimiterRule.getLimit()),
+                    nowRateLimiterRule.getUnit().toSeconds(nowRateLimiterRule.getPeriod()) + 1, TimeUnit.SECONDS);
+        }, nowRateLimiterRule.getInitialDelay(), nowRateLimiterRule.getPeriod(), nowRateLimiterRule.getUnit());
+        taskMap.put(RuleService.getBucketKey(nowRateLimiterRule), scheduledFuture);
     }
 
     @Override
-    public boolean update(LimiterRule limiterRule) {
+    public boolean update(RateLimiterRule rateLimiterRule) {
         //加锁
-        redisLock.acquire(RuleService.getLockKey(limiterRule));
-        String key = RuleService.getLimiterRuleKey(limiterRule);
+        redisLock.acquire(RuleService.getLockKey(rateLimiterRule));
+        String key = RuleService.getLimiterRuleKey(rateLimiterRule);
         String rule = valueOperations.get(key);
         //规则不存在
         if (rule == null || "".equals(rule)) {
@@ -139,34 +139,34 @@ public class RuleServiceImpl implements RuleService {
             throw new TicketServerException(ResultEnum.ERROR, "规则不存在");
         }
         //更新版本号
-        LimiterRule limiter = JSON.parseObject(rule, LimiterRule.class);
-        limiterRule.setVersion(limiter.getVersion() + 1);
+        RateLimiterRule limiter = JSON.parseObject(rule, RateLimiterRule.class);
+        rateLimiterRule.setVersion(limiter.getVersion() + 1);
         //更新规则
-        valueOperations.set(key, JSON.toJSONString(limiterRule), 5, TimeUnit.SECONDS); //3
+        valueOperations.set(key, JSON.toJSONString(rateLimiterRule), 5, TimeUnit.SECONDS); //3
         //解锁
-        redisLock.release(RuleService.getLockKey(limiterRule));
+        redisLock.release(RuleService.getLockKey(rateLimiterRule));
         return true;
     }
 
     @Override
-    public Result<LimiterRule> getAllRule(String app, String id, int page, int limit) {
+    public Result<RateLimiterRule> getAllRule(String app, String id, int page, int limit) {
         Set<String> keys = redisTemplate.keys(RuleService.getLimiterRuleKeys(app, id));
         if (keys == null) {
             throw new TicketServerException(ResultEnum.ERROR, RuleService.getLimiterRuleKeys(app, id) + " return null");
         }
         //result
-        Result<LimiterRule> result = new Result<>(ResultEnum.SUCCESS);
+        Result<RateLimiterRule> result = new Result<>(ResultEnum.SUCCESS);
         result.setCount(keys.size());
         //list
-        List<LimiterRule> limiterRules = new ArrayList<>();
+        List<RateLimiterRule> rateLimiterRules = new ArrayList<>();
         keys.stream().skip((page - 1) * limit).limit(limit)
                 .forEach(s -> {
                     String s1 = valueOperations.get(s);
-                    LimiterRule limiterRule = JSON.parseObject(s1, LimiterRule.class);
-                    updateInstanceNumber(limiterRule);
-                    limiterRules.add(limiterRule);
+                    RateLimiterRule rateLimiterRule = JSON.parseObject(s1, RateLimiterRule.class);
+                    updateInstanceNumber(rateLimiterRule);
+                    rateLimiterRules.add(rateLimiterRule);
                 });
-        result.setData(limiterRules);
+        result.setData(rateLimiterRules);
         return result;
     }
 }

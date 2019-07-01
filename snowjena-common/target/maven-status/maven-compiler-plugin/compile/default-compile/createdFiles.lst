@@ -1,7 +1,5 @@
 cn/yueshutong/commoon/enums/LimiterModel.class
 cn/yueshutong/commoon/enums/AcquireModel.class
-cn/yueshutong/commoon/entity/LimiterRule$LimiterRuleBuilder.class
 cn/yueshutong/commoon/enums/Algorithm.class
-cn/yueshutong/commoon/entity/LimiterRule.class
 cn/yueshutong/commoon/enums/RuleAuthority.class
 cn/yueshutong/commoon/http/HttpUtil.class

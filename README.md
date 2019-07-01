@@ -8,7 +8,7 @@
 
 ## Document
 
-使用文档：[中文](https://yueshutong.github.io/SnowJena/CN_README)|[English](https://yueshutong.github.io/SnowJena/EN_README)
+使用文档：[中文](./CN_README)|[English](./EN_README)
 
 ## Noun
 
