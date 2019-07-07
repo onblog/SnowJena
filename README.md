@@ -45,9 +45,4 @@ Gitee：<https://gitee.com/zyzpp/SnowJena>
 
 <img src="http://ww3.sinaimg.cn/large/006tNc79ly1g43096t4oaj30tc0tc41y.jpg" width="300px" referrerpolicy="no-referrer">
 
-<div id="wechat-public" style="text-align: center;">
-<p style="font-size: 12px;color: #828282;font-family: serif;">
-微信关注公众号
-</p>
-<img src="https://files.cnblogs.com/files/yueshutong/wechatgood.jpg.bmp" width="300px" referrerPolicy="no-referrer" />
-</div>
+<img src="http://ww3.sinaimg.cn/large/006tNc79ly1g4rgr77f3ij308c0au74a.jpg" width="300px" referrerPolicy="no-referrer">
