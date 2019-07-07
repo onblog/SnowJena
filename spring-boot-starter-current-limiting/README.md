@@ -1,6 +1,6 @@
-# spring-boot-starter-current-limiting
+# 【该项目已废弃，不提供任何技术支持】
 
-**项目重构中，暂时不推荐使用...**
+# spring-boot-starter-current-limiting
 
 ## Maven
 

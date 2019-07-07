@@ -132,6 +132,16 @@ public RateLimiterAspect rateLimiterAspect(){
 }
 ```
 
+另一种方式是使用snowjean-spring-boot-starter，可以不注入该Bean。
+
+```xml
+<dependency>
+    <groupId>cn.yueshutong</groupId>
+    <artifactId>snowjean-spring-boot-starter</artifactId>
+    <version>3.0.0.RELEASE</version>
+</dependency>
+```
+
 ### 步骤
 
 使用注解之前需要生产限流器，并设定限流器的ID，比如如下所示：
