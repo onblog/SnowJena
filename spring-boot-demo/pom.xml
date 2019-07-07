@@ -20,14 +20,19 @@
     </properties>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>cn.yueshutong</groupId>-->
+<!--            <artifactId>snowjena-core</artifactId>-->
+<!--            <version>${snowjean.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>cn.yueshutong</groupId>-->
+<!--            <artifactId>snowjena-annotation</artifactId>-->
+<!--            <version>${snowjean.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>cn.yueshutong</groupId>
-            <artifactId>snowjena-core</artifactId>
-            <version>${snowjean.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.yueshutong</groupId>
-            <artifactId>snowjena-annotation</artifactId>
+            <artifactId>snowjean-spring-boot-starter</artifactId>
             <version>${snowjean.version}</version>
         </dependency>
 
