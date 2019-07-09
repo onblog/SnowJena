@@ -132,7 +132,7 @@ public RateLimiterAspect rateLimiterAspect(){
 }
 ```
 
-另一种方式是使用snowjean-spring-boot-starter，可以不注入该Bean。
+另一种方式是使用snowjean-spring-boot-starter，可以不注入该Bean，且自带注解支持。
 
 ```xml
 <dependency>
