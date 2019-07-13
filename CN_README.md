@@ -24,11 +24,10 @@ public class AppTest {
     @Test
     public void test1() {
         // 1.配置规则
-        LimiterRule rateLimiterRule = new LimiterRule.LimiterRuleBuilder()
-                .setLimit(1) //限流数量为1
-                .setPeriod(1) //时间间隔默认为1
-                .setUnit(TimeUnit.SECONDS) //时间单位默认为秒
-                //上述规则即为每1秒的令牌数为1
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
+                .setLimit(1)
+                .setPeriod(1)
+                .setUnit(TimeUnit.SECONDS) //每秒令牌数为1
                 .build();
         // 2.工厂模式生产限流器
         RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
@@ -66,7 +65,7 @@ public class AppTest {
     @Test
     public void test2() {
         // 1.配置规则
-        LimiterRule rateLimiterRule = new LimiterRule.LimiterRuleBuilder()
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
                 .setLimit(1)
                 .setRuleAuthority(RuleAuthority.AUTHORITY_BLACK) //黑名单
                 .setLimitUser(new String[]{"user1", "user2"})
@@ -207,7 +206,7 @@ public class AppTest {
     @Test
     public void test4() throws InterruptedException {
         // 1.限流配置
-        LimiterRule rateLimiterRule = new LimiterRule.LimiterRuleBuilder()
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
                 .setApp("Application")
                 .setId("myId")
                 .setLimit(1) //每秒1个令牌
