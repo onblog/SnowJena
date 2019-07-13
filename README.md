@@ -10,24 +10,64 @@
 
 使用文档：[中文](./CN_README.md)|[English](./EN_README.md)
 
-## Noun
+## Function
 
-### 限流
+| 限流   | 熔断   | 降级   | 监控   | 注解   |
+| ------ | ------ | ------ | ------ | ------ |
+| 黑名单 | 白名单 | 控制台 | 分布式 | 高可用 |
 
-当我们设计了一个函数，准备上线，这时候这个函数会消耗一些资源，处理上限是1秒服务3000个QPS，但如果实际情况遇到高于3000的QPS该如何解决呢？本项目提供了当QPS超出某个设定的阈值，系统可以通过直接拒绝或等待两种方式来应对，从而起流量控制的作用。
+# Quick Start
 
-### 降级
+## Maven
 
-接触过Spring Cloud、Service Mesh的同学，都知道熔断降级的概念。服务之间会有相互依赖关系，例如服务A做到了1秒上万个QPS，但这时候服务B并无法满足1秒上万个QPS，那么如何保证服务A在高频调用服务B时，服务B仍能正常工作呢？一种比较常见的情况是，服务A调用服务B时，服务B因无法满足高频调用出现响应时间过长的情况，导致服务A也出现响应过长的情况，进而产生连锁反应影响整个依赖链上的所有应用，这时候就需要熔断和降级的方法。本项目通过设置快速失败来对服务自定义进行熔断或降级。
+```xml
+<dependency>
+  <groupId>cn.yueshutong</groupId>
+  <artifactId>snowjena-core</artifactId>
+  <version>3.0.0.RELEASE</version>
+</dependency>
+```
 
-## Preview
+## 本地限流
 
-<img src="http://ww2.sinaimg.cn/large/006tNc79ly1g4ia12hyx0j31ei0u0dw5.jpg" referrerPolicy="no-referrer"/>
+本项目提供了简单易用的API，对于本地限流，只需要通过工厂模式生产限流器，在需要限流的代码运行之前调用tryAcquire()方法即可。
 
-<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia0rnxjmj31ei0u046y.jpg" referrerPolicy="no-referrer"/>
+```java
+public class AppTest {
+    Logger logger = LoggerFactory.getLogger(getClass());
 
-<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g4ia1dvmasj31ei0u0ngj.jpg" referrerPolicy="no-referrer"/>
+    /**
+     * 本地限流
+     */
+    @Test
+    public void test1() {
+        // 1.配置规则
+        RateLimiterRule rateLimiterRule = new RateLimiterRuleBuilder()
+                .setLimit(1)
+                .setPeriod(1)
+                .setUnit(TimeUnit.SECONDS) //每秒令牌数为1
+                .build();
+        // 2.工厂模式生产限流器
+        RateLimiter limiter = RateLimiterFactory.of(rateLimiterRule);
+        // 3.使用
+        while (true) {
+            if (limiter.tryAcquire()) {
+                logger.info("ok");
+            }
+        }
+    }
 
+}
+```
+
+查看控制台打印
+
+```verilog
+10:01:40.179 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:41.178 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:42.178 [main] INFO com.example.springbootdemo.AppTest - ok
+10:01:43.179 [main] INFO com.example.springbootdemo.AppTest - ok
+```
 
 ## About
 
