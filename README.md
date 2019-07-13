@@ -16,6 +16,13 @@
 | ------ | ------ | ------ | ------ | ------ |
 | 黑名单 | 白名单 | 控制台 | 分布式 | 高可用 |
 
+## 设计模式
+
+| 单例模式 | 观察者模式 | 工厂模式   | 建造者模式 | MVC模式 |
+| -------- | ---------- | ---------- | ---------- | ------- |
+| 全局配置 | 动态规则   | 生产限流器 | 限流规则   | 控制台  |
+
+
 # Quick Start
 
 ## Maven
@@ -69,7 +76,7 @@ public class AppTest {
 10:01:43.179 [main] INFO com.example.springbootdemo.AppTest - ok
 ```
 
-## About
+# About
 
 Blog：<http://www.yueshutong.cn/>
 
