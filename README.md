@@ -37,8 +37,6 @@
 
 ## 本地限流
 
-本项目提供了简单易用的API，对于本地限流，只需要通过工厂模式生产限流器，在需要限流的代码运行之前调用tryAcquire()方法即可。
-
 ```java
 public class AppTest {
     Logger logger = LoggerFactory.getLogger(getClass());
@@ -67,14 +65,6 @@ public class AppTest {
 }
 ```
 
-查看控制台打印
-
-```verilog
-10:01:40.179 [main] INFO com.example.springbootdemo.AppTest - ok
-10:01:41.178 [main] INFO com.example.springbootdemo.AppTest - ok
-10:01:42.178 [main] INFO com.example.springbootdemo.AppTest - ok
-10:01:43.179 [main] INFO com.example.springbootdemo.AppTest - ok
-```
 
 # About
 
