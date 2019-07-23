@@ -10,7 +10,7 @@
 
 使用文档：[中文](./CN_README.md)|[English](./EN_README.md)
 
-## Function
+## 功能概要
 
 | 限流   | 熔断   | 降级   | 监控   | 注解   |
 | ------ | ------ | ------ | ------ | ------ |
@@ -80,6 +80,6 @@ Gitee：<https://gitee.com/zyzpp/SnowJena>
 
 如果帮助到你了，请不吝赞赏！谢谢！
 
-<img src="http://ww3.sinaimg.cn/large/006tNc79ly1g43096t4oaj30tc0tc41y.jpg" width="300px" referrerpolicy="no-referrer">
+<img src="https://s2.ax1x.com/2019/07/23/eAVsvF.jpg" width="300px" referrerpolicy="no-referrer">
 
-<img src="http://ww3.sinaimg.cn/large/006tNc79ly1g4rgr77f3ij308c0au74a.jpg" width="300px" referrerPolicy="no-referrer">
+<img src="https://s2.ax1x.com/2019/07/23/eAVcDJ.jpg" width="300px" referrerPolicy="no-referrer">
