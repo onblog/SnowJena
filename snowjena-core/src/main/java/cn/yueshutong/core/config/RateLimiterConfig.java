@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  * DCL双检查锁
  */
 public class RateLimiterConfig {
-    private static RateLimiterConfig rateLimiterConfig; //单例
+    private static volatile RateLimiterConfig rateLimiterConfig; //单例
     private static Logger logger = LoggerFactory.getLogger(RateLimiterConfig.class);
 
     private TicketServer ticketServer; //发票服务器
