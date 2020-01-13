@@ -68,18 +68,12 @@ public class AppTest {
 
 # About
 
-Blog：<https://yueshutong.cnblogs.com/>
-
 Email：[yster@foxmail.com](mailto:yster@foxmail.com)
 
 Github：<https://github.com/yueshutong/SnowJena>
-
-Gitee：<https://gitee.com/zyzpp/SnowJena>
 
 交流QQ群：781927207
 
 如果帮助到你了，请不吝赞赏！谢谢！
 
 <img src="https://user-images.githubusercontent.com/31175877/67548917-af6d1600-f735-11e9-9807-351e6a2db269.png" width="300px" referrerpolicy="no-referrer">
-
-<img src="https://user-images.githubusercontent.com/31175877/67549023-e17e7800-f735-11e9-89d4-5ca7dac0486d.png" width="300px" referrerpolicy="no-referrer">
