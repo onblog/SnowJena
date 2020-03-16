@@ -72,8 +72,6 @@ Email：[yster@foxmail.com](mailto:yster@foxmail.com)
 
 Github：<https://github.com/yueshutong/SnowJena>
 
-交流QQ群：781927207
-
 如果帮助到你了，请不吝赞赏！谢谢！
 
 <img src='https://i.loli.net/2020/01/13/pPoFNwT6fKCZQ2i.png' width="400px" />
