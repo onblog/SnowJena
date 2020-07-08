@@ -68,7 +68,7 @@ public class AppTest {
 
 # About
 
-Email：[yster@foxmail.com](mailto:yster@foxmail.com)
+Email：[codeblog@qq.com](mailto:codeblog@qq.com)
 
 如果帮助到你了，请不吝赞赏！谢谢！
 
