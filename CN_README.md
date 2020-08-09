@@ -188,7 +188,7 @@ public String sayFallback() {
 
 2. 启动TicketServer
 
-   下载 [TicketServer.jar](https://github.com/yueshutong/SnowJena/releases) 包，运行，默认端口8521。
+   克隆本项目，运行 snowjena-ticket-server 项目下的 <a href="https://github.com/onblog/SnowJena/blob/master/snowjena-ticket-server/src/main/java/cn/yueshutong/snowjenaticketserver/TicketServerApplication.java">main</a> 方法，默认端口8521。
 
 启动 TicketServer 后的界面：
 
