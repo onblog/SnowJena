@@ -4,15 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>SnowJena</artifactId>
-        <groupId>cn.yueshutong</groupId>
-        <version>3.0.0.RELEASE</version>
+        <groupId>com.github.onblog</groupId>
+        <version>4.0.0.RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>snowjena-common</artifactId>
 
     <name>snowjena-common</name>
-    <url>http://www.yueshutong.cn</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +23,6 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
         </dependency>
     </dependencies>
 

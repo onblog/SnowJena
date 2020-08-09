@@ -1,11 +1,11 @@
 package cn.yueshutong.comoon;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
-import cn.yueshutong.commoon.enums.AcquireModel;
-import cn.yueshutong.commoon.enums.RuleAuthority;
-import cn.yueshutong.core.config.RateLimiterConfig;
-import cn.yueshutong.core.limiter.RateLimiter;
-import cn.yueshutong.core.limiter.RateLimiterFactory;
+import com.github.onblog.commoon.entity.RateLimiterRule;
+import com.github.onblog.commoon.enums.AcquireModel;
+import com.github.onblog.commoon.enums.RuleAuthority;
+import com.github.onblog.core.config.RateLimiterConfig;
+import com.github.onblog.core.limiter.RateLimiter;
+import com.github.onblog.core.limiter.RateLimiterFactory;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
