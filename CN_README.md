@@ -4,9 +4,9 @@
 
 ```xml
 <dependency>
-  <groupId>cn.yueshutong</groupId>
+  <groupId>com.github.onblog</groupId>
   <artifactId>snowjena-core</artifactId>
-  <version>3.0.0.RELEASE</version>
+  <version>4.0.0.RELEASE</version>
 </dependency>
 ```
 
@@ -98,48 +98,17 @@ public class AppTest {
 10:04:31.326 [main] INFO com.example.springbootdemo.AppTest - user3
 ```
 
-## 注解支持
-
-3.0.0版本后的SonwJean支持使用注解的方式，在使用之前，你需要引入注解支持依赖：
+## SnowJean-Spring-Boot-Starter
 
 ```xml
 <dependency>
-    <groupId>cn.yueshutong</groupId>
-    <artifactId>snowjena-annotation</artifactId>
-    <version>3.0.0.RELEASE</version>
-</dependency>
-```
-
-###  AspectJ
-
-若您的应用直接使用了 AspectJ，那么您需要在 `aop.xml` 文件中引入对应的 Aspect：
-
-```xml
-<aspects>
-    <aspect name="cn.yueshutong.annotation.aspect.RateLimiterAspect"/>
-</aspects>
-```
-
-### Spring AOP
-
-若您的应用使用了 Spring AOP，您需要通过配置的方式将其注册为一个 Spring Bean：
-
-``` java
-@Bean
-public RateLimiterAspect rateLimiterAspect(){
-    return new RateLimiterAspect();
-}
-```
-
-另一种方式是使用snowjean-spring-boot-starter，可以不注入该Bean，且自带注解支持。
-
-```xml
-<dependency>
-    <groupId>cn.yueshutong</groupId>
+    <groupId>com.github.onblog</groupId>
     <artifactId>snowjean-spring-boot-starter</artifactId>
-    <version>3.0.0.RELEASE</version>
+    <version>4.0.0.RELEASE</version>
 </dependency>
 ```
+
+### 使用注解
 
 ### 步骤
 
@@ -188,7 +157,7 @@ public String sayFallback() {
 
 2. 启动TicketServer
 
-   下载 [TicketServer.jar](https://github.com/yueshutong/SnowJena/releases) 包，运行，默认端口8521。
+   克隆本项目，运行 `snowjena-ticket-server` 项目下的 main 方法，默认端口8521。
 
 启动 TicketServer 后的界面：
 

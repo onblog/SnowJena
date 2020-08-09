@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cn.yueshutong.snowjeanspringbootstarter.SnowJeanAutoConfiguration
+  com.github.onblog.snowjeanspringbootstarter.SnowJeanAutoConfiguration

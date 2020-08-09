@@ -3,20 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.yueshutong</groupId>
+    <groupId>com.github.onblog</groupId>
     <artifactId>SnowJena</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0.RELEASE</version>
+    <version>4.0.0.RELEASE</version>
 
     <modules>
         <module>snowjena-common</module>
         <module>snowjena-monitor</module>
         <module>snowjena-core</module>
-        <module>snowjena-annotation</module>
     </modules>
 
     <name>SnowJena</name>
-    <url>https://github.com/yueshutong/SnowJena</url>
+    <url>https://github.com/onblog/SnowJena</url>
     <description>Distributed lock-free current limiting framework based on token bucket algorithm.</description>
 
     <properties>
@@ -48,24 +47,29 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>cn.yueshutong</groupId>
+                <groupId>com.github.onblog</groupId>
                 <artifactId>snowjena-core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>cn.yueshutong</groupId>
+                <groupId>com.github.onblog</groupId>
                 <artifactId>snowjena-common</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>cn.yueshutong</groupId>
+                <groupId>com.github.onblog</groupId>
                 <artifactId>snowjena-monitor</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>cn.yueshutong</groupId>
+                <groupId>com.github.onblog</groupId>
                 <artifactId>snowjena-annotation</artifactId>
                 <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.73</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -128,16 +132,16 @@
 
     <scm>
         <tag>master</tag>
-        <url>https://github.com/yueshutong/SnowJena.git</url>
-        <connection>scm:git:git://github.com/yueshutong/SnowJena.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/yueshutong/SnowJena.git</developerConnection>
+        <url>https://github.com/onblog/SnowJena.git</url>
+        <connection>scm:git:git://github.com/onblog/SnowJena.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/onblog/SnowJena.git</developerConnection>
     </scm>
 
     <developers>
         <developer>
-            <name>YueShuTong</name>
-            <email>yster@foxmail.com</email>
-            <url>http://www.yueshutong.cn</url>
+            <name>XueQin</name>
+            <email>codeblog@qq.com</email>
+            <url>http://github.com/onblog</url>
         </developer>
     </developers>
 
