@@ -1,7 +1,7 @@
 package com.github.onblog.snowjenaticketserver.rule;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
-import cn.yueshutong.commoon.entity.RateLimiterRuleBuilder;
+import com.github.onblog.commoon.entity.RateLimiterRule;
+import com.github.onblog.commoon.entity.RateLimiterRuleBuilder;
 import com.github.onblog.snowjenaticketserver.exception.ResultEnum;
 import com.github.onblog.snowjenaticketserver.exception.ResultException;
 import com.github.onblog.snowjenaticketserver.rule.entity.Result;

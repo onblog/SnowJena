@@ -1,6 +1,6 @@
 package com.github.onblog.snowjenaticketserver.token.service;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
+import com.github.onblog.commoon.entity.RateLimiterRule;
 import com.github.onblog.snowjenaticketserver.redisson.SingleRedisLock;
 import com.github.onblog.snowjenaticketserver.rule.service.RuleService;
 import org.springframework.beans.factory.annotation.Autowired;

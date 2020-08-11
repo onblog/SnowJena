@@ -1,12 +1,12 @@
 package com.example.springbootdemo;
 
-import cn.yueshutong.annotation.entity.Limiter;
-import cn.yueshutong.commoon.entity.RateLimiterRule;
-import cn.yueshutong.commoon.entity.RateLimiterRuleBuilder;
-import cn.yueshutong.core.config.RateLimiterConfig;
-import cn.yueshutong.core.limiter.RateLimiter;
-import cn.yueshutong.core.limiter.RateLimiterFactory;
-import cn.yueshutong.core.observer.RateLimiterObserver;
+import com.github.onblog.commoon.entity.RateLimiterRule;
+import com.github.onblog.commoon.entity.RateLimiterRuleBuilder;
+import com.github.onblog.core.config.RateLimiterConfig;
+import com.github.onblog.core.limiter.RateLimiter;
+import com.github.onblog.core.limiter.RateLimiterFactory;
+import com.github.onblog.core.observer.RateLimiterObserver;
+import com.github.onblog.snowjeanspringbootstarter.annotation.entity.Limiter;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

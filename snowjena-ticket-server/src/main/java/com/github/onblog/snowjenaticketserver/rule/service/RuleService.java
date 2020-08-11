@@ -1,6 +1,7 @@
 package com.github.onblog.snowjenaticketserver.rule.service;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
+
+import com.github.onblog.commoon.entity.RateLimiterRule;
 import com.github.onblog.snowjenaticketserver.rule.entity.Result;
 
 public interface RuleService {

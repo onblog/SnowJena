@@ -1,6 +1,6 @@
 package com.github.onblog.snowjenaticketserver.rule.service;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
+import com.github.onblog.commoon.entity.RateLimiterRule;
 import com.github.onblog.snowjenaticketserver.exception.ResultEnum;
 import com.github.onblog.snowjenaticketserver.exception.TicketServerException;
 import com.github.onblog.snowjenaticketserver.redisson.SingleRedisLock;
