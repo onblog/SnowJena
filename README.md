@@ -29,9 +29,9 @@
 
 ```xml
 <dependency>
-  <groupId>cn.yueshutong</groupId>
+  <groupId>com.github.onblog</groupId>
   <artifactId>snowjena-core</artifactId>
-  <version>3.0.0.RELEASE</version>
+  <version>4.0.0.RELEASE</version>
 </dependency>
 ```
 

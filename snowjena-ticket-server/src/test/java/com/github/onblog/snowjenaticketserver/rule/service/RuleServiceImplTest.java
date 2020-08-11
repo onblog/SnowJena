@@ -1,8 +1,8 @@
 package com.github.onblog.snowjenaticketserver.rule.service;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
-import cn.yueshutong.monitor.entity.MonitorBean;
 import com.alibaba.fastjson.JSON;
+import com.github.onblog.commoon.entity.RateLimiterRule;
+import com.github.onblog.monitor.entity.MonitorBean;
 import org.junit.Test;
 
 public class RuleServiceImplTest {

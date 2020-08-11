@@ -1,12 +1,12 @@
 package com.example.springbootdemo;
 
-import cn.yueshutong.commoon.entity.RateLimiterRule;
-import cn.yueshutong.commoon.entity.RateLimiterRuleBuilder;
-import cn.yueshutong.commoon.enums.LimiterModel;
-import cn.yueshutong.commoon.enums.RuleAuthority;
-import cn.yueshutong.core.config.RateLimiterConfig;
-import cn.yueshutong.core.limiter.RateLimiter;
-import cn.yueshutong.core.limiter.RateLimiterFactory;
+import com.github.onblog.commoon.entity.RateLimiterRule;
+import com.github.onblog.commoon.entity.RateLimiterRuleBuilder;
+import com.github.onblog.commoon.enums.LimiterModel;
+import com.github.onblog.commoon.enums.RuleAuthority;
+import com.github.onblog.core.config.RateLimiterConfig;
+import com.github.onblog.core.limiter.RateLimiter;
+import com.github.onblog.core.limiter.RateLimiterFactory;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
