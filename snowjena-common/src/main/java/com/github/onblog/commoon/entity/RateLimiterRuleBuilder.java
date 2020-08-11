@@ -27,20 +27,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setId(id);
         return this;
     }
-    /**
-     * 时间单位
-     */
-    public RateLimiterRuleBuilder setUnit(TimeUnit unit) {
-        this.rateLimiterRule.setUnit(unit);
-        return this;
-    }
-    /**
-     * 单位时间大小
-     */
-    public RateLimiterRuleBuilder setPeriod(long period) {
-        this.rateLimiterRule.setPeriod(period);
-        return this;
-    }
+
     /**
      * 单位时间放入的令牌数
      */
@@ -48,6 +35,23 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setLimit(limit);
         return this;
     }
+
+    /**
+     * 单位时间大小
+     */
+    public RateLimiterRuleBuilder setPeriod(long period) {
+        this.rateLimiterRule.setPeriod(period);
+        return this;
+    }
+
+    /**
+     * 时间单位
+     */
+    public RateLimiterRuleBuilder setUnit(TimeUnit unit) {
+        this.rateLimiterRule.setUnit(unit);
+        return this;
+    }
+
     /**
      * 第一次放入令牌的延迟时间
      */

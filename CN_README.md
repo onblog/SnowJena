@@ -128,8 +128,8 @@ public void register() {
 
 ``` java
 /**
-* Value:rateLimiter.getId()
-* fallback:fallback函数名称
+* Value: rateLimiter.getId()
+* fallback: fallback函数名称
 */
 @Limiter(value = "limiter", fallback = "sayFallback")
 public String say() {
