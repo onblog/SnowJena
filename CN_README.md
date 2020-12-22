@@ -110,8 +110,6 @@ public class AppTest {
 
 ### 使用注解
 
-### 步骤
-
 使用注解之前需要生产限流器，并设定限流器的ID，比如如下所示：
 
 ``` java
@@ -124,7 +122,7 @@ public void register() {
 }
 ```
 
-项目代码使用注解示例：
+在项目代码使用注解：
 
 ``` java
 /**
@@ -138,7 +136,7 @@ public String say() {
 }
 
 /**
-* fallback函数的参数要与原函数一致
+* 【降级处理】fallback函数的参数要与原函数一致
 */
 public String sayFallback() {
    return "fallback_hello";
