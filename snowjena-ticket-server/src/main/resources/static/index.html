@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>SnowJena控制台</title>
+    <link rel="stylesheet" href="./layui/css/layui.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">SnowJena控制台</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layui-nav-itemed">
+                <a class="" href="javascript:;">规则总览</a>
+            </li>
+            <li class="layui-nav-item"><a target="_blank" href="https://github.com/onblog/SnowJena">项目官网</a>
+            </li>
+            <li class="layui-nav-item"><a target="_blank" href="https://github.com/onblog">邮件咨询</a></li>
+            <li class="layui-nav-item"><a target="_blank"
+                                          href="//shang.qq.com/wpa/qunwpa?idkey=82d1b1b67c5f3fea1b7ec389ea4226c06e8cb5a9a1e2ba1af2df8f8c7714869f">加入群聊</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <table class="layui-hide" id="table" lay-filter="table"></table>
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        <sapn style="color: #9E9E9E">© 版权所有,违权必究</sapn>
+    </div>
+</div>
+
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="close">规则</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="update">更新</a>
+    <a class="layui-btn layui-btn-xs" lay-event="detail">监控</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="clean">删除</a>
+</script>
+
+
+<script src="./layui/layui.all.js"></script>
+<script>
+    var $ = layui.$;
+    layui.use('table', function () {
+        var table = layui.table;
+        var render = table.render({
+            elem: '#table'
+            ,toolbar: true
+            , url: '/rule'
+            , cols: [[
+                {field: 'app', width: 110, title: 'App', sort: true}
+                , {field: 'id', width: 100, title: 'ID'}
+                , {field: 'number', width: 85, title: 'Number'}
+                , {field: 'limit', width: 80, title: 'Limit', edit: 'text'}
+                , {field: 'period', width: 80, title: 'Period', edit: 'text'}
+                , {field: 'initialDelay', width: 100, title: 'InitialDelay', edit: 'text'}
+                , {field: 'unit', width: 100, title: 'Unit', edit: 'text'}
+                , {field: 'batch', width: 80, title: 'Batch', edit: 'text'}
+                , {field: 'remaining', width: 100, title: 'Remaining', edit: 'text'}
+                , {field: 'monitor', width: 80, title: 'Monitor', edit: 'text'}
+                , {field: 'acquireModel', width: 120, title: 'AcquireModel', edit: 'text'}
+                , {field: 'ruleAuthority', width: 170, title: 'RuleAuthority', edit: 'text'}
+                , {field: 'limitUser', minWidth: 110, title: 'LimitUser', edit: 'text'}
+                , {field: 'version', width: 80, title: 'Version'}
+                , {fixed: 'right', width: 210, align: 'center', toolbar: '#tool'}
+            ]]
+            , page: true //开启分页
+        });
+        //监听单元格编辑
+        table.on('edit(table)', function (obj) {
+            var value = obj.value //得到修改后的值
+                , data = obj.data //得到所在行所有键值
+                , field = obj.field; //得到字段
+            //校验
+            var result = true;
+            if (field == 'limitUser') {
+                var values = value.split(",");
+                data.limitUser = values;
+            }
+            //PUT
+            if (!result) {
+                return;
+            }
+            $.ajax({
+                url: "/rule",
+                data: {data: JSON.stringify(data)},
+                type: "PUT",
+                async: false,
+                dataType: "json",
+                success: function (data) {
+                    // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                    if (data.code === 0) {
+                        layer.msg('更新成功', {icon: 1});
+                        //表格重载
+                        setTimeout(function () {
+                            render.reload();
+                        }, 3000);
+                    } else {
+                        layer.msg('更新失败:' + data.msg, {icon: 2});
+                    }
+                },
+                error: function (XMLHttpResponse, textStatus, errorThrown) {
+                    layer.msg('服务器错误:' + XMLHttpResponse.status+":"+textStatus.msg+":"+errorThrown, {icon: 2});
+                }
+            });
+        });
+        //监听查看工具条
+        table.on('tool(table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                layer.prompt({
+                    formType: 2
+                    ,title: '更新规则'
+                    ,anim: 1
+                    ,area: ['250px', '200px']
+                    ,value: JSON.stringify(data, null, 5)
+                }, function(value, index){
+                    layer.close(index);
+                    //这里一般是发送修改的Ajax请求
+                    $.ajax({
+                        url: "/rule",
+                        data: {data: value},
+                        type: "PUT",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            if (data.code === 0) {
+                                layer.msg('更新成功', {icon: 1});
+                                //表格重载
+                                setTimeout(function () {
+                                    render.reload();
+                                }, 3000);
+                            } else {
+                                layer.msg('更新失败:' + data.msg, {icon: 2});
+                            }
+                        },
+                        error: function (XMLHttpResponse, textStatus, errorThrown) {
+                            layer.msg('服务器错误:' + XMLHttpResponse.status, {icon: 2});
+                        }
+                    });
+                });
+            }
+            if (obj.event === 'detail') {
+                //iframe窗
+                layer.open({
+                    type: 2,
+                    title: '监控系统' + '[' + data.app + '-' + data.id + ']',
+                    shadeClose: true,
+                    shade: false,
+                    maxmin: true, //开启最大化最小化按钮
+                    area: ['893px', '600px'],
+                    content: '/monitor/monitor.html?app=' + data.app + '&id=' + data.id
+                });
+                //加载层
+                layer.load(4, {time: 3*1000});
+            }
+            if (obj.event === 'clean') {
+                //询问框
+                layer.confirm('是否删除该规则下的所有监控数据？', {
+                    btn: ['删除','取消'] //按钮
+                }, function(){
+                    $.ajax({
+                        url: "/monitor?app=" + data.app + '&id=' + data.id,
+                        type: "DELETE",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            if (data.code === 0) {
+                                layer.msg('删除监控数据成功', {icon: 1});
+                            } else {
+                                layer.msg('删除监控数据失败', {icon: 2});
+                            }
+                        },
+                        error: function (XMLHttpResponse, textStatus, errorThrown) {
+                            layer.msg('服务器错误:' + XMLHttpResponse.status);
+                        }
+                    });
+                });
+            }
+            if (obj.event === 'close') {
+                //询问框
+                layer.confirm('是否关闭/开启此限流功能？', {
+                    btn: ['关闭', '开启', '取消'] //按钮
+                }, function(){
+                    data.enable = true;
+                    $.ajax({
+                        url: "/rule",
+                        data: {data: JSON.stringify(data)},
+                        type: "PUT",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            if (data.code === 0) {
+                                layer.msg('关闭成功', {icon: 1});
+                                //表格重载
+                                setTimeout(function () {
+                                    render.reload();
+                                }, 3000);
+                            } else {
+                                layer.msg('关闭失败:' + data.msg, {icon: 2});
+                            }
+                        },
+                        error: function (XMLHttpResponse, textStatus, errorThrown) {
+                            layer.msg('服务器错误:' + XMLHttpResponse.status, {icon: 2});
+                        }
+                    });
+                },function(){
+                    data.enable = false;
+                    $.ajax({
+                        url: "/rule",
+                        data: {data: JSON.stringify(data)},
+                        type: "PUT",
+                        async: false,
+                        dataType: "json",
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            if (data.code === 0) {
+                                layer.msg('开启成功', {icon: 1});
+                                //表格重载
+                                setTimeout(function () {
+                                    render.reload();
+                                }, 3000);
+                            } else {
+                                layer.msg('开启失败:' + data.msg, {icon: 2});
+                            }
+                        },
+                        error: function (XMLHttpResponse, textStatus, errorThrown) {
+                            layer.msg('服务器错误:' + XMLHttpResponse.status, {icon: 2});
+                        }
+                    });
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
