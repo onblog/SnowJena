@@ -38,9 +38,9 @@ public class TokenServiceImpl implements TokenService {
             long result;
             if (l<=0){
                 result =  0L;
-            }else if (l>= rateLimiterRule.getLimit()){
-                valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule), rateLimiterRule.getLimit());
-                result = rateLimiterRule.getLimit();
+            }else if (l>= rateLimiterRule.getBatch()){
+                valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule), rateLimiterRule.getBatch());
+                result = rateLimiterRule.getBatch();
             }else {
                 valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule),l);
                 result = l;
