@@ -8,7 +8,7 @@ import org.junit.Test;
 public class RuleServiceImplTest {
 
     @Test
-    public void json(){
+    public void json() {
         String j = "{\"app\":\"Application\",\"id\":\"myId\",\"name\":\"1355531311\",\"limit\":\"1\",\"period\":1,\"initialDelay\":0,\"unit\":\"SECONDS\",\"batch\":2,\"remaining\":0.5,\"monitor\":10,\"acquireModel\":\"FAILFAST\",\"limiterModel\":\"CLOUD\",\"ruleAuthority\":\"NULL\",\"limitUser\":null,\"number\":0,\"version\":0}";
         RateLimiterRule rateLimiterRule = JSON.parseObject(j, RateLimiterRule.class);
         System.out.println(rateLimiterRule);
@@ -21,7 +21,7 @@ public class RuleServiceImplTest {
     }
 
     @Test
-    public void entity(){
+    public void entity() {
         MonitorBean monitorBean = new MonitorBean();
         monitorBean.setName("A");
         to(monitorBean);
@@ -30,14 +30,16 @@ public class RuleServiceImplTest {
 
     private void to(MonitorBean monitorBean) {
         monitorBean = new MonitorBean();
-        monitorBean.setName("B");;
+        monitorBean.setName("B");
+        ;
     }
 
     @Test
-    public void test1(){
-        test2("","","");
+    public void test1() {
+        test2("", "", "");
     }
-    public void test2(String... name){
+
+    public void test2(String... name) {
         StringBuilder builder = new StringBuilder();
         for (String value : name) {
             builder.append(value);

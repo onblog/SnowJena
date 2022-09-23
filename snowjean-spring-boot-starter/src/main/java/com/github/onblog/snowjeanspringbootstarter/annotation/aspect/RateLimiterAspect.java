@@ -32,7 +32,7 @@ public class RateLimiterAspect {
         MethodSignature msg = (MethodSignature) sig;
         Object target = pjp.getTarget();
         Method fallback = target.getClass().getMethod(limiter.fallback(), msg.getParameterTypes());
-        return fallback.invoke(target,pjp.getArgs());
+        return fallback.invoke(target, pjp.getArgs());
     }
 
 }

@@ -42,7 +42,7 @@ public class TicketServer {
         String server;
         lock.lock();
         try {
-            if (serverList.size()==0){
+            if (serverList.size() == 0) {
                 serverList.addAll(backupsList);
                 backupsList.clear();
             }
@@ -66,7 +66,7 @@ public class TicketServer {
                     .execute()
                     .getBody();
         } catch (IOException e) {
-            if (System.currentTimeMillis() - start >3000) {
+            if (System.currentTimeMillis() - start > 3000) {
                 logger.error("{} The server is not available.", server);
                 start = System.currentTimeMillis();
             }

@@ -45,7 +45,7 @@ public class TestController {
         RateLimiterConfig config = RateLimiterConfig.getInstance();
         config.setTicketServer(map);
         //生产限流器
-        RateLimiter rateLimiter = RateLimiterFactory.of(rateLimiterRule,config);
+        RateLimiter rateLimiter = RateLimiterFactory.of(rateLimiterRule, config);
         //随时随地获取已生产的限流器
         RateLimiter rateLimiter1 = RateLimiterObserver.getMap().get(rateLimiter.getId());
     }

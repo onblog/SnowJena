@@ -14,13 +14,13 @@ public class SingleRedisLock {
 
     private final String LOCK_TITLE = "redisLock_";
 
-    public void acquire(String lockName){
+    public void acquire(String lockName) {
         String key = LOCK_TITLE + lockName;
         RLock mylock = redisson.getLock(key);
         mylock.lock(5, TimeUnit.MINUTES); //lock提供带timeout参数，timeout结束强制解锁，防止死锁
     }
 
-    public void release(String lockName){
+    public void release(String lockName) {
         String key = LOCK_TITLE + lockName;
         RLock mylock = redisson.getLock(key);
         mylock.unlock();

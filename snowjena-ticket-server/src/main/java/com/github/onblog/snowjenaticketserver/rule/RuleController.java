@@ -24,6 +24,7 @@ public class RuleController {
 
     /**
      * 心跳包
+     *
      * @param rule 规则字符串
      * @return 最新规则字符串
      */
@@ -45,6 +46,7 @@ public class RuleController {
 
     /**
      * 修改限流规则
+     *
      * @return true/false
      */
     @RequestMapping(value = "/rule", method = RequestMethod.PUT)

@@ -13,7 +13,7 @@ public class ThreadManager {
     private ThreadProperties properties;
 
     @Bean
-    public ScheduledExecutorService get(){
+    public ScheduledExecutorService get() {
         ScheduledExecutorService scheduledThreadExecutor = Executors.newScheduledThreadPool(properties.getSize());
         return scheduledThreadExecutor;
     }

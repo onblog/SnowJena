@@ -27,22 +27,22 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Long token(RateLimiterRule rateLimiterRule) {
         String s = valueOperations.get(RuleService.getBucketKey(rateLimiterRule));
-        if (s==null||"".equals(s)){
+        if (s == null || "".equals(s)) {
             return 0L;
         }
         long l = Long.parseLong(s);
-        if (l>0){
+        if (l > 0) {
             //加锁
             redisLock.acquire(RuleService.getLockKey(rateLimiterRule));
             l = Long.parseLong(valueOperations.get(RuleService.getBucketKey(rateLimiterRule)));
             long result;
-            if (l<=0){
-                result =  0L;
-            }else if (l>= rateLimiterRule.getBatch()){
+            if (l <= 0) {
+                result = 0L;
+            } else if (l >= rateLimiterRule.getBatch()) {
                 valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule), rateLimiterRule.getBatch());
                 result = rateLimiterRule.getBatch();
-            }else {
-                valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule),l);
+            } else {
+                valueOperations.decrement(RuleService.getBucketKey(rateLimiterRule), l);
                 result = l;
             }
             //解锁

@@ -4,13 +4,15 @@ function GetQueryString(name) {
     if (r != null) return decodeURI(r[2]);
     return null;
 }
+
 var app = GetQueryString("app");
 var id = GetQueryString("id");
 setInterval(function () {
-    $.get("/monitor/json?app="+app+"&id="+id, function (data) {
+    $.get("/monitor/json?app=" + app + "&id=" + id, function (data) {
         my_echarts(data.data)
     });
 }, 3000);
+
 function my_echarts(data) {
     var myChart = echarts.init(document.getElementById('view'));//（1）
     // 指定图表的配置项和数据

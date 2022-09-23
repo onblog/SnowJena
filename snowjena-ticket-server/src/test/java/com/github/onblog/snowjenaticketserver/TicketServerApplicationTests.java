@@ -23,8 +23,8 @@ public class TicketServerApplicationTests {
 
     @Test
     public void contextLoads() {
-        System.out.println(redisProperties.getHost()+redisProperties.getPort()+redisProperties.getPassword());
-        Executors.newScheduledThreadPool(100).scheduleAtFixedRate(()->{
+        System.out.println(redisProperties.getHost() + redisProperties.getPort() + redisProperties.getPassword());
+        Executors.newScheduledThreadPool(100).scheduleAtFixedRate(() -> {
             lock.acquire("key");
             System.err.println("======lock  ======" + Thread.currentThread().getName());
             try {
@@ -35,7 +35,7 @@ public class TicketServerApplicationTests {
             }
             lock.release("key");
             System.err.println("======unlock======" + Thread.currentThread().getName());
-        },0,1, TimeUnit.MILLISECONDS);
+        }, 0, 1, TimeUnit.MILLISECONDS);
         try {
             Thread.sleep(8000);
         } catch (InterruptedException e) {

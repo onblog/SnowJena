@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * Create by Martin 2019/5/4 0004 12:51
  */
-public class MonitorBean implements Comparable<MonitorBean>{
+public class MonitorBean implements Comparable<MonitorBean> {
     private String app;
     private String id;
     private String name;
@@ -41,6 +41,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
     public void setLocalDateTime(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
     }
+
     @Override
     public int compareTo(MonitorBean o) {
         return this.getLocalDateTime().compareTo(o.getLocalDateTime());
@@ -89,7 +90,7 @@ public class MonitorBean implements Comparable<MonitorBean>{
 
 
     public String getTime() {
-        return localDateTime!=null?localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")):"";
+        return localDateTime != null ? localDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")) : "";
     }
 
     public String getDateTime() {

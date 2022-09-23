@@ -93,8 +93,8 @@ public class HttpUtil {
      * 写入参数,不支持GET方式，GET参数需自行在URL追加
      * POST的参数:demo=1&name=2
      */
-    public HttpUtil setData(String key,String value) {
-        data.put(key,value);
+    public HttpUtil setData(String key, String value) {
+        data.put(key, value);
         return this;
     }
 
@@ -136,10 +136,10 @@ public class HttpUtil {
     private String getDataString() {
         StringBuilder builder = new StringBuilder();
         List<Map.Entry<String, String>> list = new ArrayList<>(data.entrySet());
-        for (int i = 0; i< list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             Map.Entry<String, String> entry = list.get(i);
             builder.append(entry.getKey()).append("=").append(entry.getValue());
-            if (i<list.size()-1){
+            if (i < list.size() - 1) {
                 builder.append("&");
             }
         }

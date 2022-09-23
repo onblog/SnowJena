@@ -20,6 +20,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setApp(app);
         return this;
     }
+
     /**
      * 限流规则名称
      */
@@ -59,6 +60,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setInitialDelay(initialDelay);
         return this;
     }
+
     /**
      * 每批次取多少个令牌
      */
@@ -66,6 +68,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setBatch(batch);
         return this;
     }
+
     /**
      * 现有令牌数/批次令牌数<=? [0,1]
      */
@@ -73,6 +76,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setRemaining(remaining);
         return this;
     }
+
     /**
      * 监控时长，秒，0为关闭
      */
@@ -80,6 +84,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setMonitor(monitor);
         return this;
     }
+
     /**
      * 黑白名单列表
      */
@@ -87,6 +92,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setLimitUser(limitUser);
         return this;
     }
+
     /**
      * 黑名单/白名单/无
      */
@@ -94,6 +100,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setRuleAuthority(ruleAuthority);
         return this;
     }
+
     /**
      * 控制行为：快速失败/阻塞
      */
@@ -101,6 +108,7 @@ public class RateLimiterRuleBuilder {
         this.rateLimiterRule.setAcquireModel(acquireModel);
         return this;
     }
+
     /**
      * 部署方式（本地/分布式）
      */

@@ -25,11 +25,11 @@ public interface RuleService {
 
     static String getLimiterRuleKeys(String app, String id) {
         StringBuilder builder = new StringBuilder();
-        if (app==null||app.isEmpty()){
+        if (app == null || app.isEmpty()) {
             builder.append("*");
-        }else {
+        } else {
             builder.append(app);
-            if (id!=null) {
+            if (id != null) {
                 builder.append(id);
             }
         }
@@ -51,6 +51,7 @@ public interface RuleService {
 
     /**
      * 心跳 Heartbeat
+     *
      * @param rateLimiterRule 客户端
      * @return 新规则
      */
@@ -58,6 +59,7 @@ public interface RuleService {
 
     /**
      * 更新规则一定更新版本号
+     *
      * @param rateLimiterRule 参数
      * @return 结果
      */
@@ -65,6 +67,7 @@ public interface RuleService {
 
     /**
      * 查看规则
+     *
      * @param app，id，name
      * @param page
      * @param limit

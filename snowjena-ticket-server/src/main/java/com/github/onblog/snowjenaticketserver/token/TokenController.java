@@ -14,8 +14,8 @@ public class TokenController {
     @Autowired
     private TokenService tokenService;
 
-    @RequestMapping(value = "/token",method = RequestMethod.POST)
-    public String token(@RequestParam("data") String rule){
+    @RequestMapping(value = "/token", method = RequestMethod.POST)
+    public String token(@RequestParam("data") String rule) {
         RateLimiterRule rateLimiterRule = JSON.parseObject(rule, RateLimiterRule.class);
         return JSON.toJSONString(tokenService.token(rateLimiterRule));
     }

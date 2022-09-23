@@ -10,19 +10,19 @@ public interface MonitorService {
     String AFTER = "$AFTER$";
     String DATE = "$DATA$";
 
-    static String getMonitorPreKey(MonitorBean m){
-        return PRE + m.getApp() + m.getId()+ DATE + m.getDateTime();
+    static String getMonitorPreKey(MonitorBean m) {
+        return PRE + m.getApp() + m.getId() + DATE + m.getDateTime();
     }
 
-    static String getMonitorAfterKey(MonitorBean m){
+    static String getMonitorAfterKey(MonitorBean m) {
         return AFTER + m.getApp() + m.getId() + DATE + m.getDateTime();
     }
 
-    static String getMonitorPreKeys(String app,String id){
+    static String getMonitorPreKeys(String app, String id) {
         return PRE + app + id + "*";
     }
 
-    static String getMonitorAfterKeys(String app,String id){
+    static String getMonitorAfterKeys(String app, String id) {
         return AFTER + app + id + "*";
     }
 

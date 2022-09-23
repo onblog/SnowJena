@@ -22,16 +22,15 @@
 | -------- | ---------- | ---------- | ---------- | ------- |
 | 全局配置 | 动态规则   | 生产限流器 | 限流规则   | 控制台  |
 
-
 # Quick Start
 
 ## Maven
 
 ```xml
 <dependency>
-  <groupId>com.github.onblog</groupId>
-  <artifactId>snowjena-core</artifactId>
-  <version>4.0.0.RELEASE</version>
+    <groupId>com.github.onblog</groupId>
+    <artifactId>snowjena-core</artifactId>
+    <version>4.0.0.RELEASE</version>
 </dependency>
 ```
 

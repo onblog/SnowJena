@@ -30,7 +30,7 @@ public class RateLimiterObserver {
             throw new SnowJeanException("Repeat registration for current limiting rules:" + limiter.getId());
         }
         map.put(limiter.getId(), limiter);
-        if (!limiter.getRule().getLimiterModel().equals(LimiterModel.CLOUD)){
+        if (!limiter.getRule().getLimiterModel().equals(LimiterModel.CLOUD)) {
             //本地限流只注册
             return;
         }

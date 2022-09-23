@@ -17,11 +17,11 @@ public class ExceptionHandle {
      */
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public Result<?> handle(Exception e){
-        if(e instanceof TicketServerException){
+    public Result<?> handle(Exception e) {
+        if (e instanceof TicketServerException) {
             return new Result(((TicketServerException) e).getCode(), e.getMessage());
-        }else{
-            logger.error("[系统异常] {}",e.getMessage());
+        } else {
+            logger.error("[系统异常] {}", e.getMessage());
             return new Result(ResultEnum.ERROR.getCode(), e.getMessage());
         }
     }
