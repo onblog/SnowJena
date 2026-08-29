@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>SnowJena</artifactId>
+        <groupId>com.github.onblog</groupId>
+        <version>4.0.0.RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>snowjena-core</artifactId>
+
+    <name>snowjena-core</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.onblog</groupId>
+            <artifactId>snowjena-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.onblog</groupId>
+            <artifactId>snowjena-monitor</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
