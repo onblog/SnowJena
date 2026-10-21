@@ -76,8 +76,6 @@ contention, so it can reject a request during a microsecond of racing but never 
 The *rate* is as accurate as the operating system's timer. Above a few hundred permits per second that
 is exact in practice; for very low rates (a few per hour) a permit may arrive one scheduling tick late.
 
-
-
 ## Can I use one limiter for several endpoints?
 
 You can, but do not: a shared limiter means traffic to one endpoint consumes the budget of the others,
