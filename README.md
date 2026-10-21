@@ -1,35 +1,62 @@
-<p align="center">
-  <img src="assets/logo.svg" width="96" height="96" alt="java-limiter logo">
-</p>
+<div align="center">
 
-<h1 align="center">java-limiter · 疾限</h1>
+<img src="assets/logo.svg" width="104" alt="java-limiter 疾限 logo" />
 
-<p align="center"><strong>Lock-free rate limiting for Java 8+. One jar, six algorithms, zero runtime dependencies.</strong></p>
+# java-limiter · 疾限
 
-<p align="center">
-  <a href="README.md">🇺🇸 English</a> ·
-  <a href="README.zh-CN.md">🇨🇳 中文</a>
-</p>
+**Lock-free rate limiting for Java 8+ — six algorithms in one 18 KB jar, zero runtime dependencies, no background threads.**
 
-<p align="center">
-  <code>Java 8+</code> · <code>0 dependencies</code> · <code>18 KB jar</code> · <code>Apache-2.0</code> · <code>58 unit tests</code>
-</p>
+<a href="https://limiter.wordtk.com"><img alt="Live docs" src="https://img.shields.io/badge/%E2%96%B6_Live_Docs-limiter.wordtk.com-2563eb?style=for-the-badge"></a>
+
+<br/>
+
+<img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.onblog/java-limiter?style=flat-square">
+<img alt="License: Apache 2.0" src="https://img.shields.io/github/license/onblog/java-limiter?style=flat-square">
+<img alt="Java 8+" src="https://img.shields.io/badge/Java-8%2B-f89820?style=flat-square">
+<img alt="Runtime dependencies: 0" src="https://img.shields.io/badge/runtime_deps-0-2f7d52?style=flat-square">
+<img alt="Tests: 58" src="https://img.shields.io/badge/tests-58-3f7d3e?style=flat-square">
+
+<br/><br/>
+
+🇺🇸 **English** &nbsp;·&nbsp; [🇨🇳 简体中文](README.zh-CN.md)
+
+<br/>
+
+<img src="assets/algorithms.svg" width="880" alt="How each limiter admits the same configured rate">
+
+</div>
+
+> **The same 4 permits per second, six different admission patterns.** A token bucket spends a burst
+> and then settles; a leaky bucket paces evenly; a sliding window refuses the boundary trick; a fixed
+> window hands out twice the rate across a clock tick; a warm-up limiter starts cold; a concurrency
+> limiter ignores the clock entirely. One interface, one jar, nothing extra on your classpath.
 
 ---
 
-## Why
+## Table of contents
 
-Most rate limiters drag a framework, a logging implementation, a serialization library or a Redis
-client into your classpath, and many of them start a background scheduler thread to refill tokens.
-java-limiter does none of that:
+| | |
+| --- | --- |
+| [What it does](#what-it-does) | [Install](#install) |
+| [Quick start](#quick-start) | [Pick an algorithm](#pick-an-algorithm) |
+| [Common usage](#common-usage) | [Documentation](#documentation) |
+| [Build from source](#build-from-source) | [License](#license) |
 
-- **Zero runtime dependencies.** Only the JDK. Nothing to exclude, no version conflicts.
-- **Lock-free.** One atomic read plus at most one compare-and-set per request. No mutex, no blocking
-  on the fast path.
-- **No background threads.** The rate is derived from `System.nanoTime()` when a request arrives,
-  so an idle limiter costs no CPU and no memory growth.
-- **No allocations per call.** A limiter holds a fixed number of `long`s, whatever the traffic.
-- **Java 8 bytecode.** Runs unchanged on Java 8 through 25.
+---
+
+## What it does
+
+- **Zero runtime dependencies** — only the JDK. No framework, no logging binding, no JSON library, no
+  Redis client. Nothing to exclude from your build, no version conflicts to resolve.
+- **Lock-free** — one atomic read plus at most one compare-and-set per request. No mutex, no blocking,
+  no lock contention on the fast path.
+- **No background threads** — the rate is derived from `System.nanoTime()` when a request arrives, so an
+  idle limiter costs no CPU, starts nothing, and never grows.
+- **No allocations per call** — a limiter holds a fixed number of `long`s, whatever the traffic is.
+- **Java 8 bytecode** — class file version 52 with `Automatic-Module-Name: io.github.onblog.limiter`;
+  the same artifact runs on Java 8 through 25, on the classpath or the module path.
+- **Six algorithms behind one interface** — swap a token bucket for a rolling window without touching
+  the call sites, and no algorithm is a relabelled copy of another.
 
 ## Install
 
@@ -63,7 +90,7 @@ if (limiter.tryAcquire()) {
 }
 ```
 
-A rejected request is not an error: `tryAcquire` returns `false` and nothing is logged or thrown.
+A rejected request is not an error: `tryAcquire` returns `false`, and nothing is logged or thrown.
 
 ## Pick an algorithm
 
@@ -73,11 +100,11 @@ A rejected request is not an error: `tryAcquire` returns `false` and nothing is 
 | `LeakyBucketLimiter` | Strictly even pacing, never accumulates a burst | Outbound calls, MQ consumption, anything that must be smooth |
 | `SlidingWindowLimiter` | At most N permits in any rolling window | Login attempts, quota per minute/hour where the boundary must not be exploitable |
 | `FixedWindowLimiter` | At most N permits per aligned window, one `AtomicLong` | Very high traffic with loose accuracy needs |
-| `WarmUpTokenBucketLimiter` | Token bucket that starts at one third of the rate and ramps up over a period | Services that are cold right after start-up: empty caches, un-JITed code, fresh pods |
+| `WarmUpTokenBucketLimiter` | Starts at one third of the rate, ramps up over a period | Services that are cold right after start-up: empty caches, un-JITed code, fresh pods |
 | `ConcurrencyLimiter` | Caps how many permits are held **at once**, not how many per second | Protecting thread pools, connection pools and slow downstreams |
 
-`TokenBucketLimiter` and `LeakyBucketLimiter` share the same virtual-scheduling core (GCRA); they
-differ only in burst tolerance, so neither is a re-labelled copy of the other — see
+`TokenBucketLimiter` and `LeakyBucketLimiter` share the same virtual-scheduling core (GCRA) and differ
+only in burst tolerance, so neither is a relabelled copy of the other — see
 [Algorithms](https://limiter.wordtk.com/en/algorithms).
 
 ## Common usage
@@ -153,14 +180,19 @@ More in the [guide](https://limiter.wordtk.com/en/guide).
 
 ## Documentation
 
-- 🇺🇸 English: <https://limiter.wordtk.com/en/>
-- 🇨🇳 中文: <https://limiter.wordtk.com/zh-CN/>
+| | |
+| --- | --- |
+| 🇺🇸 English | <https://limiter.wordtk.com/en/> |
+| 🇨🇳 中文 | <https://limiter.wordtk.com/zh-CN/> |
+| API reference | [en](https://limiter.wordtk.com/en/api) · [zh-CN](https://limiter.wordtk.com/zh-CN/api) |
+| Algorithms | [en](https://limiter.wordtk.com/en/algorithms) · [zh-CN](https://limiter.wordtk.com/zh-CN/algorithms) |
 
 ## Build from source
 
 ```bash
 mvn clean verify          # compile, test (58 cases), package
 mvn -P release package    # additionally attach sources/javadoc and sign
+mvn -P release deploy     # upload the signed bundle to the Maven Central Portal
 ```
 
 ## License

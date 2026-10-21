@@ -30,6 +30,14 @@ features:
     details: Token bucket, leaky bucket, sliding window, fixed window, warm-up and a concurrency bulkhead. 令牌桶、漏桶、滑动窗口、固定窗口、预热限流、并发数限流。
 ---
 
+## Six algorithms, one interface
+
+<img src="/algorithms.svg" width="880" alt="How each limiter admits the same configured rate">
+
+Same configuration, six admission patterns: a burst then steady, evenly paced, a rolling window that
+refuses the boundary trick, a fixed window that hands out twice the rate across a clock tick, a cold
+start that ramps up, and a bulkhead that ignores the clock. 同一配置、六种放行形态。
+
 ## Two documentation languages
 
 - 🇺🇸 [English documentation](/en/) — introduction, guide, algorithms, API reference and FAQ.

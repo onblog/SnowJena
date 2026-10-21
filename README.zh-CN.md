@@ -1,31 +1,54 @@
-<p align="center">
-  <img src="assets/logo.svg" width="96" height="96" alt="java-limiter logo">
-</p>
+<div align="center">
 
-<h1 align="center">java-limiter · 疾限</h1>
+<img src="assets/logo.svg" width="104" alt="java-limiter 疾限 logo" />
 
-<p align="center"><strong>Java 8+ 无锁限流库：一个 jar、六种算法、零运行时依赖。</strong></p>
+# java-limiter · 疾限
 
-<p align="center">
-  <a href="README.md">🇺🇸 English</a> ·
-  <a href="README.zh-CN.md">🇨🇳 中文</a>
-</p>
+**Java 8+ 无锁限流库：六种算法压进一个 18 KB 的 jar，零运行时依赖，没有后台线程。**
 
-<p align="center">
-  <code>Java 8+</code> · <code>零依赖</code> · <code>18 KB jar</code> · <code>Apache-2.0</code> · <code>58 个单测</code>
-</p>
+<a href="https://limiter.wordtk.com"><img alt="在线文档" src="https://img.shields.io/badge/%E2%96%B6_%E5%9C%A8%E7%BA%BF%E6%96%87%E6%A1%A3-limiter.wordtk.com-2563eb?style=for-the-badge"></a>
+
+<br/>
+
+<img alt="Maven Central" src="https://img.shields.io/maven-central/v/io.github.onblog/java-limiter?style=flat-square">
+<img alt="许可：Apache 2.0" src="https://img.shields.io/github/license/onblog/java-limiter?style=flat-square">
+<img alt="Java 8+" src="https://img.shields.io/badge/Java-8%2B-f89820?style=flat-square">
+<img alt="运行时依赖：0" src="https://img.shields.io/badge/runtime_deps-0-2f7d52?style=flat-square">
+<img alt="单元测试：58" src="https://img.shields.io/badge/tests-58-3f7d3e?style=flat-square">
+
+<br/><br/>
+
+[🇺🇸 English](README.md) &nbsp;·&nbsp; 🇨🇳 **简体中文**
+
+<br/>
+
+<img src="assets/algorithms.svg" width="880" alt="同一配置下六种限流器的放行差异">
+
+</div>
+
+> **同样是每秒 4 个许可，六种完全不同的放行形态。** 令牌桶先花掉突发再回归稳态；漏桶严格匀速；滑动窗口不给你跨越边界的机会；固定窗口在整秒处白送一倍速率；预热限流刚启动时是冷的；并发数限流根本无视时钟。一个接口、一个 jar，classpath 上不多任何东西。
 
 ---
 
-## 为什么再造一个限流器
+## 目录
 
-常见的限流库会把框架、日志实现、序列化库甚至 Redis 客户端塞进你的 classpath，还有不少会专门起一个后台线程去补充令牌。java-limiter 一概不做：
+| | |
+| --- | --- |
+| [它在做什么](#它在做什么) | [引入](#引入) |
+| [三行上手](#三行上手) | [六种算法怎么选](#六种算法怎么选) |
+| [常用姿势](#常用姿势) | [文档](#文档) |
+| [本地构建](#本地构建) | [许可](#许可) |
 
-- **零运行时依赖**：只用 JDK，不需要排除任何传递依赖，也不会引发版本冲突。
-- **无锁**：每次请求一次原子读 + 最多一次 CAS，快路径上没有互斥锁、不会阻塞。
-- **没有后台线程**：限流速率在请求到来时由 `System.nanoTime()` 现算，空闲时不占 CPU、内存也不增长。
-- **每次调用零分配**：一个限流器只持有固定的几个 `long`，与流量无关。
-- **Java 8 字节码**：从 Java 8 到 25 都不用改。
+---
+
+## 它在做什么
+
+- **零运行时依赖**：只用 JDK。没有框架、没有日志实现绑定、没有 JSON 库、没有 Redis 客户端。不需要从构建里排除任何传递依赖，也不会引发版本冲突。
+- **无锁**：每次请求一次原子读、最多一次 CAS。快路径上没有互斥锁、不阻塞、没有锁竞争。
+- **没有后台线程**：速率在请求到来时由 `System.nanoTime()` 现算，空闲的限流器不占 CPU、不启动任何东西、内存也不增长。
+- **每次调用零分配**：无论流量多大，一个限流器只持有固定的几个 `long`。
+- **Java 8 字节码**：class 文件版本 52，带 `Automatic-Module-Name: io.github.onblog.limiter`；同一个产物从 Java 8 跑到 25，classpath 与 module path 都能用。
+- **六种算法共用一个接口**：把令牌桶换成滚动窗口，调用处一行都不用改；而且没有任何一种算法是另一种改个名字。
 
 ## 引入
 
@@ -146,14 +169,19 @@ public class RateLimitFilter implements Filter {
 
 ## 文档
 
-- 🇨🇳 中文：<https://limiter.wordtk.com/zh-CN/>
-- 🇺🇸 English: <https://limiter.wordtk.com/en/>
+| | |
+| --- | --- |
+| 🇨🇳 中文 | <https://limiter.wordtk.com/zh-CN/> |
+| 🇺🇸 English | <https://limiter.wordtk.com/en/> |
+| API 参考 | [中文](https://limiter.wordtk.com/zh-CN/api) · [en](https://limiter.wordtk.com/en/api) |
+| 算法原理 | [中文](https://limiter.wordtk.com/zh-CN/algorithms) · [en](https://limiter.wordtk.com/en/algorithms) |
 
 ## 本地构建
 
 ```bash
 mvn clean verify          # 编译 + 58 个单测 + 打包
 mvn -P release package    # 额外生成 sources/javadoc 并签名
+mvn -P release deploy     # 上传签名后的 bundle 到 Maven 中央仓库
 ```
 
 ## 许可
