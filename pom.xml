@@ -124,6 +124,14 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>3.2.7</version>
+                        <configuration>
+                            <!--
+                              Signing key: Martin (java-limiter) <31175877+onblog@users.noreply.github.com>
+                              Published to keyserver.ubuntu.com and keys.openpgp.org, which is what the
+                              Central Portal uses to verify the uploaded signatures.
+                            -->
+                            <keyname>63787D419204ED5402946490118A35CB768DE4A1</keyname>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -133,6 +141,23 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <!--
+                      Uploads the signed bundle to the Central Portal. This plugin talks to
+                      central.sonatype.com directly instead of a distributionManagement repository,
+                      so a wildcard settings mirror cannot hijack the upload. Credentials are read
+                      from the "central" server entry in ~/.m2/settings.xml.
+                    -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.8.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <waitUntil>validated</waitUntil>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
