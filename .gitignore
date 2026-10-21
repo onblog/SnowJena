@@ -4,8 +4,8 @@ HELP.md
 
 ### Cloudflare (docs site) ###
 node_modules/
-.vitepress/cache/
-.vitepress/dist/
+**/.vitepress/cache/
+**/.vitepress/dist/
 
 ### IDE ###
 .apt_generated

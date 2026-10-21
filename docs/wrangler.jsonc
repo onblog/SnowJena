@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "java-limiter",
+  "compatibility_date": "2026-10-01",
+  // Pure static documentation: Workers Static Assets serves the VitePress build output,
+  // there is no Worker script and no /api/* backend, so the site costs no request quota.
+  "assets": {
+    "directory": "./.vitepress/dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    {
+      "pattern": "limiter.wordtk.com",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    }
+  }
+}
