@@ -18,12 +18,14 @@ with no latency, and a Redis `INCR` + `PEXPIRE` (or a gateway limit) provides th
 | Permits argument | `int` | `int` (stored permit), `double` (permits per second) |
 | Rolling-window limit | yes (`SlidingWindowLimiter`) | no |
 | Alignment / fixed window | yes | no |
+| Warm-up | yes (`WarmUpTokenBucketLimiter`, fixed cold factor 3) | yes (`SmoothWarmingUp`) |
+| Concurrency bulkhead | yes (`ConcurrencyLimiter`) | no |
 | Introspection | `availablePermits()` | none |
 
 Guava's is a smooth rate limiter; here that role belongs to `LeakyBucketLimiter`, and the token bucket,
-sliding window and fixed window variants are additions. If Guava is already on your classpath and you
-only need smooth pacing, Guava is a reasonable choice. If you want no dependency, no mutex, and a
-window-based limit, this library covers it.
+sliding window, fixed window, warm-up and concurrency variants are additions. If Guava is already on
+your classpath and you only need smooth pacing, Guava is a reasonable choice. If you want no
+dependency, no mutex, and window, warm-up or bulkhead behaviour, this library covers it.
 
 ## Why is there no logging and no metrics integration?
 

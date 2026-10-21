@@ -15,9 +15,11 @@
 | 许可参数 | `int` | `int`（存储许可）／`double`（每秒速率） |
 | 滚动窗口限流 | 有（`SlidingWindowLimiter`） | 无 |
 | 对齐/固定窗口 | 有 | 无 |
+| 预热 | 有（`WarmUpTokenBucketLimiter`，冷却系数固定 3） | 有（`SmoothWarmingUp`） |
+| 并发数限流 | 有（`ConcurrencyLimiter`） | 无 |
 | 可观测 | `availablePermits()` | 无 |
 
-Guava 那个属于"平滑限流器"，在本库里对应 `LeakyBucketLimiter`；令牌桶、滑动窗口、固定窗口是额外的能力。如果你的工程本来就有 Guava、只需要平滑限速，用 Guava 完全合理；如果你不想要额外依赖、不想要互斥锁，或者需要基于窗口的限流，就用本库。
+Guava 那个属于"平滑限流器"，在本库里对应 `LeakyBucketLimiter`；令牌桶、滑动窗口、固定窗口、预热、并发数限流是额外的能力。如果你的工程本来就有 Guava、只需要平滑限速，用 Guava 完全合理；如果你不想要额外依赖、不想要互斥锁，或者需要基于窗口的限流，就用本库。
 
 ## 为什么不打日志、不内置监控？
 

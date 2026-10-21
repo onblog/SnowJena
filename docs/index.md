@@ -4,7 +4,7 @@ layout: home
 hero:
   name: java-limiter · 疾限
   text: Lock-free rate limiting
-  tagline: Four algorithms in one 12 KB jar, Java 8+, zero dependencies, no background threads. 四种算法、单个 12 KB jar、零依赖、无后台线程。
+  tagline: Six algorithms in one 18 KB jar, Java 8+, zero dependencies, no background threads. 六种算法、单个 18 KB jar、零依赖、无后台线程。
   image:
     src: /logo.svg
     alt: java-limiter
@@ -26,8 +26,8 @@ features:
     details: One atomic read and at most one compare-and-set per request. 每次请求一次原子读、最多一次 CAS，快路径上没有互斥锁。
   - title: No background threads · 无后台线程
     details: The rate is derived from System.nanoTime() on demand, so an idle limiter costs nothing. 请求到来时现算速率，空闲不限流器不占 CPU。
-  - title: Four algorithms · 四种算法
-    details: Token bucket, leaky bucket, sliding window, fixed window. 令牌桶、漏桶、滑动窗口、固定窗口。
+  - title: Six algorithms · 六种算法
+    details: Token bucket, leaky bucket, sliding window, fixed window, warm-up and a concurrency bulkhead. 令牌桶、漏桶、滑动窗口、固定窗口、预热限流、并发数限流。
 ---
 
 ## Two documentation languages
