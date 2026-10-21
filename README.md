@@ -165,4 +165,19 @@ mvn -P release package    # additionally attach sources/javadoc and sign
 
 ## License
 
-[Apache License 2.0](LICENSE)
+[Apache License 2.0](LICENSE) — free for commercial use, including closed-source products.
+
+You may use, modify, embed and redistribute this library, including inside proprietary software,
+without publishing your own source code. Apache-2.0 is permissive, not copyleft: nothing you build on
+top of it inherits a licensing obligation.
+
+If you redistribute it — as source, as a jar, or bundled inside your product — you must:
+
+- keep the copyright notice and a copy of the license;
+- state the changes you made, if you modified the code;
+- keep any `NOTICE` file that ships with it (this repository has none, so there is nothing extra to bundle).
+
+The license grants no trademark rights, and the software comes with no warranty.
+
+No contributor license agreement is required. By opening a pull request you agree to license your
+contribution under the same Apache-2.0 terms.
