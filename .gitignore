@@ -2,7 +2,12 @@ HELP.md
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
-### STS ###
+### Cloudflare (docs site) ###
+node_modules/
+.vitepress/cache/
+.vitepress/dist/
+
+### IDE ###
 .apt_generated
 .classpath
 .factorypath
@@ -10,14 +15,11 @@ HELP.md
 .settings
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
-
-### NetBeans ###
+.vscode/
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -25,5 +27,6 @@ HELP.md
 /.nb-gradle/
 /build/
 
-### VS Code ###
-.vscode/
+### OS ###
+.DS_Store
+*.log
