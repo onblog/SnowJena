@@ -18,6 +18,11 @@ import java.util.concurrent.locks.LockSupport;
  *   <li>{@link LeakyBucketLimiter} — strict smooth pacing, no burst.</li>
  *   <li>{@link SlidingWindowLimiter} — at most N permits per rolling window.</li>
  *   <li>{@link FixedWindowLimiter} — at most N permits per aligned window (cheapest).</li>
+ *   <li>{@link WarmUpTokenBucketLimiter} — token bucket that starts at a third of the rate and ramps
+ *       up, for dependencies that are themselves cold.</li>
+ *   <li>{@link ConcurrencyLimiter} — caps how many permits are held at once instead of how many per
+ *       second. A permit there is a slot: every {@code tryAcquire()} needs a matching
+ *       {@link ConcurrencyLimiter#release()}, so prefer its try-with-resources form.</li>
  * </ul>
  *
  * <p>Rejected requests are the caller's business: a {@code false} return means "do not perform the

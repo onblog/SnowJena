@@ -13,6 +13,12 @@ import java.time.Duration;
  * RateLimiter smooth    = RateLimiters.leakyBucket("upstream", 100);             // one permit every 10ms
  * RateLimiter rolling   = RateLimiters.slidingWindow("login", 5, Duration.ofMinutes(1));
  * RateLimiter cheapest  = RateLimiters.fixedWindow("reports", 100, Duration.ofHours(1));
+ *
+ * // Caps how many requests run at once, not how many per second.
+ * ConcurrencyLimiter inFlight = RateLimiters.concurrency("db-pool", 20);
+ *
+ * // Full speed after two minutes, one third of the rate before that.
+ * RateLimiter warming   = RateLimiters.warmUpTokenBucket("search", 600, Duration.ofMinutes(2));
  * }</pre>
  */
 public final class RateLimiters {
@@ -68,6 +74,51 @@ public final class RateLimiters {
      */
     public static LeakyBucketLimiter leakyBucket(String name, int permitsPerWindow, Duration window) {
         return new LeakyBucketLimiter(name, permitsPerWindow, window);
+    }
+
+    /**
+     * Creates a concurrency limiter that caps how many permits may be held at the same time.
+     *
+     * <p>A permit is a slot and must be returned, so prefer the try-with-resources form
+     * {@link ConcurrencyLimiter#tryEnter()} over a bare {@code tryAcquire()}.
+     *
+     * @param name           human-readable name used in logs and metrics
+     * @param maxConcurrency maximum number of permits held at once
+     * @return a new limiter
+     */
+    public static ConcurrencyLimiter concurrency(String name, int maxConcurrency) {
+        return new ConcurrencyLimiter(name, maxConcurrency);
+    }
+
+    /**
+     * Creates a warm-up token bucket limiter that allows {@code permitsPerSecond} once warm and one
+     * third of it at start-up, ramping up linearly over {@code warmUpPeriod}.
+     *
+     * @param name             human-readable name used in logs and metrics
+     * @param permitsPerSecond permits granted per second once warm
+     * @param warmUpPeriod     how long the ramp takes
+     * @return a new limiter
+     */
+    public static WarmUpTokenBucketLimiter warmUpTokenBucket(String name, int permitsPerSecond,
+                                                             Duration warmUpPeriod) {
+        Checks.positive(permitsPerSecond, "permitsPerSecond");
+        return new WarmUpTokenBucketLimiter(name, permitsPerSecond, permitsPerSecond,
+                Duration.ofSeconds(1), warmUpPeriod);
+    }
+
+    /**
+     * Creates a warm-up token bucket limiter with an explicit burst capacity.
+     *
+     * @param name             human-readable name used in logs and metrics
+     * @param capacity         burst capacity once warm
+     * @param permitsPerWindow permits granted per {@code window} once warm
+     * @param window           refill window at full speed
+     * @param warmUpPeriod     how long the ramp takes
+     * @return a new limiter
+     */
+    public static WarmUpTokenBucketLimiter warmUpTokenBucket(String name, int capacity, int permitsPerWindow,
+                                                             Duration window, Duration warmUpPeriod) {
+        return new WarmUpTokenBucketLimiter(name, capacity, permitsPerWindow, window, warmUpPeriod);
     }
 
     /**
