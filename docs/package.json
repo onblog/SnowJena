@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "vitepress": "^1.6.3",
-    "wrangler": "4.144.0"
+    "wrangler": "4.151.3"
   },
   "engines": {
     "node": ">=20"
