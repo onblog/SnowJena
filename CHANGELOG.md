@@ -18,8 +18,12 @@ First release: one module, one jar, zero third-party runtime dependencies.
 - `SlidingWindowLimiter` — at most N permits in any rolling window, 10 slots by default, fail-closed
   under contention so the limit is never exceeded.
 - `FixedWindowLimiter` — whole state in one `AtomicLong`, the cheapest implementation.
+- `ConcurrencyLimiter` — caps how many permits are held at once (bulkhead), with `release()`,
+  `execute()`/`call()` helpers and an `AutoCloseable` `Permit` for try-with-resources.
+- `WarmUpTokenBucketLimiter` — starts at one third of the configured rate (cold factor 3) and ramps up
+  linearly over a warm-up period, with the burst budget shrinking in step.
 - `RateLimiters` factory with per-second convenience overloads.
-- 37 JUnit 5 tests, including concurrency tests that assert a limit holds when many threads race for
+- 58 JUnit 5 tests, including concurrency tests that assert a limit holds when many threads race for
   the last permits.
 - Bilingual documentation site (`docs/en`, `docs/zh-CN`) published at <https://limiter.wordtk.com>.
 

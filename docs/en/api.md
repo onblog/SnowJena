@@ -35,6 +35,10 @@ public final class RateLimiters {
     LeakyBucketLimiter  leakyBucket(String name, int permitsPerWindow, Duration window);
     SlidingWindowLimiter slidingWindow(String name, int maxPermits, Duration window);
     FixedWindowLimiter  fixedWindow(String name, int maxPermits, Duration window);
+    WarmUpTokenBucketLimiter warmUpTokenBucket(String name, int permitsPerSecond, Duration warmUpPeriod);
+    WarmUpTokenBucketLimiter warmUpTokenBucket(String name, int capacity, int permitsPerWindow,
+                                              Duration window, Duration warmUpPeriod);
+    ConcurrencyLimiter  concurrency(String name, int maxConcurrency);
 }
 ```
 
@@ -85,12 +89,56 @@ At most `maxPermits` per aligned `window`, where a window starts at a multiple o
 from an arbitrary fixed origin. Cheapest implementation; may allow up to twice the limit across a
 window boundary.
 
+## `WarmUpTokenBucketLimiter`
+
+```java
+public static final int COLD_FACTOR = 3;
+
+new WarmUpTokenBucketLimiter(String name, int capacity, int permitsPerWindow, Duration window,
+                             Duration warmUpPeriod);
+int capacity();
+int permitsPerWindow();
+int coldFactor();
+double warmUpProgress();     // 0.0 at start-up, 1.0 once warm
+```
+
+A token bucket whose rate ramps from `1 / COLD_FACTOR` to the configured rate over `warmUpPeriod`, with
+the burst budget shrinking in step. The ramp follows the age of the limiter, not its traffic: an idle
+limiter still warms up. `warmUpProgress()` exposes the ramp for dashboards and tests.
+
+## `ConcurrencyLimiter`
+
+```java
+new ConcurrencyLimiter(String name, int maxConcurrency);
+int maxConcurrency();
+int inFlight();
+void release();
+void release(int permits);
+Permit tryEnter();           // null when full
+Permit tryEnter(int permits); // null when not enough slots
+void execute(Runnable task);
+<T> T call(Callable<T> task);
+
+interface Permit extends AutoCloseable {
+    @Override void close();  // idempotent
+}
+```
+
+Caps the permits held at once. Unlike the rate limiters, a permit is a slot that must be returned:
+`tryAcquire()` without a matching `release()` permanently shrinks the limit, so prefer `tryEnter()` in a
+try-with-resources block, or `execute()`/`call()`, which acquire and release around the task. Closing a
+`Permit` twice is a no-op, so a double `close()` never inflates the limit.
+
+`execute()` and `call()` throw `IllegalStateException` when every slot is busy; `call()` also wraps a
+checked exception thrown by the task in an `IllegalStateException` with the original as its cause.
+
 ## Exceptions
 
 | Exception | When |
 | --- | --- |
 | `IllegalArgumentException` | A constructor argument is not positive, the name is empty, the window is zero/negative/null, or `tryAcquire(permits)` is called with `permits < 1`. The message names the offending argument, for example `capacity must be > 0 but was 0`. |
 | `InterruptedException` | The blocking `tryAcquire(permits, timeout, unit)` was interrupted. The interrupt flag is cleared, so re-interrupt in your `catch` block if you do not propagate. |
+| `IllegalStateException` | `ConcurrencyLimiter.release(n)` returns more slots than are held (a double-release bug), or `execute()`/`call()` runs while every slot is busy. |
 
 Rejections never throw. No method logs.
 
@@ -110,6 +158,8 @@ configuration.
 | `TokenBucketLimiter`, `LeakyBucketLimiter` | 1 atomic read, 1 CAS |
 | `FixedWindowLimiter` | 1 atomic read, 1 CAS |
 | `SlidingWindowLimiter` | `slotCount` atomic reads, 1 CAS, plus one extra read for the rollback check |
+| `WarmUpTokenBucketLimiter` | 1 atomic read, 1 CAS (the ramp is computed from the clock) |
+| `ConcurrencyLimiter` | 1 atomic read, 1 CAS |
 
 No method allocates on the accepted or rejected path (a rejected blocking call allocates nothing
 either; the blocking call parks the thread).

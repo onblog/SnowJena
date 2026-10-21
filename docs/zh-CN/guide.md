@@ -44,6 +44,12 @@ RateLimiter rolling = RateLimiters.slidingWindow("login", 600, Duration.ofMinute
 
 // 每个对齐的一分钟内最多 600 次，最省
 RateLimiter aligned = RateLimiters.fixedWindow("login", 600, Duration.ofMinutes(1));
+
+// 启动后前两分钟只有 1/3 速率
+RateLimiter warming = RateLimiters.warmUpTokenBucket("search", 600, Duration.ofMinutes(2));
+
+// 同时在飞最多 20 个（并发数限流，不是速率）
+ConcurrencyLimiter inFlight = RateLimiters.concurrency("db-pool", 20);
 ```
 
 四种实现都实现了同一个 `RateLimiter` 接口，换算法不用改调用处。

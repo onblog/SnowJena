@@ -35,6 +35,10 @@ public final class RateLimiters {
     LeakyBucketLimiter   leakyBucket(String name, int permitsPerWindow, Duration window);
     SlidingWindowLimiter slidingWindow(String name, int maxPermits, Duration window);
     FixedWindowLimiter   fixedWindow(String name, int maxPermits, Duration window);
+    WarmUpTokenBucketLimiter warmUpTokenBucket(String name, int permitsPerSecond, Duration warmUpPeriod);
+    WarmUpTokenBucketLimiter warmUpTokenBucket(String name, int capacity, int permitsPerWindow,
+                                               Duration window, Duration warmUpPeriod);
+    ConcurrencyLimiter   concurrency(String name, int maxConcurrency);
 }
 ```
 
@@ -79,12 +83,50 @@ int maxPermits();
 
 每个对齐窗口内最多 `maxPermits` 个（窗口起点是一个固定原点的整数倍）。实现最省，但跨窗口边界最多可能放过 2 倍上限。
 
+## `WarmUpTokenBucketLimiter`
+
+```java
+public static final int COLD_FACTOR = 3;
+
+new WarmUpTokenBucketLimiter(String name, int capacity, int permitsPerWindow, Duration window,
+                             Duration warmUpPeriod);
+int capacity();
+int permitsPerWindow();
+int coldFactor();
+double warmUpProgress();     // 启动时为 0.0，预热完成后为 1.0
+```
+
+速率从 `1 / COLD_FACTOR` 线性爬升到配置值的令牌桶，突发额度同步从 `capacity/COLD_FACTOR` 涨到 `capacity`。爬升依据是限流器的**运行时长**而不是流量：空闲的限流器也会自己预热完。`warmUpProgress()` 可用于看板与测试。
+
+## `ConcurrencyLimiter`
+
+```java
+new ConcurrencyLimiter(String name, int maxConcurrency);
+int maxConcurrency();
+int inFlight();
+void release();
+void release(int permits);
+Permit tryEnter();            // 满了返回 null
+Permit tryEnter(int permits); // 槽位不够返回 null
+void execute(Runnable task);
+<T> T call(Callable<T> task);
+
+interface Permit extends AutoCloseable {
+    @Override void close();   // 幂等
+}
+```
+
+限制"同时在飞的许可数"。与速率限流不同，这里的许可是**槽位，必须归还**：只 `tryAcquire()` 不 `release()` 会让上限永久缩水。所以优先用 try-with-resources 的 `tryEnter()`，或者用 `execute()`/`call()`（它们在任务前后自动申请与归还）。`Permit.close()` 重复调用是幂等的，不会把上限越关越大。
+
+槽位全满时 `execute()`/`call()` 抛 `IllegalStateException`；`call()` 还会把任务抛出的受检异常包成 `IllegalStateException`（原始异常作为 cause）。
+
 ## 异常
 
 | 异常 | 触发条件 |
 | --- | --- |
 | `IllegalArgumentException` | 构造参数不为正、名字为空、窗口为零/负数/`null`，或 `tryAcquire(permits)` 的 `permits < 1`。消息会指明是哪个参数，例如 `capacity must be > 0 but was 0`。 |
 | `InterruptedException` | 阻塞版 `tryAcquire(permits, timeout, unit)` 被中断。中断标志已被清除，若不想向上传播，记得在自己的 `catch` 里恢复它。 |
+| `IllegalStateException` | `ConcurrencyLimiter.release(n)` 归还的槽位多于持有数（重复释放 bug），或 `execute()`/`call()` 在槽位全满时被调用。 |
 
 拒绝永远不抛异常。任何方法都不打日志。
 
@@ -101,5 +143,7 @@ int maxPermits();
 | `TokenBucketLimiter`、`LeakyBucketLimiter` | 1 次原子读 + 1 次 CAS |
 | `FixedWindowLimiter` | 1 次原子读 + 1 次 CAS |
 | `SlidingWindowLimiter` | `slotCount` 次原子读 + 1 次 CAS，外加一次回滚校验读 |
+| `WarmUpTokenBucketLimiter` | 1 次原子读 + 1 次 CAS（爬升曲线由时钟现算） |
+| `ConcurrencyLimiter` | 1 次原子读 + 1 次 CAS |
 
 无论放行还是拒绝都不分配对象；阻塞版只是把线程 park 住，同样不分配。

@@ -4,7 +4,7 @@
 
 <h1 align="center">java-limiter · 疾限</h1>
 
-<p align="center"><strong>Lock-free rate limiting for Java 8+. One jar, four algorithms, zero runtime dependencies.</strong></p>
+<p align="center"><strong>Lock-free rate limiting for Java 8+. One jar, six algorithms, zero runtime dependencies.</strong></p>
 
 <p align="center">
   <a href="README.md">🇺🇸 English</a> ·
@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <code>Java 8+</code> · <code>0 dependencies</code> · <code>12 KB jar</code> · <code>Apache-2.0</code> · <code>37 unit tests</code>
+  <code>Java 8+</code> · <code>0 dependencies</code> · <code>18 KB jar</code> · <code>Apache-2.0</code> · <code>58 unit tests</code>
 </p>
 
 ---
@@ -73,6 +73,8 @@ A rejected request is not an error: `tryAcquire` returns `false` and nothing is 
 | `LeakyBucketLimiter` | Strictly even pacing, never accumulates a burst | Outbound calls, MQ consumption, anything that must be smooth |
 | `SlidingWindowLimiter` | At most N permits in any rolling window | Login attempts, quota per minute/hour where the boundary must not be exploitable |
 | `FixedWindowLimiter` | At most N permits per aligned window, one `AtomicLong` | Very high traffic with loose accuracy needs |
+| `WarmUpTokenBucketLimiter` | Token bucket that starts at one third of the rate and ramps up over a period | Services that are cold right after start-up: empty caches, un-JITed code, fresh pods |
+| `ConcurrencyLimiter` | Caps how many permits are held **at once**, not how many per second | Protecting thread pools, connection pools and slow downstreams |
 
 `TokenBucketLimiter` and `LeakyBucketLimiter` share the same virtual-scheduling core (GCRA); they
 differ only in burst tolerance, so neither is a re-labelled copy of the other — see
@@ -92,6 +94,27 @@ if (limiter.tryAcquire(5)) { ... }
 if (limiter.tryAcquire(1, 200, TimeUnit.MILLISECONDS)) {
     callUpstream();                   // back pressure instead of a 429
 }
+```
+
+**Cap how many run at once** — the concurrency limiter counts slots, so a permit must be given back.
+The try-with-resources form does that for you, including when the work throws:
+
+```java
+ConcurrencyLimiter pool = RateLimiters.concurrency("db-pool", 20);
+
+try (ConcurrencyLimiter.Permit slot = pool.tryEnter()) {
+    if (slot == null) {
+        response.setStatus(429);      // every slot is busy
+        return;
+    }
+    queryDatabase();
+}                                     // slot released here
+```
+
+**Ramp up slowly after start-up** — one third of the rate at t=0, full rate after the period:
+
+```java
+RateLimiter search = RateLimiters.warmUpTokenBucket("search", 600, Duration.ofMinutes(2));
 ```
 
 **Spring Boot** — one bean, injected wherever it is needed:
@@ -136,7 +159,7 @@ More in the [guide](https://limiter.wordtk.com/en/guide).
 ## Build from source
 
 ```bash
-mvn clean verify          # compile, test (37 cases), package
+mvn clean verify          # compile, test (58 cases), package
 mvn -P release package    # additionally attach sources/javadoc and sign
 ```
 

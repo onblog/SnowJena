@@ -46,8 +46,10 @@ metrics.gauge("limiter.available", Tags.of("limiter", limiter.name()), limiter, 
 | `TokenBucketLimiter`、`LeakyBucketLimiter` | 一个 `AtomicLong` |
 | `FixedWindowLimiter` | 一个 `AtomicLong` |
 | `SlidingWindowLimiter` | `AtomicLongArray(slotCount)`，默认 10 个 long |
+| `WarmUpTokenBucketLimiter` | 一个 `AtomicLong` 加一个预热起始时刻 |
+| `ConcurrencyLimiter` | 一个 `AtomicInteger` |
 
-jar 约 12 KB，整个对外 API 只有 7 个类。
+jar 约 18 KB，整个对外 API 只有 9 个类。
 
 ## 能在 Java 17 / 21 / 25 上用吗？
 

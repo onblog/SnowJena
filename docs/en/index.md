@@ -4,7 +4,7 @@ layout: home
 hero:
   name: java-limiter
   text: Lock-free rate limiting for Java 8+
-  tagline: One 12 KB jar, four algorithms, zero runtime dependencies, no background threads.
+  tagline: One 18 KB jar, six algorithms, zero runtime dependencies, no background threads.
   image:
     src: /logo.svg
     alt: java-limiter
@@ -23,8 +23,8 @@ features:
     details: One atomic read and at most one compare-and-set per request. No mutex, no blocking, no allocation on the fast path.
   - title: No background threads
     details: The rate is derived from System.nanoTime() when a request arrives, so an idle limiter costs no CPU and never grows.
-  - title: Four algorithms
-    details: Token bucket, leaky bucket, sliding window and fixed window behind one small interface, each with its trade-off documented.
+  - title: Six algorithms
+    details: Token bucket, leaky bucket, sliding window, fixed window, warm-up and a concurrency bulkhead behind one small interface, each with its trade-off documented.
 ---
 
 ## Install
@@ -69,6 +69,8 @@ A rejected request is not an error: `tryAcquire` returns `false`, nothing is log
 | `LeakyBucketLimiter` | Strictly even pacing, never accumulates a burst | Outbound calls, MQ consumption, anything that must be smooth |
 | `SlidingWindowLimiter` | At most N permits in any rolling window | Login attempts, per-minute or per-hour quota with no exploitable boundary |
 | `FixedWindowLimiter` | At most N permits per aligned window, one `AtomicLong` | Very high traffic with loose accuracy needs |
+| `WarmUpTokenBucketLimiter` | Starts at a third of the rate, ramps up over a warm-up period | Services that are cold right after start-up |
+| `ConcurrencyLimiter` | Caps permits **in flight**, not permits per second | Protecting thread pools, connection pools, slow downstreams |
 
 Read [Algorithms](/en/algorithms) for how each one works and what it guarantees under contention.
 

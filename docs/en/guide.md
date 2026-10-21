@@ -45,6 +45,12 @@ RateLimiter rolling = RateLimiters.slidingWindow("login", 600, Duration.ofMinute
 
 // at most 600 permits per aligned minute, cheapest
 RateLimiter aligned = RateLimiters.fixedWindow("login", 600, Duration.ofMinutes(1));
+
+// a third of the rate for the first two minutes after start-up
+RateLimiter warming = RateLimiters.warmUpTokenBucket("search", 600, Duration.ofMinutes(2));
+
+// at most 20 requests in flight at once (a bulkhead, not a rate)
+ConcurrencyLimiter inFlight = RateLimiters.concurrency("db-pool", 20);
 ```
 
 All four implement the same `RateLimiter` interface, so you can swap one for another without

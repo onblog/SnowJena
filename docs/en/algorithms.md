@@ -1,7 +1,8 @@
 # Algorithms
 
-Four limiters, one interface. They exist because "limit the rate" hides four different questions:
-does a burst fit through, must the pace be smooth, and how is the window boundary defined?
+Six limiters, one interface. They exist because "limit the rate" hides several different questions:
+does a burst fit through, must the pace be smooth, how is the window boundary defined, is the
+dependency cold, and is the real constraint requests per second or requests in flight?
 
 | Limiter | Rate model | Burst | State | Cost per request |
 | --- | --- | --- | --- | --- |
@@ -9,6 +10,8 @@ does a burst fit through, must the pace be smooth, and how is the window boundar
 | `LeakyBucketLimiter` | strictly even pacing | 1 | one `long` | 1 read + 1 CAS |
 | `SlidingWindowLimiter` | N per rolling window | up to N | `slots` longs | `slots` reads + 1 CAS (+ 1 read, rare rollback) |
 | `FixedWindowLimiter` | N per aligned window | up to 2N at the boundary | one `long` | 1 read + 1 CAS |
+| `WarmUpTokenBucketLimiter` | token bucket whose rate ramps up | `capacity / 3` while cold, `capacity` warm | one `long` + ramp start | 1 read + 1 CAS |
+| `ConcurrencyLimiter` | N permits held at once | not applicable (no time axis) | one `int` | 1 read + 1 CAS |
 
 ## Token bucket (virtual scheduling / GCRA)
 
@@ -99,6 +102,57 @@ accuracy requirements.
 Its known weakness is the boundary burst: 100 permits at 11:59:59 plus 100 permits at 12:00:01 means
 200 permits within two seconds, twice the configured rate. Choose `SlidingWindowLimiter` when a client
 could deliberately exploit that.
+
+## Concurrency limiting (bulkhead)
+
+`ConcurrencyLimiter` is the odd one out: it has no time axis at all. It answers "how many requests may
+be in progress at the same time", not "how many per second". The two are not interchangeable:
+
+> A downstream answers in 3 seconds and you allow 10 requests per second. The rate limiter is perfectly
+> happy. Meanwhile 30 requests are in flight, and a 20-connection pool has already given up.
+
+Three things follow from being slot-based rather than token-based:
+
+1. **A permit is not refunded by the clock.** It only comes back through `release()`, so the
+   try-with-resources form (`tryEnter()`) is the safe default: it releases on the way out, including
+   when the work throws. Returning more permits than are held throws `IllegalStateException`, which
+   turns a double-release bug into an immediate test failure instead of a silently inflated limit.
+2. **There is nothing to "refill".** `availablePermits()` is `maxConcurrency - inFlight`, the state is
+   one `AtomicInteger`, and `tryAcquire(n)` / `release(n)` are single CAS operations, so a burst of
+   callers that do not fit is rejected instead of oversubscribing the pool.
+3. **It composes with a rate limiter.** Run both: the token bucket protects the downstream, the
+   concurrency limiter protects this process's own threads and connections. Neither replaces the other.
+
+## Warm-up
+
+`WarmUpTokenBucketLimiter` is a token bucket whose emission interval starts at three times the steady
+one and shrinks linearly to it over the warm-up period. The rate therefore goes from `1/3` to `1` of
+the configured value, and because the burst budget is a fixed number of emission intervals, the burst
+goes from `capacity / 3` to `capacity` at the same time:
+
+```
+rate   ●
+       │        ╭──────────── steady rate after the ramp
+  100% ┤      ╭─╯
+       │    ╭─╯
+   33% ┤╭───╯
+       └────┬────────────────────────▶ time
+           warmUpPeriod
+```
+
+Two details matter in practice:
+
+- **The ramp is based on the age of the limiter, not on traffic.** Waiting idle does not warm it up; a
+  limiter created two minutes ago is warm even if it has not served a single request. That is what
+  makes it work on a freshly started instance, which is exactly the situation the feature exists for.
+- **A limiter whose capacity is smaller than the cold factor cannot be starved.** The burst budget is
+  clamped to at least one emission interval, so a capacity of 1 — the "no burst" configuration — still
+  admits one permit at a time while cold instead of nothing at all.
+
+The cold factor is fixed at 3, the same value Alibaba Sentinel uses. It is a deliberate simplification:
+a configurable factor changes the shape of the curve and would need its own tests for every
+combination, while 3 is the value that has been tuned in production for the common "don't slam the
+dependency for the first N minutes" case.
 
 ## What is guaranteed under concurrency
 

@@ -58,8 +58,10 @@ clock change cannot make a limiter grant a burst or stall.
 | `TokenBucketLimiter`, `LeakyBucketLimiter` | one `AtomicLong` |
 | `FixedWindowLimiter` | one `AtomicLong` |
 | `SlidingWindowLimiter` | `AtomicLongArray(slotCount)`, 10 longs by default |
+| `WarmUpTokenBucketLimiter` | one `AtomicLong` plus the ramp start timestamp |
+| `ConcurrencyLimiter` | one `AtomicInteger` |
 
-The jar is about 12 KB and the whole addressable API is 7 classes.
+The jar is about 18 KB and the whole addressable API is 9 classes.
 
 ## Does it work on Java 17, 21 and 25?
 
