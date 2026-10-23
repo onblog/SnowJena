@@ -9,7 +9,7 @@ export default defineConfig({
   lang: 'en',
   cleanUrls: true,
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    ['link', { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#0f172a' }]
   ],
   themeConfig: {
