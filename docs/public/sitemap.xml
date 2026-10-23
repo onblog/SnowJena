@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://limiter.wordtk.com/</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/en/guide</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/en/api</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/en/algorithms</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/en/faq</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/zh-CN/guide</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/zh-CN/api</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/zh-CN/algorithms</loc>
+  </url>
+  <url>
+    <loc>https://limiter.wordtk.com/zh-CN/faq</loc>
+  </url>
+</urlset>
