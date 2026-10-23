@@ -30,3 +30,6 @@ node_modules/
 ### OS ###
 .DS_Store
 *.log
+
+# Local environment (never commit the production domain)
+.env

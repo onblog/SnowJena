@@ -1,0 +1,5 @@
+{
+  "outDir": ".vitepress/dist",
+  "html": [],
+  "pages": ["/", "/en/guide", "/en/api", "/en/algorithms", "/en/faq", "/zh-CN/guide", "/zh-CN/api", "/zh-CN/algorithms", "/zh-CN/faq"]
+}

@@ -8,12 +8,9 @@
     "directory": "./.vitepress/dist",
     "not_found_handling": "404-page"
   },
-  "routes": [
-    {
-      "pattern": "limiter.wordtk.com",
-      "custom_domain": true
-    }
-  ],
+  // 域名绑定不在仓库里声明：统一在 Cloudflare Dashboard 的
+  // Worker → Settings → Domains & Routes 维护。
+  "workers_dev": false,
   "observability": {
     "enabled": true,
     "logs": {
